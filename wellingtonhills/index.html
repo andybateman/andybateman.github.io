@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Wellington Hills</title>
+	<style>
+		#map { 
+		  height: 100%; 
+		  width: 100%; 
+		  position:absolute; 
+		  top: 0; 
+		  left: 0;
+		  z-index: -10;
+		}
+		.gm-style-mtc {
+			display: none;
+		}
+		#title {
+		  background-color: #fff;
+		  font-family: sans-serif;
+		  font-size: 1.4em;
+		  font-weight: 600;
+		  display: inline-block;
+		  padding: 5px 10px
+		}
+	</style>
+</head>
+<body>
+
+<div id="map"></div>
+<div id="title">Wellington Hills</div>
+<script>
+	function initMap() {
+		var map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 11,
+			center: {lat: -41.259173, lng: 174.866319}
+		});
+		setMarkers(map);
+	}
+
+	var hills = [
+	  ["Matiu/Somes Island",74,-41.259173,174.866319,false],
+	  ["Spinnaker Summit",98,-41.1086,174.88595,false],
+	  ["Botanic Gardens",121,-41.28525,174.76748,"2/8/2021"],
+	  ["Mt Victoria",196,-41.296187,174.796257,"14/8/2021"],
+	  ["Tinakori Hill",303,-41.27413,174.763641,false],
+	  ["Cannon Point",345,-41.1033333,175.0730556,false],
+	  ["Brooklyn Wind Turbine",373,-41.3111,174.7449,false],
+	  ["Makara Peak",412,-41.2891667,174.7069444,false],
+	  ["Mt Kaukau",431,-41.2341667,174.7797222,false],
+	  ["Boulder Hill",442,-41.1522222,174.9372222,false],
+	  ["Belmont Trig",457,-41.1833333,174.8738889,false],
+	  ["Colonial Knob",458,-41.1552778,174.8036111,false],
+	  ["Hawkins Hill",495,-41.3291667,174.7258333,false],
+	  ["Rimutaka Trig",725,-41.1188889,175.23,false],
+	  ["Mount Climie",860,-41.1502778,175.1433333,false],
+	  ["Rimutaka Summit",365,-41.14271931,175.19782662,false]
+	];
+
+	function setMarkers(map) {
+		var infoWindow = new google.maps.InfoWindow(), marker, i;
+		
+		for (var i = 0; i < hills.length; i++) {
+			var hill = hills[i];
+			marker = new google.maps.Marker({
+				position: {lat: hill[2], lng: hill[3]},
+				icon: "https://maps.google.com/mapfiles/ms/micons/" + ((hill[4]) ? "green" : "red") + "-dot.png",
+				map: map,
+				title: hill[0] + " (" + hill[1] + "m)"
+			});
+
+			google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infoWindow.setContent(
+					hills[i][0] + " (" + hills[i][1] + "m)<br />" +
+					((hills[i][4]) ? "Did it on " + hills[i][4] : "Haven't done it yet..."));
+                infoWindow.open(map, marker);
+            }
+        	})(marker, i));
+		}
+	}
+</script>
+
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWAAwLjq6VMAPGbrxks8oG9wNNXw1Kj3I&callback=initMap"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/d07b1474/cloudflare-static/email-decode.min.js"></script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-22038364-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

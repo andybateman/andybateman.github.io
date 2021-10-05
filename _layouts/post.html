@@ -1,0 +1,44 @@
+---
+layout: default
+---
+
+<div class="post">
+    
+<article class="post-content">
+<h2>{{ page.title }}</h2>
+{{ content }}
+</article>
+{% if page.meta.Lng %}
+<div id="map-canvas"></div>
+<script type="text/javascript">
+    function initialize() {
+        
+    var myLatlng = new google.maps.LatLng({{ page.meta.Lat }}, {{ page.meta.Lng }});
+
+    var mapOptions = {
+        center: myLatlng,
+        zoom: {% if page.meta.Scale %}{{ page.meta.Scale }}{% else %}3{% endif %}
+    };
+    
+    var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+    
+    var marker = new google.maps.Marker({
+        position: myLatlng,
+        map: map,
+        title:"Hello World!"
+    });
+    
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+{% endif %}
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'andybateman';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+</div>
