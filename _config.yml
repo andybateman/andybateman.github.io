@@ -8,18 +8,11 @@ twitter_username: andybateman
 facebook_username: andybateman
 permalink: /:categories/:title/
 
+sass:
+  sass_dir: _scss
+  style: compressed
+
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-redirect-from
-
-# Build settings
-markdown: kramdown
-exclude: [s3_website.yml]
-
-flickr:
-  cache_dir:       "./_cache/flickr"
-  api_key:          b48b29f43a801fee7ec90e1b5e9c5b84
-  shared_secret:    f7a9ba6b68ea7d2a
-  access_token:     72157650263066281-96a9a61c647f2f16
-  access_secret:    81f8304cf5e7c976
