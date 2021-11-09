@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Wellington Hills</title>
+	<style>
+		#chartContainer { 
+		  height: 100%; 
+		  width: 100%; 
+		  position:absolute; 
+		  top: 0; 
+		  left: 0;
+		  z-index: -10;
+		}
+		#title {
+		  background-color: #fff;
+		  font-family: sans-serif;
+		  font-size: 1.4em;
+		  font-weight: 600;
+		  display: inline-block;
+		  padding: 5px 10px
+		}
+	</style>
+</head>
+<body>
+
+<div id="chartContainer"></div>
+
+<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        var dataPoints = [];
+	 
+        function getDataPointsFromCSV(csv,col) {
+            var dataPoints = csvLines = points = [];
+            csvLines = csv.split(/[\r?\n|\r|\n]+/);         
+		        
+            for (var i = 1; i < csvLines.length; i++)
+                if (csvLines[i].length > 0) {
+                    points = csvLines[i].split(",");
+					if (points[col].length > 0) {
+						dataPoints.push({ 
+							x: parseFloat(points[0]),
+							y: parseFloat(points[col])
+						});
+					}
+                }
+            return dataPoints;
+        }
+	
+	$.get("/newzealandhills/walks.csv", function(data) {
+	    var chart = new CanvasJS.Chart("chartContainer", {
+		    title: {
+		        text: "New Zealand Hills",
+				fontColor: "#2f4f4f",
+				fontSize: 15,
+				padding: 10,
+				margin: 15,
+				fontWeight: "regular"
+		    },
+			animationEnabled: true,
+			axisX:{
+      		 title: "Kilometres",
+			 titleFontSize: 15,
+			 labelFontSize: 15
+			},
+			axisY:{
+			 labelFontSize: 15,
+			 interval: 250,
+			 gridColor: "grey",
+			 gridDashType: "dash"
+  			},
+			legend: {
+			 fontSize: 15,
+			 dockInsidePlotArea: true
+			},
+			toolTip:{   
+			 content: "{name}<br />{y}meters at {x}km"      
+		    },
+		    data: [
+				 {
+		         type: "spline",
+				 name: "Paparoa",
+         	     showInLegend: "true",
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,1)
+		      },
+			  {
+		         type: "spline",
+				 name: "Kaukau",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,2)
+		      },
+			  {
+		         type: "spline",
+				 name: "Torara Flats",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,3)
+		      },
+			  {
+		         type: "spline",
+				 name: "Mt Vic",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,4)
+		      },
+			  {
+		         type: "spline",
+				 name: "Tongariro Crossing",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,5)
+		      },
+			  {
+		         type: "spline",
+				 name: "Greytown -> Martinborough",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,5)
+		      },
+			  {
+		         type: "spline",
+				 name: "Greytown",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,6)
+		      },
+			  {
+		         type: "spline",
+				 name: "Remutaka Rail Trail",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,7)
+		      },
+			  {
+		         type: "spline",
+				 name: "Colonial Knob",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,8)
+		      },
+			  {
+		         type: "spline",
+				 name: "WLG -> Kapiti",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,9)
+		      },
+			  {
+		         type: "spline",
+				 name: "Paekakariki Escarpment",
+         	     showInLegend: "true", 
+				 markerType: "none",
+				 dataPoints: getDataPointsFromCSV(data,10)
+		      }],
+	     });
+		 chart.render();
+	});
+  }
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-22038364-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>
