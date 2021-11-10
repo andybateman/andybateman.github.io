@@ -1,165 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>New Zealand Hills</title>
-	<style>
-		#chartContainer { 
-		  height: 95%; 
-		  width: 100%; 
-		  position:absolute; 
-		  top: 0; 
-		  left: 0;
-		  z-index: -10;
-		}
-		#title {
-		  background-color: #fff;
-		  font-family: sans-serif;
-		  font-size: 1.4em;
-		  font-weight: 600;
-		  display: inline-block;
-		  padding: 5px 10px
-		}
-	</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Zealand Hills</title>
+  <style>
+	#chart {
+      height: 100%; 
+      width: 100%; 
+      position:absolute; 
+      top: 0; 
+      left: 0;
+      z-index: -10;
+    }
+  </style>
+  <!-- Load d3.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.1.1/d3.min.js"></script>
 </head>
 <body>
 
-<div id="chartContainer"></div>
+<!-- Create a div where the graph will take place -->
+<canvas id="chart"></canvas>
 
-<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<script type="text/javascript">
-    window.onload = function() {
-        var dataPoints = [];
-	 
-        function getDataPointsFromCSV(csv,col) {
-            var dataPoints = csvLines = points = [];
-            csvLines = csv.split(/[\r?\n|\r|\n]+/);         
-		        
-            for (var i = 1; i < csvLines.length; i++)
-                if (csvLines[i].length > 0) {
-                    points = csvLines[i].split(",");
-					if (points[col].length > 0) {
-						dataPoints.push({ 
-							x: parseFloat(points[0]),
-							y: parseFloat(points[col])
-						});
-					}
-                }
-            return dataPoints;
+<script>
+d3.csv('/walks.csv')
+  .then(makeChart);
+
+  function makeChart(hills) {
+
+  var chart = new Chart('chart', {
+    type: 'line',
+    data: {
+      labels: hills.map(function(d) {return d.km}),
+      datasets: [
+	 	    {
+          data: hills.map(function(d) {return d.TongariroCrossing}).filter(e =>  e),
+          label: "Tongariro Crossing",
+          radius: 0,
+          backgroundColor: "#4faec6",
+          borderColor: "#4faec6",
+          borderWidth: 2
+        },
+        {
+          data: hills.map(function(d) {return d.Paparoa}).filter(e =>  e),
+          label: "Paparoa",
+          radius: 0,
+          backgroundColor: "#98b5d7",
+          borderColor: "#98b5d7",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.Kaukau}).filter(e =>  e),
+          label: "Kaukau",
+          radius: 0,
+          backgroundColor: "#395a8e",
+          borderColor: "#395a8e",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.MtVic}).filter(e =>  e),
+          label: "Mt Vic",
+          radius: 0,
+          backgroundColor: "#c0504e",
+          borderColor: "#c0504e",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.TotaraFlats}).filter(e =>  e),
+          label: "Totara Flats",
+          radius: 0,
+          backgroundColor: "#b3cb7f",
+          borderColor: "#b3cb7f",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.GreytownMartinborough}).filter(e =>  e),
+          label: "Greytown Martinborough",
+          radius: 0,
+          backgroundColor: "#4E1261",
+          borderColor: "#4E1261",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.Greytown}).filter(e =>  e),
+          label: "Greytown",
+          radius: 0,
+          backgroundColor: "#611F12",
+          borderColor: "#611F12",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.RemutakaRailTrail}).filter(e =>  e),
+          label: "Remutaka Rail Trail",
+          radius: 0,
+          backgroundColor: "#416104",
+          borderColor: "#416104",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.ColonialKnob}).filter(e =>  e),
+          label: "Colonial Knob",
+          radius: 0,
+          backgroundColor: "#7f6084",
+          borderColor: "#7f6084",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.WLGKapiti}).filter(e =>  e),
+          label: "WLG Kapiti",
+          radius: 0,
+          backgroundColor: "#e79c70",
+          borderColor: "#e79c70",
+          borderWidth: 2
+        },
+		    {
+          data: hills.map(function(d) {return d.PaekakarikiEscarpment}).filter(e =>  e),
+          label: "Paekakariki Escarpment",
+          radius: 0,
+          backgroundColor: "#77a033",
+          borderColor: "#77a033",
+          borderWidth: 2
         }
-	
-	$.get("/newzealandhills/walks.csv", function(data) {
-	    var chart = new CanvasJS.Chart("chartContainer", {
-		    title: {
-		        text: "New Zealand Hills",
-				fontColor: "#2f4f4f",
-				fontSize: 15,
-				padding: 10,
-				margin: 15,
-				fontWeight: "regular"
-		    },
-			animationEnabled: true,
-			axisX:{
-      		 title: "Kilometres",
-			 titleFontSize: 15,
-			 labelFontSize: 15
-			},
-			axisY:{
-			 labelFontSize: 15,
-			 interval: 250,
-			 gridColor: "grey",
-			 gridDashType: "dash"
-  			},
-			legend: {
-			 fontSize: 15
-			},
-			toolTip:{   
-			 content: "{name}<br />{y}meters at {x}km"      
-		    },
-		    data: [
-				 {
-		         type: "spline",
-				 name: "Paparoa",
-         	     showInLegend: "true",
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,1)
-		      },
-			  {
-		         type: "spline",
-				 name: "Kaukau",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,2)
-		      },
-			  {
-		         type: "spline",
-				 name: "Torara Flats",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,3)
-		      },
-			  {
-		         type: "spline",
-				 name: "Mt Vic",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,4)
-		      },
-			  {
-		         type: "spline",
-				 name: "Tongariro Crossing",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,5)
-		      },
-			  {
-		         type: "spline",
-				 name: "Greytown -> Martinborough",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,5)
-		      },
-			  {
-		         type: "spline",
-				 name: "Greytown",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,6)
-		      },
-			  {
-		         type: "spline",
-				 name: "Remutaka Rail Trail",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,7)
-		      },
-			  {
-		         type: "spline",
-				 name: "Colonial Knob",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,8)
-		      },
-			  {
-		         type: "spline",
-				 name: "WLG -> Kapiti",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,9)
-		      },
-			  {
-		         type: "spline",
-				 name: "Paekakariki Escarpment",
-         	     showInLegend: "true", 
-				 markerType: "none",
-				 dataPoints: getDataPointsFromCSV(data,10)
-		      }],
-	     });
-		 chart.render();
-	});
-  }
+      ]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom'
+            }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Kilometres'
+            },
+            grid: {
+              color: '#ECFFEA',
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Elevation'
+            }
+          }
+        },
+		responsive: true,
+		maintainAspectRatio: false,
+      }
+  });
+}
 </script>
 
 <script>
