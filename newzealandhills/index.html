@@ -24,7 +24,7 @@
 <canvas id="chart"></canvas>
 
 <script>
-d3.csv('/newzealandhills/walks.csv')
+d3.csv('walks.csv')
   .then(makeChart);
 
   function makeChart(hills) {
@@ -176,6 +176,14 @@ d3.csv('/newzealandhills/walks.csv')
           radius: 0,
           backgroundColor: "#E0FFE5",
           borderColor: "#E0FFE5",
+          borderWidth: 2
+        },
+        {
+          data: hills.map(function(d) {return d.BlueHut}).filter(e =>  e),
+          label: "Blue Hut Track",
+          radius: 0,
+          backgroundColor: "#2403fc",
+          borderColor: "#2403fc",
           borderWidth: 2
         }
       ]
