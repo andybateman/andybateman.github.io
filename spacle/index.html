@@ -133,7 +133,7 @@
 
     $("form").submit(function (e) {
       $distance = null;
-      $guess = $("#floatingInput").val();
+      $guess = $("#floatingInput").val().trim();
       $.each($objects, function (i, val) {
         if ($guess.toLowerCase() == val.label.toLowerCase()) {
           $distance = Math.abs(val.AU - $object.AU);
