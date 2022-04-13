@@ -143,11 +143,11 @@
         $("#confirmation").html(
           "<strong>" + $object.label + " is Correct!</strong>"
         );
-      } else if ($distance == null) {
-        $("#confirmation").html("That's not a proper guess.");
-        $distance = null;
       } else if ($guess.toLowerCase() == "tatooine") {
         $("#confirmation").html("Tatooine is in a galaxy far, far away.");
+        $distance = null;
+      } else if ($distance == null) {
+        $("#confirmation").html($guess + " is not a proper guess.");
         $distance = null;
       } else {
         $("#confirmation").html(
@@ -155,6 +155,7 @@
         );
         $distance = null;
       }
+      $("#floatingInput").val('');
       return false;
     });
   </script>
