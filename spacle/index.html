@@ -43,6 +43,9 @@
               />
             </p>
             <div class="modal-body ui-front p-5 pt-0">
+              <div class="d-none mb-3 text-black" id="confirmation">
+                    Not into lists? Try the new grid view.
+                </div>
               <form id="haveaguess">
                 <div class="form-floating mb-3">
                   <input
@@ -82,6 +85,7 @@
 
   <script>
     $.getJSON("spacle.json", function (result) {
+      $objects = result;
       $object = result[Math.floor(Math.random() * result.length)];
 
       $("<img />")
@@ -105,7 +109,6 @@
       "Mercury",
       "Venus",
       "Earth",
-      "Moon",
       "Mars",
       "Jupiter",
       "Saturn",
@@ -121,7 +124,18 @@
   } );
 
     $("form").submit(function (e) {
-      console.log($("#floatingInput").val());
+      $guess = $("#floatingInput").val();
+      if ($object.label.toLowerCase() ==  $guess.toLowerCase()) {
+        $('#confirmation').html($object.label + " is Correct!").removeClass('d-none');
+      } else {
+        $.each($objects, function( i, val ) {
+          if ($guess.toLowerCase()==val.label.toLowerCase()) {
+            console.log($distance=Math.abs(val.AU-$object.AU));
+          }
+          
+        });
+        $('#confirmation').html("Wrong: " + $guess + " is " + $distance + "au away, try again.").removeClass('d-none');
+      }
       return false;
     });
   </script>
