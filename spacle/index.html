@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Spacle</title>
+
+    <!-- Bootstrap core CSS -->
+    <link
+      href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+
+    <meta name="theme-color" content="#7952b3" />
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      $.getJSON("/spacle.json", function (result) {
+        $object = result[Math.floor(Math.random() * result.length)];
+
+        $("#object")
+          .delay(1000)
+          .fadeOut("slow", function () {
+            $("#object").attr("src", "/objects/" + $object.label + ".svg");
+          });
+        $("#object").fadeIn();
+      });
+    </script>
+  </head>
+  <body class="d-flex h-100 text-center text-white bg-dark">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="mb-auto">
+        <div>
+          <h3 class="float-md-start mb-0 text-white">Spacle</h3>
+          <nav class="nav nav-masthead justify-content-center float-md-end">
+            <a class="nav-link active" aria-current="page" href="#">Play</a>
+          </nav>
+        </div>
+      </header>
+
+      <div
+        class="modal position-static d-block py-5"
+        tabindex="-1"
+        role="dialog"
+        id="modalSignin"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content rounded-5 shadow">
+            <div class="modal-header p-5 pb-4 border-bottom-0"></div>
+
+            <div class="modal-body p-5 pt-0">
+              <p class="lead p-4">
+                <img src="objects/empty.svg" height="250px" id="object" />
+              </p>
+
+              <form class="">
+                <div class="form-floating mb-3">
+                  <input
+                    type="text"
+                    class="form-control rounded-4 text-black"
+                    id="floatingInput"
+                    placeholder="Planet"
+                  />
+                  <label class="text-black" for="floatingInput"
+                    >What's your guess?</label
+                  >
+                </div>
+                <button
+                  class="w-100 mb-2 btn btn-lg rounded-4 btn-primary bg-dark"
+                  type="submit"
+                >
+                  Guess
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-auto text-white-50">
+        <p>
+          <a href="https://www.underthestars.co.nz" class="text-white"
+            >Spacle</a
+          >
+          by
+          <a href="https://builtby.ninja/" class="text-white">Built By Ninja</a
+          >.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+[
+    {
+        "label": "Sun",
+        "AU": "0"
+    },
+    {
+        "label": "Mercury",
+        "AU": "0.4"
+    },
+    {
+        "label": "Venus",
+        "AU": "0.7"
+    },
+    {
+        "label": "Earth",
+        "AU": "1"
+    },
+    {
+        "label": "Mars",
+        "AU": "1.5"
+    },
+    {
+        "label": "Asteroid Belt",
+        "AU": "2.8"
+    },
+    {
+        "label": "Jupiter",
+        "AU": "5.2"
+    },
+    {
+        "label": "Saturn",
+        "AU": "9.6"
+    },
+    {
+        "label": "Uranus",
+        "AU": "19.2"
+    },
+    {
+        "label": "Neptune",
+        "AU": "30"
+    },
+    {
+        "label": "Pluto",
+        "AU": "39"
+    }
+]
