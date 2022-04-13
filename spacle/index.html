@@ -23,7 +23,8 @@
           .delay(1000)
           .fadeOut("slow", function () {
             $("#object").attr("src", "objects/" + $object.label.toLowerCase() + ".svg");
-          }).$("#object").fadeIn();
+          });
+          $("#object").fadeIn();
       });
     </script>
   </head>
@@ -42,7 +43,7 @@
 
             <div class="modal-body p-5 pt-0">
               <p class="lead">
-                <img src="objects/empty.svg" width="10em" id="object" />
+                <img src="objects/empty.svg" width="230em" height="230em" id="object" />
               </p>
 
               <form class="">
