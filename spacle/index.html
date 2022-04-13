@@ -19,8 +19,9 @@
       $.getJSON("spacle.json", function (result) {
         $object = result[Math.floor(Math.random() * result.length)];
 
+        $('<img />').attr('src',"objects/" + $object.label.toLowerCase() + ".svg").appendTo('body').css('display','none');
         $("#object")
-          .delay(1000)
+          .delay(2000)
           .fadeOut("slow", function () {
             $("#object").attr("src", "objects/" + $object.label.toLowerCase() + ".svg");
           });
@@ -39,12 +40,12 @@
       >
         <div class="modal-dialog" role="document">
           <div class="modal-content rounded-5 shadow">
-            <div class="modal-header p-5 pb-4 border-bottom-0"></div>
 
+            <div class="modal-header p-5 pb-4 border-bottom-0"></div>
+            <p class="lead">
+              <img src="objects/empty.svg" width="230em" height="230em" id="object" />
+            </p>
             <div class="modal-body p-5 pt-0">
-              <p class="lead">
-                <img src="objects/empty.svg" width="230em" height="230em" id="object" />
-              </p>
 
               <form class="">
                 <div class="form-floating mb-3">
