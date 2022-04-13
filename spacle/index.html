@@ -126,7 +126,7 @@
     $("form").submit(function (e) {
       $guess = $("#floatingInput").val();
       if ($object.label.toLowerCase() ==  $guess.toLowerCase()) {
-        $('#confirmation').html($object.label + " is Correct!").removeClass('d-none');
+        $('#confirmation').html("<strong>" + $object.label + " is Correct!</strong>").removeClass('d-none');
       } else {
         $.each($objects, function( i, val ) {
           if ($guess.toLowerCase()==val.label.toLowerCase()) {
