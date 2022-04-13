@@ -48,3 +48,7 @@ body {
   color: #fff;
   border-bottom-color: #fff;
 }
+
+.ui-helper-hidden-accessible {
+  display: none;
+}
