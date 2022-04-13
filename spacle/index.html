@@ -22,7 +22,7 @@
         $("#object")
           .delay(1000)
           .fadeOut("slow", function () {
-            $("#object").attr("src", "objects/" + $object.label + ".svg");
+            $("#object").attr("src", "objects/" + $object.label.toLowerCase() + ".svg");
           });
         $("#object").fadeIn();
       });
