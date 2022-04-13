@@ -135,9 +135,10 @@
         $('#confirmation').html("<strong>" + $object.label + " is Correct!</strong>").removeClass('d-none');
       } else if ($distance == null) {
         $('#confirmation').html("That's not a proper guess.").removeClass('d-none');
+        $distance = null;
       } else {
-
         $('#confirmation').html("Wrong: " + $guess + " is " + $distance + "au away, try again.").removeClass('d-none');
+        $distance = null;
       }
       return false;
     });
