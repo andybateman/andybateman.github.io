@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+<script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	theme: "light1", //"light1", "dark1", "dark2"
+	title:{
+		text: "My Health after 'The Accident'"             
+	},
+	toolTip:{
+		shared: true
+	},
+	data:[{
+		type: "stackedBar100",
+		toolTipContent: "{label}<br><b>{name}:</b> {y} (#percent%)",
+		showInLegend: true, 
+		name: "Fixed",
+		color: "#11852b",
+		dataPoints: [
+            { y: 0, label: "Right foot surgery" },
+            { y: 75, label: "Chest injury, left side (Closed fracture of 5-9 ribs)" },
+			{ y: 40, label: "Chest injury (Manipulation of rib 8)" },
+			{ y: 66, label: "Chest injury (Closed fracture sternum)" },
+			{ y: 75, label: "Leg injury, right side (Closed fracture of the lower)" },
+			{ y: 75, label: "Knee injury, right side (Closed fracture of the patella)" },
+			{ y: 25, label: "Arm injury, left side (Closed fracture of the scaphoid)" },
+			{ y: 10, label: "Arm injury, left side (Nerve damage)" },
+			{ y: 66, label: "Toe injury, right side (Fracture of great toe)" },
+			{ y: 70, label: "Arm injury, right side (Closed fracture triquetral)" },
+			{ y: 80, label: "Abdomen or pelvis injury (Contusion, anterior abdominal wall)" }
+		]
+		},
+        {
+		type: "stackedBar100",
+		toolTipContent: "{label}<br><b>{name}:</b> {y} (#percent%)",
+		showInLegend: true, 
+		name: "Still Broken",
+		color: "#ff0000",
+		dataPoints: [
+            { y: 100, label: "Right foot surgery" },
+            { y: 25, label: "Chest injury, left side (Closed fracture of 5-9 ribs)" },
+			{ y: 60, label: "Chest injury (Manipulation of rib 8)" },
+			{ y: 34, label: "Chest injury (Closed fracture sternum)" },
+			{ y: 25, label: "Leg injury, right side (Closed fracture of the lower)" },
+			{ y: 25, label: "Knee injury, right side (Closed fracture of the patella)" },
+			{ y: 75, label: "Arm injury, left side (Closed fracture of the scaphoid)" },
+			{ y: 90, label: "Arm injury, left side (Nerve damage)" },
+			{ y: 34, label: "Toe injury, right side (Fracture of great toe)" },
+			{ y: 30, label: "Arm injury, right side (Closed fracture triquetral)" },
+			{ y: 20, label: "Abdomen or pelvis injury (Contusion, anterior abdominal wall)" }
+		]
+		}]
+});
+chart.render();
+
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+</body>
+</html>
