@@ -185,6 +185,14 @@ d3.csv('walks.csv')
           backgroundColor: "#2403fc",
           borderColor: "#2403fc",
           borderWidth: 2
+        },
+        {
+          data: hills.map(function(d) {return d.HumpRidgeTrack}).filter(e =>  e),
+          label: "Hump Ridge Track",
+          radius: 0,
+          backgroundColor: "#2403fc",
+          borderColor: "#2403fc",
+          borderWidth: 2
         }
       ]
     },
