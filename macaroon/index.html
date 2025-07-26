@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Macaroon Catch Game</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #fcefe3;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      user-select: none;
+      height: 100vh;
+      position: relative;
+    }
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #fcefe3 0%, #f9d5d3 100%);
+    }
+    .macaroon {
+      position: absolute;
+      width: 12vw;
+      height: 12vw;
+      max-width: 60px;
+      max-height: 60px;
+      min-width: 40px;
+      min-height: 40px;
+      pointer-events: none;
+      will-change: transform;
+      user-select: none;
+    }
+    #mouth {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      width: 75vw;
+      height: 50vw;
+      max-width: 375px;
+      max-height: 250px;
+      min-width: 200px;
+      min-height: 133px;
+      margin-left: -37.5vw;
+      background: url('images/william.png') no-repeat center center;
+      background-size: contain;
+      pointer-events: none;
+      user-select: none;
+      filter: drop-shadow(0 0 3px #a33);
+      transition: background-image 0.3s ease;
+    }
+    #scoreBoard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 5vw;
+      max-font-size: 24px;
+      min-font-size: 18px;
+      font-weight: bold;
+      color: #a33;
+      text-shadow: 1px 1px 0 #fff;
+      user-select: none;
+    }
+    #startScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(252, 239, 227, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #startButton {
+      font-size: 6vw;
+      max-font-size: 36px;
+      min-font-size: 24px;
+      font-weight: bold;
+      color: #a33;
+      background: #fff;
+      border: 3px solid #a33;
+      padding: 4vw 8vw;
+      border-radius: 15px;
+      cursor: pointer;
+      text-shadow: 1px 1px 0 #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    #startButton:hover {
+      background: #a33;
+      color: #fff;
+      text-shadow: 1px 1px 0 #000;
+    }
+    #scrollingText {
+      position: absolute;
+      top: 30%;
+      width: 200%;
+      font-size: 8vw;
+      max-font-size: 48px;
+      min-font-size: 24px;
+      font-weight: bold;
+      color: #a33;
+      text-shadow: 2px 2px 0 #fff;
+      white-space: nowrap;
+      animation: scroll 15s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+<body>
+  <div id="gameArea">
+    <div id="scoreBoard">Score: 0</div>
+    <div id="mouth"></div>
+  </div>
+
+  <div id="startScreen">
+    <div id="scrollingText">Eat the Macaroon, Eat the Macaroon, Eat the Macaroon, Eat the Macaroon, Not the Bad one, Eat the Macaroon, Eat the Macaroon, Eat the Macaroon, Eat the Macaroon, Eat the Macaroon, Not the Bad one, Eat the Macaroon, </div>
+    <div id="startButton">START GAME</div>
+  </div>
+
+  <script>
+    // Macaroon images to use (excluding burnt from random selection)
+    const macaroonImages = [
+      'images/aqua.png',
+      'images/blue.png',
+      'images/brown.png',
+      'images/dark.png',
+      'images/green.png',
+      'images/pink.png',
+      'images/sprinkle.png',
+      'images/unicorn.png',
+      'images/yellow.png',
+      'images/yellowish.png'
+    ];
+
+    const gameArea = document.getElementById('gameArea');
+    const mouth = document.getElementById('mouth');
+    const scoreBoard = document.getElementById('scoreBoard');
+
+    let score = 0;
+    const macaroons = [];
+    const mouthWidth = 150;
+    const mouthHeight = 100;
+    let speedMultiplier = 1;
+    let mouthX = window.innerWidth / 2;
+    let gameOver = false;
+    let gameStarted = false;
+    let macaroonInterval;
+
+    // Create a macaroon element
+    function createMacaroon() {
+      const burntChance = Math.min(0.5, score * 0.05);
+      const isBurnt = Math.random() < burntChance;
+      const imgSrc = isBurnt ? 'images/burnt.png' : macaroonImages[Math.floor(Math.random() * macaroonImages.length)];
+      
+      const macaroon = document.createElement('img');
+      macaroon.src = imgSrc;
+      macaroon.className = 'macaroon';
+      
+      // Macaroons can fall anywhere across the full width
+      macaroon.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      macaroon.style.top = '-60px';
+      macaroon.rotation = Math.random() * 360;
+      macaroon.rotationSpeed = (Math.random() * 0.5 + 0.1) * (Math.random() < 0.5 ? -1 : 1);
+      macaroon.fallSpeed = (Math.random() < 0.3 ? (Math.random() * 3 + 3) : (Math.random() * 1.5 + 1.0));
+      
+      gameArea.appendChild(macaroon);
+      macaroons.push(macaroon);
+    }
+
+    // Update positions of macaroons and check for catching
+    function update() {
+      speedMultiplier = 1 + score * 0.05;
+      let closeToMouth = false;
+      
+      for (let i = macaroons.length - 1; i >= 0; i--) {
+        const m = macaroons[i];
+        let top = parseFloat(m.style.top);
+        let left = parseFloat(m.style.left);
+
+        // Update rotation and position
+        m.rotation += m.rotationSpeed;
+        m.style.transform = `rotate(${m.rotation}deg)`;
+        top += m.fallSpeed * speedMultiplier;
+        m.style.top = top + 'px';
+
+        // Check if macaroon is close to mouth
+        if (Math.abs(left + 30 - mouthX) < 150 && 
+            top + 60 >= window.innerHeight - 10 - mouthHeight - 100 && 
+            top + 60 <= window.innerHeight) {
+          closeToMouth = true;
+        }
+
+        // Check if macaroon reached mouth level
+        if (top + 60 >= window.innerHeight - 10 - mouthHeight) {
+          // Check if caught
+          if (left + 30 >= mouthX - mouthWidth / 2 && left + 30 <= mouthX + mouthWidth / 2) {
+            // Caught macaroon
+            if (m.src.includes('burnt.png')) {
+              score -= 5;
+            } else {
+              score++;
+            }
+            scoreBoard.textContent = 'Score: ' + score;
+            
+            // Check for game over
+            if (score < 0) {
+              gameOver = true;
+              scoreBoard.textContent = 'GAME OVER! Final Score: ' + score;
+              scoreBoard.style.fontSize = '36px';
+              scoreBoard.style.color = '#ff0000';
+              scoreBoard.style.left = '50%';
+              scoreBoard.style.top = '50%';
+              scoreBoard.style.transform = 'translate(-50%, -50%)';
+              scoreBoard.style.textAlign = 'center';
+              return;
+            }
+            
+            gameArea.removeChild(m);
+            macaroons.splice(i, 1);
+            continue;
+          } else if (top + 60 > window.innerHeight) {
+            // Missed macaroon - if it's a good macaroon (not burnt), deduct 1 point
+            if (!m.src.includes('burnt.png')) {
+              score--;
+              scoreBoard.textContent = 'Score: ' + score;
+              
+              // Check for game over
+              if (score < 0) {
+                gameOver = true;
+                scoreBoard.textContent = 'GAME OVER! Final Score: ' + score;
+                scoreBoard.style.fontSize = '36px';
+                scoreBoard.style.color = '#ff0000';
+                scoreBoard.style.left = '50%';
+                scoreBoard.style.top = '50%';
+                scoreBoard.style.transform = 'translate(-50%, -50%)';
+                scoreBoard.style.textAlign = 'center';
+                return;
+              }
+            }
+            
+            gameArea.removeChild(m);
+            macaroons.splice(i, 1);
+            continue;
+          }
+        }
+
+        // Remove if fallen off screen
+        if (top > window.innerHeight) {
+          // If it's a good macaroon (not burnt), deduct 1 point
+          if (!m.src.includes('burnt.png')) {
+            score--;
+            scoreBoard.textContent = 'Score: ' + score;
+            
+            // Check for game over
+            if (score < 0) {
+              gameOver = true;
+              scoreBoard.textContent = 'GAME OVER! Final Score: ' + score;
+              scoreBoard.style.fontSize = '36px';
+              scoreBoard.style.color = '#ff0000';
+              scoreBoard.style.left = '50%';
+              scoreBoard.style.top = '50%';
+              scoreBoard.style.transform = 'translate(-50%, -50%)';
+              scoreBoard.style.textAlign = 'center';
+              return;
+            }
+          }
+          
+          gameArea.removeChild(m);
+          macaroons.splice(i, 1);
+        }
+      }
+      
+      // Update mouth image based on proximity
+      const newImage = closeToMouth ? 'william_open.png' : 'william.png';
+      if (!mouth.style.backgroundImage.includes(newImage)) {
+        mouth.style.backgroundImage = `url("images/${newImage}")`;
+      }
+    }
+
+    // Move mouth with mouse or touch
+    function updateMouthPosition(x) {
+      mouthX = x;
+      // Get current mouth width for responsive design
+      const currentMouthWidth = Math.min(window.innerWidth * 0.375, 187.5);
+      // Allow Will to move right to the edge of the window
+      if (mouthX < 0) mouthX = 0;
+      if (mouthX > window.innerWidth) mouthX = window.innerWidth;
+      mouth.style.left = (mouthX - currentMouthWidth) + 'px';
+      mouth.style.marginLeft = '0px';
+    }
+
+    // Event listeners
+    window.addEventListener('mousemove', (e) => updateMouthPosition(e.clientX));
+    
+    // Touch handling with relative positioning
+    let touchStartX = null;
+    let initialMouthX = null;
+    
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+        initialMouthX = mouthX;
+      }
+    }, { passive: true });
+    
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0 && touchStartX !== null) {
+        const touchDelta = e.touches[0].clientX - touchStartX;
+        const newPosition = initialMouthX + touchDelta;
+        updateMouthPosition(newPosition);
+      }
+    }, { passive: true });
+    
+    window.addEventListener('touchend', () => {
+      touchStartX = null;
+      initialMouthX = null;
+    }, { passive: true });
+
+    // Start game function
+    function startGame() {
+      gameStarted = true;
+      document.getElementById('startScreen').style.display = 'none';
+      
+      // Create macaroons periodically
+      macaroonInterval = setInterval(() => {
+        if (!gameOver && gameStarted && macaroons.length < 10) {
+          createMacaroon();
+        }
+      }, 1000);
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (!gameOver && gameStarted) {
+        update();
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Start button event listener
+    document.getElementById('startButton').addEventListener('click', startGame);
+
+    // Initialize
+    mouth.style.left = (mouthX - 187.5) + 'px';
+    mouth.style.backgroundImage = 'url("images/william.png")';
+    gameLoop();
+  </script>
+</body>
+</html>
