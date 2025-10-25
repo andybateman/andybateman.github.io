@@ -147,6 +147,7 @@
     const scoreBoard = document.getElementById('scoreBoard');
 
     let score = 0;
+    let finalscore = 0;
     const macaroons = [];
     const mouthWidth = 150;
     const mouthHeight = 100;
@@ -209,13 +210,14 @@
               score -= 5;
             } else {
               score++;
+              if (finalscore < score) { finalscore = score }
             }
             scoreBoard.textContent = 'Score: ' + score;
             
             // Check for game over
             if (score < 0) {
               gameOver = true;
-              scoreBoard.textContent = 'GAME OVER! Final Score: ' + score;
+              scoreBoard.textContent = 'GAME OVER! Final Score: ' + finalscore;
               scoreBoard.style.fontSize = '36px';
               scoreBoard.style.color = '#ff0000';
               scoreBoard.style.left = '50%';
