@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will's Superhero Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Courier', monospace;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .terminal {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .output-line {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .prompt {
+            color: #ffffff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-name {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .failure-text {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .success-text {
+            font-weight: bold;
+        }
+
+        .stats-line {
+            border-top: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 10px 0;
+            margin: 15px 0;
+        }
+
+        .choice-number {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        #userInput {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Courier New', 'Courier', monospace;
+            font-size: 16px;
+            outline: none;
+            width: 100px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal" id="terminal">
+        <div class="output-line">========================================</div>
+        <div class="output-line">WILL'S SUPER SILLY HERO ADVENTURE</div>
+        <div class="output-line">========================================</div>
+        <div class="output-line">&nbsp;</div>
+    </div>
+
+    <script>
+        const story = {
+            start: {
+                text: "Good morning, Will! You just woke up and discovered you have SUPERPOWERS! But here's the funny part - you also got a super silly superhero name! The city needs a hero and you're just the person for the job!\n\nWhich RIDICULOUS superhero do you want to be?",
+                choices: [
+                    { text: "Captain Obvious (States the obvious!)", next: "captainObvious" },
+                    { text: "The Incredible Sulk (Gets grumpy!)", next: "incredibleSulk" },
+                    { text: "Procrastination Kid (Does things later!)", next: "procrastinationMan" },
+                    { text: "The Okay Gatsby (Throws okay parties!)", next: "mediocreGatsby" },
+                    { text: "Doctor Awkward (Makes things weird!)", next: "doctorAwkward" },
+                    { text: "The Super Visible Kid (Everyone sees you!)", next: "visibleWoman" },
+                    { text: "Burp Boy (Burps on demand!)", next: "burpBoy" },
+                    { text: "The Nap Master (Falls asleep anywhere!)", next: "napMaster" },
+                    { text: "Sneeze Girl (Super powerful sneezes!)", next: "sneezeGirl" }
+                ]
+            },
+            captainObvious: {
+                text: "You are now CAPTAIN OBVIOUS! Your superpower is saying things that everyone already knows! A giant robot is stomping around downtown, knocking over buildings.\n\n\"That's a robot!\" you shout loudly.\n\nWhat should you do?",
+                choices: [
+                    { text: "Keep pointing out obvious things!", next: "obviousWin" },
+                    { text: "Call your helper, Lieutenant No-Duh", next: "obviousTeam" },
+                    { text: "Say obvious stuff until the robot leaves", next: "obviousAnnoy" },
+                    { text: "Try to say something clever instead", next: "obviousFail" }
+                ]
+            },
+            incredibleSulk: {
+                text: "You are now THE INCREDIBLE SULK! Instead of getting super strong when you're mad, you just get really grumpy and pouty! Some bad guys are trying to steal money from the bank.\n\nYou cross your arms and let out a big, loud sigh.\n\nWhat should you do?",
+                choices: [
+                    { text: "Give them the silent treatment", next: "sulkSilent" },
+                    { text: "Write them a note about being good", next: "sulkNote" },
+                    { text: "Say 'it's fine' in a grumpy voice", next: "sulkMumble" },
+                    { text: "Try talking to them nicely", next: "sulkFail" }
+                ]
+            },
+            procrastinationMan: {
+                text: "You are now PROCRASTINATION KID! You have the power to make things happen later instead of now! A big space rock (a meteor!) is flying toward Earth!\n\n\"I'll deal with it tomorrow,\" you think.\n\nWhat do you do?",
+                choices: [
+                    { text: "Make a to-do list about the meteor", next: "procrastList" },
+                    { text: "Read about meteors for hours instead", next: "procrastResearch" },
+                    { text: "Use your powers to delay the meteor!", next: "procrastWin" },
+                    { text: "Try to act right away for once", next: "procrastFail" }
+                ]
+            },
+            obviousWin: {
+                text: "You keep saying more and more obvious things: \"That building is falling down!\" \"People are running!\" \"This is dangerous!\"\n\nYour helpful observations help the TV news people tell everyone what's happening, and other superheroes work together to stop the robot!\n\nYou saved the day, Captain Obvious! (Obviously!)",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            obviousTeam: {
+                text: "Your sidekick Lieutenant No-Duh shows up! Together you're the ultimate obvious team!\n\n\"The robot is made of metal!\" you say.\n\"Yes, that's right!\" says Lieutenant No-Duh.\n\nYou say so many obvious things that the robot's computer brain gets confused and shuts down. You win!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            obviousAnnoy: {
+                text: "\"You're a robot! You're really tall! You're breaking stuff! That's not nice!\"\n\nThe robot's computer brain gets so tired of your obvious facts that it shuts itself off just to get some peace and quiet!\n\nIt was obvious this would work!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            obviousFail: {
+                text: "*** OH NO! ***\n\nYou try to sound smart: 'That robot is actually... um... a metaphor!'\n\nEveryone looks confused. The robot keeps smashing buildings while people wonder what you're talking about. Your power only works when you say obvious stuff!\n\nOops! Maybe stick to being obvious next time!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            sulkSilent: {
+                text: "You stand there with your arms crossed, looking super grumpy and disappointed. The bad guys start to feel weird.\n\n\"Um... are you okay?\" one of them asks nervously.\n\nYou sigh even LOUDER. They feel so bad that they put the money back and leave! Being grumpy saved the day!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sulkNote: {
+                text: "You write a note: 'Dear Bank Robbers, I'm not mad, just really disappointed in you. We need to talk about your choices. - The Incredible Sulk'\n\nThe note makes them feel so guilty that they turn themselves in to the police and promise to be better! Your grumpy powers worked!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sulkMumble: {
+                text: "\"Oh sure, just take the money, it's fine, whatever...\" you mumble in your grumpiest voice.\n\nYour grumpy mumbling makes everything feel so awkward that the bad guys can't focus. They give up and leave just to get away from the grumpy vibes!\n\nThe Incredible Sulk wins!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sulkFail: {
+                text: "*** OH NO! ***\n\n'Excuse me, could you please stop taking that money?' you say in a nice, friendly voice.\n\nThe bad guys just laugh at you. 'What are you gonna do about it?'\n\nWithout your grumpy power, you can't make them feel bad! They run away with the money. Being nice doesn't work for the Incredible Sulk!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            procrastList: {
+                text: "You spend HOURS making the perfect to-do list with colors and stickers and everything! While you're busy doing that, the meteor gets its math wrong and misses Earth completely!\n\nYou saved the world by waiting! Classic Procrastination Kid!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            procrastResearch: {
+                text: "You start reading about meteors online, then about space, then about rockets, then about what astronauts eat for lunch...\n\nWhile you're reading, NASA (the space people) stops the meteor themselves. You tell everyone you helped! Nobody can prove you didn't!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            procrastWin: {
+                text: "Using your special powers, you tell the meteor to come 'next week, maybe Thursday?'\n\nThe meteor gets so delayed and confused that it forgets what it was doing and floats away into space! Procrastination Kid saves the day by making things happen LATER!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            procrastFail: {
+                text: "*** OH NO! ***\n\nYou try to act super fast for once, but you're not used to it! You run around in circles and accidentally bump into a big satellite dish!\n\nWith the dish broken, the space people can't talk to each other and can't stop the meteor. The meteor splashes into the ocean and makes big waves. You should have waited like usual!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            mediocreGatsby: {
+                text: "You are now THE OKAY GATSBY! Your superpower is throwing okay parties that are just... fine! A bad guy called The Fun Sucker is stealing all the fun from the city!\n\nYou're at your mansion. What's your plan?",
+                choices: [
+                    { text: "Throw an okay party to trick the villain", next: "gatsbyParty" },
+                    { text: "Point at stuff and say 'Old Sport' a lot", next: "gatsbyOldSport" },
+                    { text: "Use your pretty nice car to help", next: "gatsbyCar" },
+                    { text: "Try to throw the BEST party ever!", next: "gatsbyFail" }
+                ]
+            },
+            gatsbyParty: {
+                text: "You throw a party that's... okay. The snacks are fine, the music is decent, and people are having a pretty good (but not great) time.\n\nThe Fun Sucker shows up but finds there's not enough fun to steal! Your okay party is the perfect trick!",
+                choices: [
+                    { text: "Offer them a normal drink", next: "gatsbyDrink" },
+                    { text: "Tell them boring stories", next: "gatsbyStories" }
+                ]
+            },
+            gatsbyOldSport: {
+                text: "You point at the bad guy dramatically. 'Listen here, old sport...'\n\nThe villain stops and looks confused. 'Did you just call me old sport?'\n\n'Yes, old sport. That's not very nice behavior, old sport.'\n\nThey're so confused by your weird old-timey words that they forget to be bad!",
+                choices: [
+                    { text: "Invite them to swim in your pool", next: "gatsbyPool" },
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            gatsbyCar: {
+                text: "You drive your pretty nice (but not too fancy) car toward the villain!\n\nThey jump out of the way easily, but they slip on a puddle and bonk their head! Sometimes okay plans work out just fine!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            gatsbyDrink: {
+                text: "You offer them a normal drink. 'It's not the best, but it's pretty good,' you say honestly.\n\nYour okay-ness is so nice and honest that The Fun Sucker becomes good and changes their name to The Okay Fun Giver!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            gatsbyStories: {
+                text: "'So there I was, having a perfectly normal day...' you begin telling a very boring story.\n\nThe Fun Sucker falls asleep from boredom! Your okay storytelling saves the day! It's not the most exciting win, but it works!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            gatsbyPool: {
+                text: "'Want to go swimming, old sport? The water is a nice 72 degrees.'\n\nThey agree, and you both have a pretty fun afternoon together. Turns out the villain just needed an okay friend! Mission complete!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            gatsbyFail: {
+                text: "*** OH NO! ***\n\nYou try to throw the MOST AMAZING party ever! Ice sculptures! Fireworks! Famous people!\n\nBut you're The OKAY Gatsby - you don't know how to be super fancy! The party is a mess. The ice melts, the fireworks go wrong, and everyone leaves.\n\nThe Fun Sucker has SO MUCH fun to steal and becomes super powerful! Should have stayed okay, old sport!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            doctorAwkward: {
+                text: "You are now DOCTOR AWKWARD! Your superpower is making things feel really weird and uncomfortable! (Also, your name is spelled the same backwards - awkward!)\n\nSome tricky bad guys are trying to trick people at the mall. Time to make things super weird!",
+                choices: [
+                    { text: "Stand really close and stare at them", next: "awkwardEyes" },
+                    { text: "Tell a really long, boring story", next: "awkwardStory" },
+                    { text: "Talk about embarrassing stuff", next: "awkwardPast" },
+                    { text: "Try to act cool and smooth like them", next: "awkwardFail" }
+                ]
+            },
+            awkwardEyes: {
+                text: "You walk right up to the bad guys and stand REALLY close to their faces, staring without blinking.\n\n'So... what are we doing?' you ask, still staring.\n\nThey try to keep tricking people but can't focus. The weirdness is too powerful!",
+                choices: [
+                    { text: "Stay there until they give up", next: "awkwardConfess" },
+                    { text: "Start breathing loudly", next: "awkwardBreathe" }
+                ]
+            },
+            awkwardStory: {
+                text: "'That reminds me of this one time,' you start, 'actually wait, first let me tell you about my cousin's friend's neighbor...'\n\nThe bad guys try to leave but you follow them, telling your super long story that never ends. They finally give up and go to the police just to get away from you!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            awkwardPast: {
+                text: "You announce loudly, 'Hey Brad, remember in third grade when you had that embarrassing thing happen?'\n\nThe bad guy named Brad freezes. 'How did you know...'\n\n'And Sharon, everyone knows about your haircut!'\n\nThey run away in shame. Doctor Awkward wins!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            awkwardConfess: {
+                text: "You just keep standing there. Silent. Staring. Not moving. They squirm and fidget.\n\n'Okay FINE, we're bad guys! Just please stop being weird!'\n\nThe power of awkwardness wins! You don't even blink to celebrate.",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            awkwardBreathe: {
+                text: "You start breathing really loud through your mouth. 'Is it hot in here?' you ask while sweating.\n\nEverything becomes SO uncomfortable that the bad guys pack up their stuff and leave town completely. Doctor Awkward saves the day!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            awkwardFail: {
+                text: "*** OH NO! ***\n\n'Hey there, cool friends! What's happening?' you say, trying to act cool and smooth.\n\nYou're SO BAD at being cool that everyone cringes super hard! Instead of stopping the bad guys, you make things so cringey that people give them money just so everyone will leave!\n\nYou tried to be cool, but you're Doctor AWKWARD. That's not how your powers work!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            visibleWoman: {
+                text: "You are THE SUPER VISIBLE KID! Unlike invisible heroes, everyone can ALWAYS see you! You actually glow a little bit, and people can't help but look at you wherever you go!\n\nSome sneaky ninjas are trying to steal secrets from City Hall. Time to be SUPER visible!",
+                choices: [
+                    { text: "Stand in the middle and be super obvious", next: "visibleObvious" },
+                    { text: "Wear super bright, flashy clothes", next: "visibleClothes" },
+                    { text: "Shout out everything the ninjas do", next: "visibleNarrate" },
+                    { text: "Try to be sneaky like the ninjas", next: "visibleFail" }
+                ]
+            },
+            visibleObvious: {
+                text: "You stand right in the ninjas' path, glowing brightly and impossible to miss.\n\n'Hello! I am here! Everyone can see me!' you shout.\n\nThe ninjas try to sneak past but everyone keeps looking at YOU, which means they also see the ninjas! Their sneaky plan fails!",
+                choices: [
+                    { text: "Wave at everyone really big", next: "visibleWave" },
+                    { text: "Give the ninjas big hugs", next: "visibleHug" }
+                ]
+            },
+            visibleClothes: {
+                text: "You put on a super bright yellow suit with flashing lights and a shiny sparkly cape!\n\nThe ninjas can't get anywhere near City Hall because EVERYONE for blocks and blocks is staring at you. You're way too visible! Mission complete!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            visibleNarrate: {
+                text: "'There's a ninja behind that plant!' you shout loudly. 'Now he's moving left! Oh, another one by the door!'\n\nYou announce their every move! The ninjas give up - there's no point being sneaky when The Super Visible Kid is around!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            visibleWave: {
+                text: "You wave at everyone walking by. 'HI! HELLO! LOOK AT ME!'\n\nEveryone DOES look at you, which means they also see the ninjas trying to hide behind you! The ninjas get caught. Being super visible saves the day!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            visibleHug: {
+                text: "You run up and give each ninja a big hug! 'GROUP HUG TIME!'\n\nNow everyone can see exactly where all the ninjas are! They can't escape your visible hugs! The secrets are safe!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            visibleFail: {
+                text: "*** OH NO! ***\n\nYou try to sneak around in the dark, wearing all black clothes to hide.\n\nBut you GLOW! Like a nightlight! You're trying to hide in the dark but you're lighting up like a glowstick! The ninjas see you from super far away and bonk you on the head.\n\nWhile you're sleeping on the floor (still glowing), the ninjas steal the secrets. You're The SUPER VISIBLE Kid - you can't hide!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            burpBoy: {
+                text: "You are now BURP BOY! Your superpower is burping SUPER LOUD whenever you want! A villain called The Quiet Librarian is forcing everyone in the city to whisper!\n\nYour tummy rumbles. You feel a burp coming. What do you do?",
+                choices: [
+                    { text: "Let out the BIGGEST burp ever!", next: "burpBig" },
+                    { text: "Burp the alphabet really loud", next: "burpAlphabet" },
+                    { text: "Drink soda to make even bigger burps", next: "burpSoda" },
+                    { text: "Try to be polite and hold it in", next: "burpFail" }
+                ]
+            },
+            burpBig: {
+                text: "You take a deep breath and let out the LOUDEST burp in the history of burps!\n\n'BUUUUUUUUUUUUURRRRRRP!'\n\nThe sound is so loud it echoes through the whole city! Windows rattle! Dogs howl! The Quiet Librarian's ears start ringing and she runs away screaming 'TOO LOUD! TOO LOUD!'",
+                choices: [
+                    { text: "Burp a victory song", next: "burpVictory" },
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            burpAlphabet: {
+                text: "You burp out each letter: 'BURP-A! BURP-B! BURP-C!'\n\nBy the time you get to 'BURP-Z', everyone in the city is laughing so hard they can't stay quiet! The Quiet Librarian gives up because nobody can whisper when they're giggling!\n\nBurp Boy saves the day with the burp-abet!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            burpSoda: {
+                text: "You chug three cans of fizzy soda! Your belly feels SUPER bubbly!\n\nThen you let out a burp so powerful it creates a wind that blows The Quiet Librarian all the way out of town! She lands in a library (where she belongs) and everyone can talk normally again!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            burpVictory: {
+                text: "You burp a beautiful victory tune! *BURP-BURP-BUUUURP!*\n\nEveryone cheers! You're the hero! The mayor gives you the key to the city (and a lifetime supply of soda)!\n\nBurp Boy is the champion!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            burpFail: {
+                text: "*** OH NO! ***\n\nYou try to hold in your burp and say 'excuse me' politely.\n\nBut Burp Boy's power ONLY works when you burp! Without burping, you're just a regular kid! The Quiet Librarian makes everyone whisper forever!\n\nYou should have let it rip!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            napMaster: {
+                text: "You are THE NAP MASTER! Your superpower is falling asleep anywhere and making others sleepy too! The villain Sleepless Sam is keeping everyone awake with loud music!\n\nYou yawn. Your eyelids feel heavy. What's your plan?",
+                choices: [
+                    { text: "Take a nap right in front of the villain", next: "napFront" },
+                    { text: "Yawn so big everyone gets sleepy", next: "napYawn" },
+                    { text: "Set up the coziest blanket fort ever", next: "napFort" },
+                    { text: "Try to stay awake and fight", next: "napFail" }
+                ]
+            },
+            napFront: {
+                text: "You lie down right in front of Sleepless Sam, pull out a pillow from your cape, and fall asleep immediately!\n\n'Zzzzzzz...'\n\nSleepless Sam is SO confused that he stops the music to watch you sleep. But watching someone sleep is SO boring that HE falls asleep too! The whole city takes a nice nap!",
+                choices: [
+                    { text: "Wake up and celebrate with more naps", next: "napMore" },
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            napYawn: {
+                text: "You let out the BIGGEST yawn ever! 'YAAAAAAAAWWWWWN!'\n\nSleepless Sam yawns. Then everyone watching yawns. Soon the ENTIRE city is yawning! Everyone gets so sleepy that Sleepless Sam turns off the music and everyone takes a nice cozy nap!\n\nThe Nap Master wins with a yawn!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            napFort: {
+                text: "You use your super speed (when motivated by naps) to build the ULTIMATE blanket fort with pillows, stuffed animals, and twinkle lights!\n\nIt's SO cozy that Sleepless Sam abandons being evil and asks if he can nap in your fort. You say yes! Turns out he just needed a good nap!\n\nYou both become best napping buddies!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            napMore: {
+                text: "You wake up after your victory nap, stretch, and announce: 'I think we all deserve another nap!'\n\nThe whole city agrees! Everyone takes a second nap! You're declared the city's official Nap Time Coordinator!\n\nBest. Job. Ever.",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            napFail: {
+                text: "*** OH NO! ***\n\nYou try to stay awake and fight Sleepless Sam with karate moves!\n\nBut you're The NAP MASTER! Fighting isn't your thing! You get tired immediately, fall asleep standing up, and bonk your head! Sleepless Sam keeps playing loud music all night!\n\nShould have just taken a nap!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            },
+            sneezeGirl: {
+                text: "You are SNEEZE GIRL! Your superpower is sneezing SO HARD it can blow things away! A giant pile of smelly garbage is blocking the whole city!\n\nYour nose starts to tickle. What do you do?",
+                choices: [
+                    { text: "Sneeze at the garbage pile", next: "sneezeGarbage" },
+                    { text: "Smell pepper to make a MEGA sneeze", next: "sneezePepper" },
+                    { text: "Do a triple sneeze combo", next: "sneezeCombo" },
+                    { text: "Try to hold your sneeze in", next: "sneezeFail" }
+                ]
+            },
+            sneezeGarbage: {
+                text: "You point your nose at the garbage pile and...\n\n'AH... AH... ACHOOOOOOOO!'\n\nYour sneeze is SO powerful that it blows all the garbage into the recycling center where it belongs! The city is clean again! Everyone cheers (from a safe distance)!",
+                choices: [
+                    { text: "Sneeze confetti to celebrate", next: "sneezeConfetti" },
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sneezePepper: {
+                text: "You grab some pepper and take a big sniff!\n\n'AH... AH... AH... MEGA-CHOOOOOOOO!'\n\nThe sneeze is SO BIG it creates a tornado that picks up ALL the garbage and launches it into outer space! Aliens find it and are actually really happy because they collect garbage as art!\n\nEveryone wins!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sneezeCombo: {
+                text: "You wind up for the legendary triple sneeze!\n\n'ACHOO! ACHOO! ACHOOOOOOO!'\n\nThe first sneeze moves the garbage! The second sneeze lifts it up! The third sneeze launches it over the mountains! The garbage lands in a dump far away where it's supposed to be!\n\nSneeze Girl saves the day with triple power!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sneezeConfetti: {
+                text: "You sneeze toward a bag of confetti!\n\n'ACHOO!'\n\nConfetti EXPLODES everywhere! It's like the best party ever! The mayor gives you a medal (while wearing a raincoat to avoid sneeze spray)!\n\nSneeze Girl is the hero!",
+                choices: [
+                    { text: "Play Again!", next: "start" }
+                ]
+            },
+            sneezeFail: {
+                text: "*** OH NO! ***\n\nYou try to hold in your sneeze by pinching your nose!\n\nBut holding in a super-powered sneeze makes your eyes water and your face turn red! Then it comes out as a tiny 'achoo' that doesn't move anything! The garbage stays put and starts to smell even WORSE!\n\nNever hold in a super sneeze!",
+                choices: [
+                    { text: "Try Again!", next: "start" }
+                ]
+            }
+        };
+
+        let currentScene = 'start';
+        let decisions = 0;
+        let victories = 0;
+        let failures = 0;
+        let currentHero = 'None';
+        let awaitingInput = false;
+        let currentChoices = [];
+
+        const heroNames = {
+            captainObvious: 'Captain Obvious',
+            incredibleSulk: 'The Incredible Sulk',
+            procrastinationMan: 'Procrastination Kid',
+            mediocreGatsby: 'The Okay Gatsby',
+            doctorAwkward: 'Doctor Awkward',
+            visibleWoman: 'The Super Visible Kid',
+            burpBoy: 'Burp Boy',
+            napMaster: 'The Nap Master',
+            sneezeGirl: 'Sneeze Girl'
+        };
+
+        const failureScenes = [
+            'obviousFail', 'sulkFail', 'procrastFail',
+            'gatsbyFail', 'awkwardFail', 'visibleFail',
+            'burpFail', 'napFail', 'sneezeFail'
+        ];
+
+        function addLine(text) {
+            const terminal = document.getElementById('terminal');
+            const line = document.createElement('div');
+            line.className = 'output-line';
+            line.innerHTML = text;
+            terminal.appendChild(line);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function typeText(text, callback) {
+            const lines = text.split('\n');
+            let lineIndex = 0;
+
+            function typeLine() {
+                if (lineIndex < lines.length) {
+                    addLine(lines[lineIndex]);
+                    lineIndex++;
+                    setTimeout(typeLine, 50);
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            typeLine();
+        }
+
+        function showStats() {
+            if (currentScene !== 'start') {
+                addLine('&nbsp;');
+                addLine('<div class="stats-line">DECISIONS: ' + decisions + ' | HERO: ' + currentHero + ' | VICTORIES: ' + victories + ' | FAILURES: ' + failures + '</div>');
+            }
+        }
+
+        function displayChoices(choices) {
+            addLine('&nbsp;');
+            currentChoices = choices;
+            choices.forEach((choice, index) => {
+                addLine('<span class="choice-number">[' + (index + 1) + ']</span> ' + choice.text);
+            });
+            addLine('&nbsp;');
+            showPrompt();
+        }
+
+        function showPrompt() {
+            awaitingInput = true;
+            const terminal = document.getElementById('terminal');
+            const promptLine = document.createElement('div');
+            promptLine.className = 'prompt';
+            promptLine.id = 'inputPrompt';
+            promptLine.innerHTML = '> <input type="text" id="userInput" maxlength="2" autofocus> <span class="cursor">_</span>';
+            terminal.appendChild(promptLine);
+
+            const input = document.getElementById('userInput');
+            input.focus();
+            input.addEventListener('keydown', handleInput);
+
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function handleInput(e) {
+            if (e.key === 'Enter') {
+                const input = e.target.value.trim();
+                const choice = parseInt(input);
+
+                const promptLine = document.getElementById('inputPrompt');
+                if (promptLine) {
+                    promptLine.innerHTML = '> ' + input;
+                    promptLine.removeAttribute('id');
+                }
+
+                awaitingInput = false;
+
+                if (choice >= 1 && choice <= currentChoices.length) {
+                    processChoice(currentChoices[choice - 1]);
+                } else {
+                    addLine('&nbsp;');
+                    addLine('Invalid choice. Please enter a number from 1 to ' + currentChoices.length);
+                    addLine('&nbsp;');
+                    showPrompt();
+                }
+            }
+        }
+
+        function processChoice(choice) {
+            if (choice.next !== 'start') {
+                decisions++;
+            }
+
+            if (failureScenes.includes(currentScene)) {
+                failures++;
+            }
+
+            if (choice.next === 'start' && currentScene !== 'start' && !failureScenes.includes(currentScene)) {
+                victories++;
+            }
+
+            currentScene = choice.next;
+
+            if (choice.next === 'start') {
+                decisions = 0;
+                currentHero = 'None';
+
+                addLine('&nbsp;');
+                addLine('========================================');
+                addLine('&nbsp;');
+            }
+
+            displayScene(choice.next);
+        }
+
+        function displayScene(sceneKey) {
+            const scene = story[sceneKey];
+
+            if (heroNames[sceneKey]) {
+                currentHero = heroNames[sceneKey];
+            }
+
+            addLine('&nbsp;');
+            typeText(scene.text, function() {
+                showStats();
+                displayChoices(scene.choices);
+            });
+        }
+
+        // Start the game
+        displayScene('start');
+    </script>
+</body>
+</html>
