@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will's Superhero Adventure</title>
     <style>
+        /* ========================================
+           RESET & BASE STYLES
+           ======================================== */
         * {
             margin: 0;
             padding: 0;
@@ -20,6 +23,9 @@
             overflow-x: hidden;
         }
 
+        /* ========================================
+           TERMINAL LAYOUT
+           ======================================== */
         .terminal {
             max-width: 900px;
             margin: 0 auto;
@@ -30,10 +36,23 @@
             line-height: 1.4;
         }
 
+        /* ========================================
+           PROMPT & INPUT
+           ======================================== */
         .prompt {
             color: #ffffff;
             margin-top: 20px;
             margin-bottom: 10px;
+        }
+
+        #userInput {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Courier New', 'Courier', monospace;
+            font-size: 16px;
+            outline: none;
+            width: 100px;
         }
 
         .cursor {
@@ -45,6 +64,9 @@
             51%, 100% { opacity: 0; }
         }
 
+        /* ========================================
+           TEXT STYLING
+           ======================================== */
         .hero-name {
             color: #ffffff;
             font-weight: bold;
@@ -59,6 +81,9 @@
             font-weight: bold;
         }
 
+        /* ========================================
+           STATS & CHOICES
+           ======================================== */
         .stats-line {
             border-top: 1px solid #ffffff;
             border-bottom: 1px solid #ffffff;
@@ -66,16 +91,12 @@
             margin: 15px 0;
         }
 
-        .choice-number {
-            color: #ffffff;
-            font-weight: bold;
-        }
-
         .choice-line {
             cursor: pointer;
             padding: 5px 0;
             margin: 2px 0;
             user-select: none;
+            transition: all 0.2s ease;
         }
 
         .choice-line:hover {
@@ -87,20 +108,21 @@
             background: #888888;
         }
 
-        #userInput {
-            background: transparent;
-            border: none;
+        .choice-number {
             color: #ffffff;
-            font-family: 'Courier New', 'Courier', monospace;
-            font-size: 16px;
-            outline: none;
-            width: 100px;
+            font-weight: bold;
         }
 
+        /* ========================================
+           UTILITY
+           ======================================== */
         .hidden {
             display: none;
         }
 
+        /* ========================================
+           RESPONSIVE
+           ======================================== */
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -122,6 +144,49 @@
     </div>
 
     <script>
+        // ========================================
+        // GAME CONFIGURATION & CONSTANTS
+        // ========================================
+        const CONFIG = {
+            typeDelay: 50,
+            maxInputLength: 2,
+            minChoiceNumber: 1
+        };
+
+        const HERO_NAMES = {
+            captainObvious: 'Captain Obvious',
+            incredibleSulk: 'The Incredible Sulk',
+            procrastinationMan: 'Procrastination Kid',
+            mediocreGatsby: 'The Okay Gatsby',
+            doctorAwkward: 'Doctor Awkward',
+            visibleWoman: 'The Super Visible Kid',
+            burpBoy: 'Burp Boy',
+            napMaster: 'The Nap Master',
+            sneezeGirl: 'Sneeze Girl'
+        };
+
+        const FAILURE_SCENES = [
+            'obviousFail', 'sulkFail', 'procrastFail',
+            'gatsbyFail', 'awkwardFail', 'visibleFail',
+            'burpFail', 'napFail', 'sneezeFail'
+        ];
+
+        // ========================================
+        // GAME STATE
+        // ========================================
+        const gameState = {
+            currentScene: 'start',
+            decisions: 0,
+            victories: 0,
+            failures: 0,
+            currentHero: 'None',
+            awaitingInput: false,
+            currentChoices: []
+        };
+
+        // ========================================
+        // STORY DATA
+        // ========================================
         const story = {
             start: {
                 text: "Good morning, Will! You just woke up and discovered you have SUPERPOWERS! But here's the funny part - you also got a super silly superhero name! The city needs a hero and you're just the person for the job!\n\nWhich RIDICULOUS superhero do you want to be?",
@@ -503,32 +568,14 @@
             }
         };
 
-        let currentScene = 'start';
-        let decisions = 0;
-        let victories = 0;
-        let failures = 0;
-        let currentHero = 'None';
-        let awaitingInput = false;
-        let currentChoices = [];
+        // ========================================
+        // DOM MANIPULATION FUNCTIONS
+        // ========================================
 
-        const heroNames = {
-            captainObvious: 'Captain Obvious',
-            incredibleSulk: 'The Incredible Sulk',
-            procrastinationMan: 'Procrastination Kid',
-            mediocreGatsby: 'The Okay Gatsby',
-            doctorAwkward: 'Doctor Awkward',
-            visibleWoman: 'The Super Visible Kid',
-            burpBoy: 'Burp Boy',
-            napMaster: 'The Nap Master',
-            sneezeGirl: 'Sneeze Girl'
-        };
-
-        const failureScenes = [
-            'obviousFail', 'sulkFail', 'procrastFail',
-            'gatsbyFail', 'awkwardFail', 'visibleFail',
-            'burpFail', 'napFail', 'sneezeFail'
-        ];
-
+        /**
+         * Add a line of text to the terminal
+         * @param {string} text - HTML content to display
+         */
         function addLine(text) {
             const terminal = document.getElementById('terminal');
             const line = document.createElement('div');
@@ -538,6 +585,11 @@
             window.scrollTo(0, document.body.scrollHeight);
         }
 
+        /**
+         * Type text with delay between lines
+         * @param {string} text - Text to display (newline-separated)
+         * @param {function} callback - Function to call when complete
+         */
         function typeText(text, callback) {
             const lines = text.split('\n');
             let lineIndex = 0;
@@ -546,35 +598,41 @@
                 if (lineIndex < lines.length) {
                     addLine(lines[lineIndex]);
                     lineIndex++;
-                    setTimeout(typeLine, 50);
-                } else {
-                    if (callback) callback();
+                    setTimeout(typeLine, CONFIG.typeDelay);
+                } else if (callback) {
+                    callback();
                 }
             }
 
             typeLine();
         }
 
+        /**
+         * Display current game stats
+         */
         function showStats() {
-            if (currentScene !== 'start') {
+            if (gameState.currentScene !== 'start') {
                 addLine('&nbsp;');
-                addLine('<div class="stats-line">DECISIONS: ' + decisions + ' | HERO: ' + currentHero + ' | VICTORIES: ' + victories + ' | FAILURES: ' + failures + '</div>');
+                const stats = `<div class="stats-line">DECISIONS: ${gameState.decisions} | HERO: ${gameState.currentHero} | VICTORIES: ${gameState.victories} | FAILURES: ${gameState.failures}</div>`;
+                addLine(stats);
             }
         }
 
+        /**
+         * Display choice options to player
+         * @param {array} choices - Array of choice objects
+         */
         function displayChoices(choices) {
             addLine('&nbsp;');
-            currentChoices = choices;
+            gameState.currentChoices = choices;
             const terminal = document.getElementById('terminal');
 
             choices.forEach((choice, index) => {
                 const choiceLine = document.createElement('div');
                 choiceLine.className = 'output-line choice-line';
-                choiceLine.innerHTML = '<span class="choice-number">[' + (index + 1) + ']</span> ' + choice.text;
+                choiceLine.innerHTML = `<span class="choice-number">[${index + 1}]</span> ${choice.text}`;
                 choiceLine.dataset.choiceIndex = index;
-                choiceLine.onclick = function() {
-                    handleChoiceClick(index);
-                };
+                choiceLine.onclick = () => handleChoiceClick(index);
                 terminal.appendChild(choiceLine);
             });
 
@@ -582,34 +640,41 @@
             showPrompt();
         }
 
+        /**
+         * Handle mouse click on a choice
+         * @param {number} index - Index of the selected choice
+         */
         function handleChoiceClick(index) {
-            if (!awaitingInput) return;
+            if (!gameState.awaitingInput) return;
 
             const choiceNumber = index + 1;
             const promptLine = document.getElementById('inputPrompt');
             if (promptLine) {
-                promptLine.innerHTML = '> ' + choiceNumber;
+                promptLine.innerHTML = `> ${choiceNumber}`;
                 promptLine.removeAttribute('id');
             }
 
-            // Remove click handlers from all choices
+            // Disable all choice click handlers
             const choiceLines = document.querySelectorAll('.choice-line');
             choiceLines.forEach(line => {
                 line.onclick = null;
                 line.style.cursor = 'default';
             });
 
-            awaitingInput = false;
-            processChoice(currentChoices[index]);
+            gameState.awaitingInput = false;
+            processChoice(gameState.currentChoices[index]);
         }
 
+        /**
+         * Display input prompt
+         */
         function showPrompt() {
-            awaitingInput = true;
+            gameState.awaitingInput = true;
             const terminal = document.getElementById('terminal');
             const promptLine = document.createElement('div');
             promptLine.className = 'prompt';
             promptLine.id = 'inputPrompt';
-            promptLine.innerHTML = '> <input type="text" id="userInput" maxlength="2" autofocus> <span class="cursor">_</span>';
+            promptLine.innerHTML = `> <input type="text" id="userInput" maxlength="${CONFIG.maxInputLength}" autofocus> <span class="cursor">_</span>`;
             terminal.appendChild(promptLine);
 
             const input = document.getElementById('userInput');
@@ -619,49 +684,64 @@
             window.scrollTo(0, document.body.scrollHeight);
         }
 
+        /**
+         * Handle keyboard input from player
+         * @param {event} e - Keyboard event
+         */
         function handleInput(e) {
-            if (e.key === 'Enter') {
-                const input = e.target.value.trim();
-                const choice = parseInt(input);
+            if (e.key !== 'Enter') return;
 
-                const promptLine = document.getElementById('inputPrompt');
-                if (promptLine) {
-                    promptLine.innerHTML = '> ' + input;
-                    promptLine.removeAttribute('id');
-                }
+            const input = e.target.value.trim();
+            const choice = parseInt(input);
 
-                awaitingInput = false;
+            const promptLine = document.getElementById('inputPrompt');
+            if (promptLine) {
+                promptLine.innerHTML = `> ${input}`;
+                promptLine.removeAttribute('id');
+            }
 
-                if (choice >= 1 && choice <= currentChoices.length) {
-                    processChoice(currentChoices[choice - 1]);
-                } else {
-                    addLine('&nbsp;');
-                    addLine('Invalid choice. Please enter a number from 1 to ' + currentChoices.length);
-                    addLine('&nbsp;');
-                    showPrompt();
-                }
+            gameState.awaitingInput = false;
+
+            if (choice >= CONFIG.minChoiceNumber && choice <= gameState.currentChoices.length) {
+                processChoice(gameState.currentChoices[choice - 1]);
+            } else {
+                addLine('&nbsp;');
+                addLine(`Invalid choice. Please enter a number from 1 to ${gameState.currentChoices.length}`);
+                addLine('&nbsp;');
+                showPrompt();
             }
         }
 
+        // ========================================
+        // GAME LOGIC FUNCTIONS
+        // ========================================
+
+        /**
+         * Process player choice and update game state
+         * @param {object} choice - The selected choice object
+         */
         function processChoice(choice) {
+            // Track decisions
             if (choice.next !== 'start') {
-                decisions++;
+                gameState.decisions++;
             }
 
-            if (failureScenes.includes(currentScene)) {
-                failures++;
+            // Track failures
+            if (FAILURE_SCENES.includes(gameState.currentScene)) {
+                gameState.failures++;
             }
 
-            if (choice.next === 'start' && currentScene !== 'start' && !failureScenes.includes(currentScene)) {
-                victories++;
+            // Track victories
+            if (choice.next === 'start' && gameState.currentScene !== 'start' && !FAILURE_SCENES.includes(gameState.currentScene)) {
+                gameState.victories++;
             }
 
-            currentScene = choice.next;
+            gameState.currentScene = choice.next;
 
+            // Reset on new game
             if (choice.next === 'start') {
-                decisions = 0;
-                currentHero = 'None';
-
+                gameState.decisions = 0;
+                gameState.currentHero = 'None';
                 addLine('&nbsp;');
                 addLine('========================================');
                 addLine('&nbsp;');
@@ -670,21 +750,28 @@
             displayScene(choice.next);
         }
 
+        /**
+         * Display a scene from the story
+         * @param {string} sceneKey - Key of the scene to display
+         */
         function displayScene(sceneKey) {
             const scene = story[sceneKey];
 
-            if (heroNames[sceneKey]) {
-                currentHero = heroNames[sceneKey];
+            // Update current hero if this is a hero selection scene
+            if (HERO_NAMES[sceneKey]) {
+                gameState.currentHero = HERO_NAMES[sceneKey];
             }
 
             addLine('&nbsp;');
-            typeText(scene.text, function() {
+            typeText(scene.text, () => {
                 showStats();
                 displayChoices(scene.choices);
             });
         }
 
-        // Start the game
+        // ========================================
+        // INITIALIZATION
+        // ========================================
         displayScene('start');
     </script>
 </body>
