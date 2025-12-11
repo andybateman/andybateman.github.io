@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <title>Sam Nikiel</title>
 	<link type="text/css" rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
-	<link type="text/css" rel="stylesheet" href="/samnikiel/styles.css" />
+	<link type="text/css" rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
@@ -13,9 +13,79 @@
 <div class="container">
   <h1>Sam Nikiel</h1>
   <h2>1979 - 2002</h2>
+  
+  <div id="guestbook-container"></div>
 </div>
 
+
+
 <script>
+  // Load and display guestbook entries with fade in/out
+  async function loadGuestbook() {
+    try {
+      const response = await fetch('./samnikiel.json');
+      const data = await response.json();
+      const container = document.getElementById('guestbook-container');
+      const entries = data.book;
+      
+      let currentIndex = 0;
+      
+      function calculateDisplayTime(message) {
+        // Base time: 2 seconds minimum
+        // Add 0.05 seconds per character (roughly 1 second per 20 characters)
+        const baseTime = 2000;
+        const charTime = message.length * 50;
+        return Math.max(baseTime, charTime);
+      }
+      
+      function displayEntry() {
+        if (currentIndex >= entries.length) {
+          currentIndex = 0; // Loop back to start
+        }
+        
+        const entry = entries[currentIndex];
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'guestbook-entry fade-in';
+        entryDiv.innerHTML = `
+          <div class="entry-content">
+            <h3>${entry.Name}</h3>
+            <p class="entry-date">${entry.Date}</p>
+            <p class="entry-location">${entry.Location}</p>
+            <div class="entry-message">${entry.Message}</div>
+          </div>
+        `;
+        
+        container.innerHTML = '';
+        container.appendChild(entryDiv);
+        
+        // Fade in
+        setTimeout(() => {
+          entryDiv.classList.add('visible');
+        }, 50);
+        
+        // Calculate display time based on message length
+        const displayTime = calculateDisplayTime(entry.Message);
+        
+        // Fade out and show next
+        setTimeout(() => {
+          entryDiv.classList.remove('visible');
+          setTimeout(() => {
+            currentIndex++;
+            displayEntry();
+          }, 1000); // Wait for fade out to complete
+        }, displayTime);
+      }
+      
+      displayEntry();
+    } catch (error) {
+      console.error('Error loading guestbook:', error);
+    }
+  }
+  
+  // Load guestbook when page loads
+  document.addEventListener('DOMContentLoaded', loadGuestbook);
+
+  // Google Analytics
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
