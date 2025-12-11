@@ -71,6 +71,22 @@
             font-weight: bold;
         }
 
+        .choice-line {
+            cursor: pointer;
+            padding: 5px 0;
+            margin: 2px 0;
+            user-select: none;
+        }
+
+        .choice-line:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .choice-line:active {
+            background: #888888;
+        }
+
         #userInput {
             background: transparent;
             border: none;
@@ -83,6 +99,17 @@
 
         .hidden {
             display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .choice-line {
+                padding: 10px 5px;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
@@ -538,11 +565,42 @@
         function displayChoices(choices) {
             addLine('&nbsp;');
             currentChoices = choices;
+            const terminal = document.getElementById('terminal');
+
             choices.forEach((choice, index) => {
-                addLine('<span class="choice-number">[' + (index + 1) + ']</span> ' + choice.text);
+                const choiceLine = document.createElement('div');
+                choiceLine.className = 'output-line choice-line';
+                choiceLine.innerHTML = '<span class="choice-number">[' + (index + 1) + ']</span> ' + choice.text;
+                choiceLine.dataset.choiceIndex = index;
+                choiceLine.onclick = function() {
+                    handleChoiceClick(index);
+                };
+                terminal.appendChild(choiceLine);
             });
+
             addLine('&nbsp;');
             showPrompt();
+        }
+
+        function handleChoiceClick(index) {
+            if (!awaitingInput) return;
+
+            const choiceNumber = index + 1;
+            const promptLine = document.getElementById('inputPrompt');
+            if (promptLine) {
+                promptLine.innerHTML = '> ' + choiceNumber;
+                promptLine.removeAttribute('id');
+            }
+
+            // Remove click handlers from all choices
+            const choiceLines = document.querySelectorAll('.choice-line');
+            choiceLines.forEach(line => {
+                line.onclick = null;
+                line.style.cursor = 'default';
+            });
+
+            awaitingInput = false;
+            processChoice(currentChoices[index]);
         }
 
         function showPrompt() {
