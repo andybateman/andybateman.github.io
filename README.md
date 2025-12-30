@@ -162,6 +162,7 @@ This project uses the **PARA method** for organization:
 - Updated navigation to include Mohoe link
 - Discovered 4 new Mojo locations (25 total, up from 24)
 - Published interactive map with location tracking and progress statistics
+- **Made map iPhone-friendly** with responsive design, safe area support, and touch optimization
 
 ### Previous Updates
 - Reorganized project structure using PARA method

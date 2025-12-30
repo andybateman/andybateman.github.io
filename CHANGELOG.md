@@ -20,10 +20,18 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   - New location highlighting (🆕 badges)
   - Visited/pending status tracking
 - Navigation link to Mohoe map in main menu
+- **iPhone-friendly responsive design**:
+  - Mobile layout with sidebar at top (40vh max height)
+  - Touch-optimized interactions (44px minimum tap targets)
+  - Safe area support for notches and Dynamic Island
+  - Momentum scrolling with `-webkit-overflow-scrolling`
+  - Proper viewport configuration for iOS web app
+  - Responsive breakpoint at 768px
 
 ### Changed
 - Updated navigation to include Mohoe link
 - Enhanced location-based content section in README
+- Map responsive: desktop (side-by-side) and mobile (stacked)
 
 ### Discovered
 - 4 new Mojo locations (total increased from 24 to 25):
