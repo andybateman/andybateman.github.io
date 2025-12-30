@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohoe Coffee Drinking Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        #map {
+            flex: 1;
+            z-index: 1;
+        }
+        .sidebar {
+            width: 300px;
+            background: white;
+            overflow-y: auto;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .city-section {
+            margin-bottom: 20px;
+        }
+        .city-title {
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .location-item {
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .location-item:hover {
+            background-color: #f0f0f0;
+        }
+        .location-item.visited {
+            color: #27ae60;
+        }
+        .location-item.unvisited {
+            color: #7f8c8d;
+        }
+        .location-item.new {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            margin-right: 6px;
+            font-weight: 600;
+        }
+        .stats {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        .stats-item {
+            margin-bottom: 6px;
+        }
+        .stats-item strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="map"></div>
+        <div class="sidebar">
+            <h2>Mohoe Coffee</h2>
+            <div class="stats">
+                <div class="stats-item"><strong>Visited:</strong> <span id="visited-count">10</span>/25</div>
+                <div class="stats-item"><strong>Remaining:</strong> <span id="remaining-count">15</span></div>
+            </div>
+            <div id="locations-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([-39.13, 177.71], 5);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        const locations = {
+            Wellington: [
+                { name: 'Mojo Airport', lat: -41.3302555, lng: 174.8112968, visited: true, date: '2025-04-22' },
+                { name: 'Mojo Atrium', lat: -41.3088882, lng: 174.78024073264186, visited: false },
+                { name: 'Mojo Aurora', lat: -41.28095375, lng: 174.77463842494112, visited: false },
+                { name: 'Mojo Bowen', lat: -41.2782275, lng: 174.7749621, visited: true, date: '2025-02-03' },
+                { name: 'Mojo Brandon', lat: -41.2835488, lng: 174.7774388, visited: true, date: '2025-02-24' },
+                { name: 'Mojo Central', lat: -41.2873166, lng: 174.775592, visited: true, date: '2025-01-13' },
+                { name: 'Mojo CSB Hospital', lat: -41.3095758, lng: 174.7780857, visited: false, new: true },
+                { name: 'Mojo Express', lat: -41.2877809, lng: 174.775322, visited: true, date: '2025-01-13' },
+                { name: 'Mojo Featherston', lat: -41.2800147, lng: 174.7792808, visited: true, date: '2025-04-22' },
+                { name: 'Mojo Old Bank', lat: -41.2858613, lng: 174.77624173047525, visited: true, date: '2025-01-16' },
+                { name: 'Mojo State', lat: -41.2867081, lng: 174.7763177, visited: true, date: '2025-01-15' },
+                { name: 'Mojo Summit', lat: -41.2729276, lng: 174.778072, visited: false },
+                { name: 'Mojo Tahi', lat: -41.2792641, lng: 174.7759010162606, visited: true, date: '2025-03-01' },
+                { name: 'Mojo Terrace', lat: -41.2831236, lng: 174.7749322, visited: false },
+                { name: 'Mojo Wakefield', lat: -41.3166702, lng: 174.7782206, visited: false },
+                { name: 'The Beanery by Mojo', lat: -41.2806013, lng: 174.775054, visited: false, new: true }
+            ],
+            Auckland: [
+                { name: 'Mojo Albert', lat: -36.8464218, lng: 174.7646047, visited: true, date: '2025-03-05' },
+                { name: 'Mojo AUT', lat: -36.8532194, lng: 174.7673188, visited: false, new: true },
+                { name: 'Mojo Fanshawe', lat: -36.8463158, lng: 174.757656, visited: false },
+                { name: 'Mojo Little Quay', lat: -36.8430427, lng: 174.765275, visited: true, date: '2025-05-02' },
+                { name: 'Mojo Quay', lat: -36.8431578, lng: 174.7653159, visited: false, new: true },
+                { name: 'Mojo Vulcan Lane', lat: -36.847243481470784, lng: 174.76720162032652, visited: false },
+                { name: 'Mojo Wyndham', lat: -36.8466984, lng: 174.76281, visited: false },
+                { name: 'Mojo Wynyard', lat: -36.8445627, lng: 174.7549833, visited: false }
+            ],
+            Christchurch: [
+                { name: 'Mojo Cashel', lat: -43.533344799999995, lng: 172.6318274481211, visited: false }
+            ]
+        };
+
+        // Add markers to map
+        Object.entries(locations).forEach(([city, locs]) => {
+            locs.forEach(loc => {
+                const icon = L.icon({
+                    iconUrl: loc.visited ? 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgZmlsbD0iIzI3YWU2MCIvPjwvc3ZnPg==' : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgZmlsbD0iIzk5OTkiLz48L3N2Zz4=',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+
+                const marker = L.marker([loc.lat, loc.lng], { icon }).addTo(map);
+                const popupText = loc.visited ? `<strong>${loc.name}</strong><br>✅ Visited: ${loc.date}` : `<strong>${loc.name}</strong><br>⏳ Not visited`;
+                marker.bindPopup(popupText);
+            });
+        });
+
+        // Build sidebar
+        const listContainer = document.getElementById('locations-list');
+        Object.entries(locations).forEach(([city, locs]) => {
+            const cityDiv = document.createElement('div');
+            cityDiv.className = 'city-section';
+            
+            const cityTitle = document.createElement('div');
+            cityTitle.className = 'city-title';
+            cityTitle.textContent = city;
+            cityDiv.appendChild(cityTitle);
+
+            locs.forEach(loc => {
+                const item = document.createElement('div');
+                let className = `location-item ${loc.visited ? 'visited' : 'unvisited'}`;
+                if (loc.new) className += ' new';
+                item.className = className;
+                const badge = loc.visited ? '✅' : (loc.new ? '🆕' : '⏳');
+                item.innerHTML = `<span class="status-badge">${badge}</span> ${loc.name}`;
+                item.onclick = () => map.setView([loc.lat, loc.lng], 15);
+                cityDiv.appendChild(item);
+            });
+
+            listContainer.appendChild(cityDiv);
+        });
+    </script>
+</body>
+</html>
