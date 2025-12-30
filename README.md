@@ -68,6 +68,7 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 ### 📍 Location-Based Content
 - **New Zealand Hills** (`newzealandhills/`) - NZ walks and hiking information
 - **Wellington Hills** (`wellingtonhills/`) - Wellington-specific walks
+- **Mohoe Coffee Map** (`mohoe/`) - Interactive Mojo coffee location tracker
 - **Sam Nikiel** (`samnikiel/`) - Photo gallery
 
 ### 🎨 Design Assets
@@ -156,7 +157,13 @@ This project uses the **PARA method** for organization:
 
 ## Recent Updates
 
-### Latest Changes
+### Latest Changes (2025-12-30)
+- Added Mohoe Coffee Map (`mohoe/`) - Interactive Leaflet.js map tracking Mojo coffee locations
+- Updated navigation to include Mohoe link
+- Discovered 4 new Mojo locations (25 total, up from 24)
+- Published interactive map with location tracking and progress statistics
+
+### Previous Updates
 - Reorganized project structure using PARA method
 - Cleaned up and refactored Will's Superhero Adventure game code
 - Improved code documentation and organization
@@ -204,4 +211,4 @@ This project is actively maintained and updated regularly.
 
 ---
 
-*Last Updated: 12 December 2025*
+*Last Updated: 30 December 2025*

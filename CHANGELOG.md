@@ -10,6 +10,28 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 - Performance optimization for image assets
 - SEO improvements and metadata updates
 
+## [2.1.0] - 2025-12-30
+
+### Added
+- **Mohoe Coffee Map** (`mohoe/`) - Interactive Leaflet.js map for tracking Mojo coffee locations
+  - 25 Mojo locations across Wellington, Auckland, and Christchurch
+  - Interactive map with markers and popups
+  - Sidebar with location list and progress statistics
+  - New location highlighting (🆕 badges)
+  - Visited/pending status tracking
+- Navigation link to Mohoe map in main menu
+
+### Changed
+- Updated navigation to include Mohoe link
+- Enhanced location-based content section in README
+
+### Discovered
+- 4 new Mojo locations (total increased from 24 to 25):
+  - Mojo AUT - Auckland
+  - Mojo Quay - Auckland
+  - Mojo CSB Hospital - Wellington
+  - The Beanery by Mojo - Wellington
+
 ## [2.0.0] - 2025-12-12
 
 ### Added
@@ -159,6 +181,6 @@ When making changes, please:
 
 ---
 
-**Last Updated:** 12 December 2025
-**Current Version:** 2.0.0
+**Last Updated:** 30 December 2025
+**Current Version:** 2.1.0
 **Status:** Active Development
