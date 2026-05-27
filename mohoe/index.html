@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mohoe Coffee">
     <title>Mohoe Coffee Drinking Map</title>
-    <meta name="description" content="Tracking every Mojo coffee location in New Zealand — 10 visited, 15 to go.">
+    <meta name="description" content="Tracking every Mojo coffee location in New Zealand — interactive map of visited and remaining locations.">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -198,8 +198,8 @@
             <a href="/" style="font-size:0.8em;color:#666;text-decoration:none;display:block;margin-bottom:8px;">← Home</a>
             <h2>Mohoe Coffee</h2>
             <div class="stats">
-                <div class="stats-item"><strong>Visited:</strong> <span id="visited-count">10</span>/25</div>
-                <div class="stats-item"><strong>Remaining:</strong> <span id="remaining-count">15</span></div>
+                <div class="stats-item"><strong>Visited:</strong> <span id="visited-count">0</span>/<span id="total-count">0</span></div>
+                <div class="stats-item"><strong>Remaining:</strong> <span id="remaining-count">0</span></div>
             </div>
             <div id="locations-list"></div>
         </div>
@@ -298,6 +298,14 @@
 
             listContainer.appendChild(cityDiv);
         });
+
+        // Compute stats from data
+        const allLocs = Object.values(locations).flat();
+        const total = allLocs.length;
+        const visitedCount = allLocs.filter(l => l.visited).length;
+        document.getElementById('total-count').textContent = total;
+        document.getElementById('visited-count').textContent = visitedCount;
+        document.getElementById('remaining-count').textContent = total - visitedCount;
 
         // Handle window resize for responsive layout
         window.addEventListener('resize', () => {
