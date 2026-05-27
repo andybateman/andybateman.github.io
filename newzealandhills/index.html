@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Zealand Hills</title>
   <style>
 	#chart {
-      height: 100%; 
-      width: 100%; 
-      position:absolute; 
-      top: 0; 
+      height: 100%;
+      width: 100%;
+      position:absolute;
+      top: 0;
       left: 0;
       z-index: -10;
     }
+    #home-link {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background-color: #fff;
+      font-family: sans-serif;
+      font-size: 1em;
+      padding: 5px 8px;
+      border-radius: 4px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+      text-decoration: none;
+      color: #333;
+    }
+    #home-link:hover { color: #000; }
   </style>
   <!-- Load d3.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
@@ -20,6 +35,7 @@
 </head>
 <body>
 
+<a id="home-link" href="/">←</a>
 <!-- Create a div where the graph will take place -->
 <canvas id="chart"></canvas>
 

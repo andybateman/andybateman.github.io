@@ -6,11 +6,18 @@ baseurl: ""
 url: "https://www.andybateman.com"
 twitter_username: andybateman
 facebook_username: andybateman
+locale: en_NZ
 permalink: /:categories/:title/
 
 sass:
   sass_dir: _scss
   style: compressed
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /cdn/icons/andybateman/AppIcon76x76@2x_icons/macos/icon_1024x1024.png
 
 plugins:
   - jekyll-seo-tag
