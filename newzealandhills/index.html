@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>New Zealand Hills</title>
+  <meta name="description" content="Elevation profiles and distance charts for New Zealand walks and hikes.">
   <style>
 	#chart {
       height: 100%;
@@ -30,8 +31,8 @@
     #home-link:hover { color: #000; }
   </style>
   <!-- Load d3.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.1.1/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -41,7 +42,10 @@
 
 <script>
 d3.csv('walks.csv')
-  .then(makeChart);
+  .then(makeChart)
+  .catch(function() {
+    document.body.innerHTML += '<p style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:sans-serif;color:#c00;">Could not load walk data.</p>';
+  });
 
   function makeChart(hills) {
 
