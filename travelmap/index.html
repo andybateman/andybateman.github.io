@@ -1,0 +1,89 @@
+---
+title: Our Travels
+permalink: /travelmap/
+description: An interactive map of the journey — every geotagged story from the kitjunkie travel blog, plotted in order.
+sitemap:
+  priority: 0.7
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Our Travels</title>
+	<meta name="description" content="{{ page.description }}">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<style>
+		html, body { height: 100%; margin: 0; padding: 0; }
+		#map { height: 100%; width: 100%; background: #aadaff; }
+		#title {
+			position: absolute; top: 10px; left: 50px; z-index: 1000;
+			background-color: #fff; font-family: sans-serif; font-size: 1.4em;
+			font-weight: 600; padding: 5px 10px; border-radius: 4px;
+			box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+		}
+		#home-link {
+			position: absolute; top: 10px; left: 10px; z-index: 1000;
+			background-color: #fff; font-family: sans-serif; font-size: 1em;
+			padding: 5px 8px; border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+			text-decoration: none; color: #333;
+		}
+		#home-link:hover { color: #000; }
+		.leaflet-popup-content { font-family: sans-serif; }
+		.leaflet-popup-content a { color: #c0392b; font-weight: 600; text-decoration: none; }
+		.leaflet-popup-content a:hover { text-decoration: underline; }
+		.leaflet-popup-content .meta { color: #666; font-size: 0.85em; }
+	</style>
+</head>
+<body>
+
+<div id="map"></div>
+<a id="home-link" href="/">←</a>
+<div id="title">Our Travels</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+	// Geotagged stories, in chronological order, injected at build time.
+	var stops = [
+	{% assign geoposts = site.posts | where_exp: "p", "p.lat" | sort: "date" %}
+	{% for p in geoposts %}{
+		title: {{ p.title | jsonify }},
+		lat: {{ p.lat }}, lng: {{ p.lng }},
+		url: "{{ p.url | relative_url }}",
+		date: "{{ p.date | date: '%-d %b %Y' }}",
+		cat: {{ p.categories | first | default: '' | jsonify }}
+	}{% unless forloop.last %},{% endunless %}
+	{% endfor %}
+	];
+
+	var map = L.map('map');
+	L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+		maxZoom: 17,
+		attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+	}).addTo(map);
+
+	// Journey path in chronological order
+	var path = stops.map(function (s) { return [s.lat, s.lng]; });
+	L.polyline(path, { color: '#c0392b', weight: 2, opacity: 0.5, dashArray: '6 6' }).addTo(map);
+
+	// One marker per story
+	stops.forEach(function (s, i) {
+		var marker = L.circleMarker([s.lat, s.lng], {
+			radius: 7, fillColor: '#c0392b', color: '#fff',
+			weight: 2, opacity: 1, fillOpacity: 0.9
+		}).addTo(map);
+		marker.bindPopup(
+			'<a href="' + s.url + '">' + s.title + '</a>' +
+			'<div class="meta">' + s.date + (s.cat ? ' &middot; ' + s.cat : '') + '</div>'
+		);
+	});
+
+	if (path.length) {
+		map.fitBounds(L.latLngBounds(path).pad(0.15));
+	} else {
+		map.setView([0, 0], 2);
+	}
+</script>
+
+</body>
+</html>

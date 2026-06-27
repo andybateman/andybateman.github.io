@@ -37,6 +37,29 @@
           {{ content }}
         </article>
 
+        {% if page.lat %}
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <figure class="my-4">
+          <div id="post-map" class="rounded-3 border" style="height: 260px;"></div>
+          <figcaption class="text-muted small mt-1">
+            Where this happened &middot; <a href="/travelmap/">see the whole journey &rarr;</a>
+          </figcaption>
+        </figure>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+          (function () {
+            var m = L.map('post-map', { scrollWheelZoom: false }).setView([{{ page.lat }}, {{ page.lng }}], 6);
+            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+              maxZoom: 17,
+              attribution: 'Map: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'
+            }).addTo(m);
+            L.circleMarker([{{ page.lat }}, {{ page.lng }}], {
+              radius: 8, fillColor: '#c0392b', color: '#fff', weight: 2, fillOpacity: 0.9
+            }).addTo(m).bindPopup({{ page.title | jsonify }}).openPopup();
+          })();
+        </script>
+        {% endif %}
+
         <p class="mt-5 mb-0"><a href="/posts">&larr; All stories</a></p>
 
       </div>
