@@ -4,6 +4,11 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 
 ## [Unreleased]
 
+### Changed
+- Refreshed the 20 README keywords to reflect the 3.0.0 redesign — added the
+  travel/story blog, the kitjunkie history, "The Logbook" theme and the travel
+  map; dropped stale terms (internal folder id, Bootstrap, generic "web design")
+
 ### Planned
 - Apply the type system to the home body and interactive games
 - Performance: trim or subset Bootstrap; enable HTML compression
