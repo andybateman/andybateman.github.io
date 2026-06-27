@@ -5,9 +5,25 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 ## [Unreleased]
 
 ### Planned
-- Convert the Mohoe coffee map to the shared head/theme
 - Apply the type system to the home body and interactive games
 - Performance: trim or subset Bootstrap; enable HTML compression
+
+## [3.0.1] - 2026-06-27
+
+### Changed
+- **Mohoe converted to the shared head/theme** — the last page still
+  hand-rolling its own `<head>` now uses `_includes/head.html` via front
+  matter (`map`/`leaflet`), inheriting site fonts, favicon, SEO and GA4. The
+  bespoke map+sidebar layout is kept but restyled to "The Logbook" (Space Mono
+  / Bricolage Grotesque, brand-yellow stats panel, marker-red accents)
+- Mohoe markers swapped from base64 SVG sprites to themed Leaflet
+  `circleMarker`s matching the other maps (green visited, red to-visit,
+  yellow-with-red-ring for new openings)
+
+### Fixed
+- Mohoe "visited" list items were yellow text on a white sidebar (`#FBCA12` on
+  `#fff`) — nearly invisible; now green
+- Removed a malformed `#9999` hex on the old unvisited marker icon
 
 ## [3.0.0] - 2026-06-27
 
