@@ -48,14 +48,16 @@ body {
 
 h1 {
   text-indent: -5000px;
-  background-image: url('/images/logo.png');
-  background-position: 0 0;
+  background-image: url('/images/logo.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
   width: 270px;
   height: 320px;
   margin: 10px auto;
 
   &:hover {
-    background-position: 0 320px;
+    background-image: url('/images/logo-hover.svg');
   }
 }
 
