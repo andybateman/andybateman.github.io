@@ -46,7 +46,9 @@ body {
   max-width: 42em;
 }
 
-h1 {
+/* The logo is the home-page hero only (inside .cover-container).
+   Scoped so it doesn't hijack ordinary <h1> headings such as post titles. */
+.cover-container h1 {
   text-indent: -5000px;
   background-image: url('/images/logo.svg');
   background-repeat: no-repeat;
