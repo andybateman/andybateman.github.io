@@ -12,54 +12,41 @@
 <!-- Hey! What are you looking at?! -->
 <html lang="en" class="h-100">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Andy Bateman">
-    <title>{% if page.title %}{{ page.title }} | Andy Bateman{% else %}{{ site.title }}{% endif %}</title>
-
-    <meta name="theme-color" content="#000">
-    <link href="/custom.css" rel="stylesheet">
-
-    {% seo %}
-    <meta name="ROBOTS" content="INDEX,FOLLOW" />
-    <meta name="rating" content="General" />
-    <meta http-equiv="Reply-to" content="me@andybateman.com" />
-    <meta name="revisit-after" content="2 days" />
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-22038364-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-22038364-1');
-    </script>
-
+    {% include head.html %}
   </head>
-  <body class="d-flex h-100 text-center text-white">
-    
-  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-    <header class="mb-auto">
-      <div>
-        <h3 class="float-md-start mb-0">Andy Bateman</h3>
-        <nav class="nav nav-masthead justify-content-center float-md-end">
-          <a class="nav-link active" aria-current="page" href="/">Home</a>
-          <a class="nav-link" href="/wellingtonhills">Hills</a>
-          <a class="nav-link" href="/posts">Stories</a>
+  <body class="text-dark">
+
+    <main class="container my-4 my-md-5">
+      <div class="mx-auto bg-white rounded-3 shadow-sm p-4 p-md-5" style="max-width: 720px;">
+
+        <nav class="d-flex justify-content-between align-items-baseline mb-4 pb-2 border-bottom">
+          <a href="/" class="h5 mb-0 text-decoration-none text-dark">Andy Bateman</a>
+          <span>
+            <a class="text-decoration-none text-dark me-3" href="/wellingtonhills">Hills</a>
+            <a class="text-decoration-none text-dark" href="/posts">Stories</a>
+          </span>
         </nav>
+
+        <article>
+          <h1 class="mb-1">{{ page.title }}</h1>
+          <p class="text-muted mb-4">
+            <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time>
+            {%- if page.categories and page.categories.size > 0 %} &middot; {{ page.categories | join: ", " }}{% endif %}
+          </p>
+
+          {{ content }}
+        </article>
+
+        <p class="mt-5 mb-0"><a href="/posts">&larr; All stories</a></p>
+
       </div>
-    </header>
 
-{{ content }}
+      <footer class="text-center text-muted small mt-4">
+        <p>Built by <a href="https://builtby.ninja/" class="text-muted">Ninja</a>.</p>
+      </footer>
+    </main>
 
-    <footer class="mt-auto text-white-50">
-      <p>Built by <a href="https://builtby.ninja/" class="text-white">Ninja</a>.</p>
-    </footer>
-  </div>
-   
-  <!-- Optional JavaScript; -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    {% include scripts.html %}
 
   </body>
 </html>
