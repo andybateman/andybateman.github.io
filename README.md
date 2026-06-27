@@ -65,11 +65,17 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 - **QR Code Generator** (`qr/`) - QR code generation page
 - **Health Tracker** (`health/`) - Personal health tracking page
 
-### 📍 Location-Based Content
-- **New Zealand Hills** (`newzealandhills/`) - NZ walks and hiking information
-- **Wellington Hills** (`wellingtonhills/`) - Wellington-specific walks
+### 📍 Maps & Location-Based Content
+All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).
+- **Travel Map** (`travelmap/`) - Full journey; plots every geotagged story chronologically with a route line. Data injected from post front matter at build time.
+- **New Zealand Hills** (`newzealandhills/`) - Elevation/distance charts (Chart.js + d3)
+- **Wellington Hills** (`wellingtonhills/`) - Interactive map of hills to summit
 - **Mohoe Coffee Map** (`mohoe/`) - Interactive Mojo coffee location tracker
 - **Sam Nikiel** (`samnikiel/`) - Photo gallery
+
+### 📖 Stories ("The Logbook")
+- **`posts/`** - 57 travel-blog posts (2001–2011), recovered from the original kitjunkie blog, presented as a chronological journey grouped by year
+- Posts with coordinates show a per-post location mini-map (39 of 57 geotagged)
 
 ### 🎨 Design Assets
 - Custom brand fonts (Batemans-Logos)
@@ -80,42 +86,37 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 
 ## Technology Stack
 
-- **Static Site Generator:** Jekyll
-- **Styling:** SCSS with Bootstrap
-- **Hosting:** GitHub Pages
-- **Version Control:** Git
-- **Build System:** Jekyll with plugins
-- **SEO:** jekyll-seo-tag, jekyll-sitemap
+- **Static Site Generator:** Jekyll 4 (local) / GitHub Pages (live build)
+- **Styling:** `custom.scss` + Bootstrap 5.3.3 (CDN); `map.css` for map pages
+- **Type:** Bricolage Grotesque (display) + Space Mono (data), via Google Fonts
+- **Maps:** Leaflet + OpenTopoMap; charts via Chart.js + d3
+- **Hosting:** GitHub Pages (auto-deploy on push to `master`)
+- **SEO/build plugins:** jekyll-seo-tag, jekyll-sitemap, jekyll-redirect-from
+- **Shared `<head>`:** `_includes/head.html` serves every page, branching on
+  front-matter flags `map:` / `leaflet:` (map pages) vs content pages
 
 ## Getting Started
 
+GitHub Pages builds and deploys the live site itself. For local work:
+
 ### Prerequisites
-- Ruby 2.7+
-- Jekyll 4.0+
-- Bundler
-
-### Installation
-
-```bash
-cd 1_Projects/Current\ Site/andybateman.github.io
-bundle install
-```
+- Ruby 3.x+ (the macOS system Ruby 2.6 is too old). On this Mac, the Homebrew
+  Ruby works — put it on PATH first.
 
 ### Local Development
 
 ```bash
-bundle exec jekyll serve
+cd andybateman.github.io
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+bundle install
+bundle exec jekyll serve     # http://localhost:4000 (rebuilds on save)
+bundle exec jekyll build     # one-off → _site/
 ```
 
-Visit `http://localhost:4000` to view the site locally.
-
-### Building for Production
-
-```bash
-bundle exec jekyll build
-```
-
-The compiled site will be in the `_site/` directory.
+> **Note:** the `Gemfile` uses modern Jekyll 4 + `liquid ~> 4.0.4` rather than
+> the `github-pages` gem, which pins a Jekyll too old to run on current Ruby.
+> Output is equivalent for this site; the live build is unaffected (plugins are
+> declared in `_config.yml`).
 
 ## Content
 
@@ -137,8 +138,10 @@ The site includes 50+ blog posts covering:
 
 ### Andy Bateman Brand
 - **Primary Color:** #FBCA12 (Andy Bright Yellow)
-- **Secondary Color:** #000000 (Andy Black)
-- **Accent Color:** #FFFFFF (Pure White)
+- **Ink:** #1A1813 (near-black text)
+- **Accent:** #C0392B (Marker Red — from the map pins; used for links, category tags, active nav)
+- **Display face:** Bricolage Grotesque · **Mono face:** Space Mono
+- **Logo:** `images/logo.svg` (solid) + `images/logo-hover.svg` (outline on hover), from `ab-05.svg`
 - **Personality:** Bold, creative, approachable, energetic
 
 ### Main Street Network Brand
@@ -157,12 +160,14 @@ This project uses the **PARA method** for organization:
 
 ## Recent Updates
 
-### Latest Changes (2025-12-30)
-- Added Mohoe Coffee Map (`mohoe/`) - Interactive Leaflet.js map tracking Mojo coffee locations
-- Updated navigation to include Mohoe link
-- Discovered 4 new Mojo locations (25 total, up from 24)
-- Published interactive map with location tracking and progress statistics
-- **Made map iPhone-friendly** with responsive design, safe area support, and touch optimization
+### Latest Changes (2026-06-27)
+- **Restored the story blog** — 57 travel posts (2001–2011) with a new readable layout
+- **Added the Travel Map** (`travelmap/`) and per-post location maps; recovered 39 posts' coordinates
+- **"The Logbook" theme** — new visual identity (Bricolage Grotesque + Space Mono, marker-red accent); `/posts/` redesigned
+- **Unified the `<head>`** across all pages; map/chart pages now get fonts, GA4, SEO and favicon
+- **Logo → SVG** (ab-05), replacing the base64 PNG sprite; fixed post titles that were rendering as the logo
+- **Local builds fixed** (modern Jekyll Gemfile) and post content cleaned (mojibake, WordPress cruft, dead links)
+- See `CHANGELOG.md` for the full 3.0.0 entry
 
 ### Previous Updates
 - Reorganized project structure using PARA method
@@ -212,4 +217,4 @@ This project is actively maintained and updated regularly.
 
 ---
 
-*Last Updated: 30 December 2025*
+*Last Updated: 27 June 2026*

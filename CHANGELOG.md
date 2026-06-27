@@ -5,10 +5,43 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 ## [Unreleased]
 
 ### Planned
-- Enhanced mobile responsiveness for all interactive games
-- Additional superhero personas for Will's game
-- Performance optimization for image assets
-- SEO improvements and metadata updates
+- Convert the Mohoe coffee map to the shared head/theme
+- Apply the type system to the home body and interactive games
+- Performance: trim or subset Bootstrap; enable HTML compression
+
+## [3.0.0] - 2026-06-27
+
+### Added
+- **Story blog restored** — 57 posts (2001–2011) recovered from the kitjunkie
+  travel blog, with a new readable article layout
+- **`/travelmap/`** — full-screen Leaflet/OpenTopoMap plotting every geotagged
+  story chronologically with a route line and popups
+- **Per-post location maps** — posts with `lat`/`lng` show a small map of where
+  the story happened; 39 of 57 posts geotagged (coordinates recovered from the
+  original WordPress export)
+- **"The Logbook" theme** — distinctive visual identity: Bricolage Grotesque +
+  Space Mono, brand yellow/ink with marker-red accent pulled from the map pins;
+  `/posts/` rebuilt as a route-line journey grouped by year
+- Shared `_includes/head.html` and `_includes/scripts.html`; `map.css` for map
+  pages; `Gemfile` for working local builds (modern Jekyll, not `github-pages`)
+- Recovered 4 kit-review photos from the 2018 backup (`images/posts/`)
+
+### Changed
+- Logo migrated from a ~50KB base64 PNG sprite to SVG (`images/logo.svg` +
+  `logo-hover.svg`), later updated to the cleaner ab-05 pin
+- Unified the `<head>` across all pages (content vs map) so the map/chart pages
+  now get fonts, GA4, SEO and favicon they previously lacked
+- Home masthead restyled (Bricolage brand, Space Mono nav) with a Stories link
+
+### Fixed
+- Post titles were rendering as the logo (global `h1` rule); scoped to the home
+  hero only
+- Story posts rendered unstyled (post layout was missing the Bootstrap CSS link)
+  and used dead Universal Analytics / deprecated meta — brought to parity via the
+  shared head
+- Content cleanup across all posts: mojibake (`donâ€™t` → `don't`), WordPress
+  front-matter cruft and exposed author emails removed, dead Flickr shortcodes
+  resolved, broken image paths fixed
 
 ## [2.1.0] - 2025-12-30
 
