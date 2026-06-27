@@ -59,6 +59,45 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   front-matter cruft and exposed author emails removed, dead Flickr shortcodes
   resolved, broken image paths fixed
 
+## [2.3.0] - 2026-05-27
+
+### Security
+- Removed exposed Google Maps API key from Wellington Hills; key deleted from Google Cloud Console
+
+### Changed
+- Migrated Wellington Hills map from Google Maps to Leaflet + OpenTopoMap (no API key required)
+- Migrated analytics from dead Universal Analytics (UA-22038364-1) to GA4 (G-BQRMNNRYYZ)
+- Updated Bootstrap CSS and JS from 5.0.2/5.1.2 to 5.3.3 via CDN
+- Removed Bootstrap SCSS source from repo (`_scss/`, 85 files) — now CDN-loaded
+- Extracted 50KB base64 logo from `custom.scss` to `images/logo.png`
+- Updated Chart.js 3.6.0 → 4.5.1 and d3 7.1.1 → 7.9.0 on NZ Hills page
+
+### Fixed
+- Removed duplicate `<title>` tag on homepage (jekyll-seo-tag now owns it)
+- Removed deprecated meta tags: `revisit-after`, `Reply-to`, `rating`
+- Fixed `og:locale` from `en_US` to `en_NZ`
+- Added missing `lang="en"` attribute to NZ Hills page
+- Added `.DS_Store` to `.gitignore` and removed tracked instances
+
+### Added
+- Home navigation link (← Home) on Wellington Hills, NZ Hills, and Mohoe subpages
+- Meta descriptions on all three standalone subpages
+- `og:image` default (1024×1024 icon) via Jekyll front matter defaults
+- Favicon and apple-touch-icon link tags in default layout
+- Error handling for `walks.csv` load failure on NZ Hills
+- SRI integrity hashes on all CDN-loaded scripts and stylesheets
+- 20 keywords in README
+
+## [2.2.0] - 2026-01-12
+
+### Changed
+- Mohoe Coffee Map location item colours: visited items set to yellow (`#FBCA12`)
+  with bold weight; unvisited darkened from `#7f8c8d` to `#666`
+  (the yellow-on-white legibility regression later fixed in 3.0.1)
+
+### Fixed
+- Missing newline at end of `mohoe/index.html`
+
 ## [2.1.0] - 2025-12-30
 
 ### Added
@@ -238,6 +277,6 @@ When making changes, please:
 
 ---
 
-**Last Updated:** 30 December 2025
-**Current Version:** 2.1.0
+**Last Updated:** 27 June 2026
+**Current Version:** 3.0.1
 **Status:** Active Development
