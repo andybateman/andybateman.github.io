@@ -1,22 +1,123 @@
 ---
-layout: default
-title: Posts
+title: Stories
 permalink: /posts/
+description: Dispatches from a slow trip around the world and back — Nepal to New Zealand, kit reviews and all, 2001–2011.
 sitemap:
   priority: 0.7
-  changefreq: 'daily'
-meta:
-  flickr: 12851497075
-
 ---
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    {% include head.html %}
+    <style>
+      :root{
+        --ink:#1a1813; --brand:#fbca12; --marker:#c0392b;
+        --muted:#7c7459; --line:rgba(26,24,19,.16);
+        --display:"Bricolage Grotesque",system-ui,sans-serif;
+        --mono:"Space Mono",ui-monospace,monospace;
+      }
+      body.logbook{
+        background:var(--brand); color:var(--ink);
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+        text-shadow:none; box-shadow:none; -webkit-font-smoothing:antialiased;
+      }
+      .wrap{max-width:720px;margin:0 auto;padding:1.4rem 1.4rem 5rem;}
+      /* top bar */
+      .topbar{display:flex;justify-content:space-between;align-items:baseline;
+        padding-bottom:1.5rem;}
+      .topbar .brand{font-family:var(--display);font-weight:800;font-size:1.15rem;
+        color:var(--ink);text-decoration:none;letter-spacing:-.01em;}
+      .topbar nav a{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
+        letter-spacing:.08em;color:var(--ink);text-decoration:none;margin-left:1.1rem;
+        padding-bottom:.15rem;border-bottom:2px solid transparent;}
+      .topbar nav a:hover{border-bottom-color:var(--ink);}
+      .topbar nav a.here{border-bottom-color:var(--marker);}
+      /* hero */
+      .hero{padding:2rem 0 2.6rem;border-bottom:3px solid var(--ink);}
+      .hero h1{font-family:var(--display);font-weight:800;
+        font-size:clamp(3rem,12vw,5.5rem);line-height:.92;letter-spacing:-.03em;
+        margin:0 0 .9rem;}
+      .hero .lede{font-size:1.12rem;line-height:1.5;max-width:30em;margin:0 0 1.3rem;
+        color:#2c281d;}
+      .hero .stat{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;
+        letter-spacing:.06em;color:var(--muted);}
+      .hero .map-cta{display:inline-block;margin-top:.2rem;font-family:var(--mono);
+        font-size:.82rem;font-weight:700;color:var(--ink);text-decoration:none;
+        background:var(--ink);color:var(--brand);padding:.55rem .9rem;border-radius:2px;}
+      .hero .map-cta:hover{background:var(--marker);color:#fff;}
+      .hero .lede + .stat{display:block;margin-bottom:1.3rem;}
+      /* logbook */
+      .logbook{list-style:none;margin:0;padding:1.6rem 0 0;position:relative;}
+      .logbook::before{content:"";position:absolute;left:6px;top:2.4rem;bottom:0;
+        width:2px;background:var(--line);}
+      .logbook .year{font-family:var(--mono);font-weight:700;font-size:1.5rem;
+        color:var(--ink);margin:2.2rem 0 .4rem;padding-left:2.1rem;position:relative;}
+      .logbook .year:first-child{margin-top:0;}
+      .logbook .year::before{content:"";position:absolute;left:0;top:.5rem;
+        width:14px;height:14px;border-radius:50%;background:var(--ink);}
+      .logbook .stop{position:relative;}
+      .logbook .stop::before{content:"";position:absolute;left:4px;top:1.05rem;
+        width:7px;height:7px;border-radius:50%;background:var(--brand);
+        border:2px solid var(--ink);transition:background .12s;}
+      .logbook .stop a{display:grid;grid-template-columns:4.4rem 1fr;gap:.9rem;
+        align-items:baseline;padding:.5rem 0 .5rem 2.1rem;text-decoration:none;
+        color:var(--ink);border-bottom:1px solid rgba(26,24,19,.1);}
+      .logbook .stop:hover::before{background:var(--marker);}
+      .logbook .stop a:hover .title{text-decoration:underline;text-underline-offset:3px;}
+      .logbook .date{font-family:var(--mono);font-size:.72rem;color:var(--muted);
+        text-transform:uppercase;letter-spacing:.03em;padding-top:.18rem;}
+      .logbook .title{font-family:var(--display);font-weight:600;font-size:1.12rem;
+        line-height:1.25;}
+      .logbook .tag{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;
+        letter-spacing:.07em;color:var(--marker);display:block;margin-top:.15rem;}
+      .footer{margin-top:3rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+      @media (max-width:480px){
+        .logbook .stop a{grid-template-columns:1fr;gap:.1rem;}
+        .logbook .date{padding-top:0;}
+      }
+    </style>
+  </head>
+  <body class="logbook">
+    <div class="wrap">
 
-<div id="photo_header" class="wrap">
-  <h2>Here you go, have a read.</h2>
-  <p><a href="/travelmap/">See where these stories happened on the map &rarr;</a></p>
-</div>
+      <div class="topbar">
+        <a class="brand" href="/">Andy Bateman</a>
+        <nav>
+          <a href="/wellingtonhills">Hills</a>
+          <a href="/travelmap/">Map</a>
+          <a class="here" href="/posts/">Stories</a>
+        </nav>
+      </div>
 
-<ul class="links wrap">
-	{% for post in site.posts %}
-    <li><a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
+      <header class="hero">
+        <h1>The&nbsp;Logbook</h1>
+        <p class="lede">{{ page.description }}</p>
+        <span class="stat">{{ site.posts | size }} entries &middot; 2001&ndash;2011</span>
+        <a class="map-cta" href="/travelmap/">Open the journey map &rarr;</a>
+      </header>
+
+      {% assign chrono = site.posts | sort: 'date' %}
+      {% assign by_year = chrono | group_by_exp: 'p', 'p.date | date: "%Y"' %}
+      <ol class="logbook">
+        {% for yg in by_year %}
+        <li class="year">{{ yg.name }}</li>
+        {% for p in yg.items %}
+        <li class="stop">
+          <a href="{{ p.url | relative_url }}">
+            <span class="date">{{ p.date | date: '%-d %b' }}</span>
+            <span class="body">
+              <span class="title">{{ p.title }}</span>
+              {% assign cat = p.categories | first %}
+              {% if cat and cat != 'Uncategorized' %}<span class="tag">{{ cat }}</span>{% endif %}
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+        {% endfor %}
+      </ol>
+
+      <div class="footer">Built by <a href="https://builtby.ninja/" style="color:var(--ink)">Ninja</a>.</div>
+
+    </div>
+  </body>
+</html>

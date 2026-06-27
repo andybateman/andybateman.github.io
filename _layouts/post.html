@@ -13,35 +13,70 @@
 <html lang="en" class="h-100">
   <head>
     {% include head.html %}
+    <style>
+      :root{
+        --ink:#1a1813; --brand:#fbca12; --marker:#c0392b; --muted:#7c7459;
+        --display:"Bricolage Grotesque",system-ui,sans-serif;
+        --mono:"Space Mono",ui-monospace,monospace;
+      }
+      body.post{background:var(--brand);color:var(--ink);text-shadow:none;box-shadow:none;
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+      .sheet{max-width:720px;}
+      .topbar .brand{font-family:var(--display);font-weight:800;font-size:1.15rem;
+        color:var(--ink);text-decoration:none;letter-spacing:-.01em;}
+      .topbar nav a{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
+        letter-spacing:.08em;color:var(--ink);text-decoration:none;margin-left:1.1rem;
+        padding-bottom:.15rem;border-bottom:2px solid transparent;}
+      .topbar nav a:hover{border-bottom-color:var(--ink);}
+      .topbar nav a.here{border-bottom-color:var(--marker);}
+      .post-title{font-family:var(--display);font-weight:800;letter-spacing:-.025em;
+        line-height:1.02;font-size:clamp(2rem,5.5vw,3rem);margin:0 0 .6rem;}
+      .post-meta{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;
+        letter-spacing:.04em;color:var(--muted);margin:0 0 2rem;display:flex;gap:.7rem;align-items:center;}
+      .post-meta .tag{color:#fff;background:var(--marker);padding:.12rem .5rem;border-radius:2px;
+        font-size:.66rem;letter-spacing:.06em;}
+      .post-body{font-size:1.075rem;line-height:1.7;}
+      .post-body p{margin:0 0 1.15rem;}
+      .post-body a{color:var(--marker);text-underline-offset:2px;}
+      .post-body img{max-width:100%;height:auto;border-radius:6px;}
+      .post-map-cap{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
+        letter-spacing:.04em;color:var(--muted);}
+      .post-map-cap a{color:var(--marker);}
+      .backlink{font-family:var(--mono);font-size:.8rem;text-transform:uppercase;
+        letter-spacing:.06em;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--marker);}
+      .post-foot{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
+    </style>
   </head>
-  <body class="text-dark">
+  <body class="post">
 
     <main class="container my-4 my-md-5">
-      <div class="mx-auto bg-white rounded-3 shadow-sm p-4 p-md-5" style="max-width: 720px;">
+      <div class="sheet mx-auto bg-white rounded-4 shadow-sm p-4 p-md-5">
 
-        <nav class="d-flex justify-content-between align-items-baseline mb-4 pb-2 border-bottom">
-          <a href="/" class="h5 mb-0 text-decoration-none text-dark">Andy Bateman</a>
-          <span>
-            <a class="text-decoration-none text-dark me-3" href="/wellingtonhills">Hills</a>
-            <a class="text-decoration-none text-dark" href="/posts">Stories</a>
-          </span>
-        </nav>
+        <div class="topbar d-flex justify-content-between align-items-baseline mb-5 pb-2 border-bottom">
+          <a class="brand" href="/">Andy Bateman</a>
+          <nav>
+            <a href="/wellingtonhills">Hills</a>
+            <a href="/travelmap/">Map</a>
+            <a class="here" href="/posts/">Stories</a>
+          </nav>
+        </div>
 
         <article>
-          <h1 class="mb-1">{{ page.title }}</h1>
-          <p class="text-muted mb-4">
+          <h1 class="post-title">{{ page.title }}</h1>
+          <p class="post-meta">
             <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time>
-            {%- if page.categories and page.categories.size > 0 %} &middot; {{ page.categories | join: ", " }}{% endif %}
+            {% assign cat = page.categories | first %}
+            {% if cat and cat != 'Uncategorized' %}<span class="tag">{{ cat }}</span>{% endif %}
           </p>
 
-          {{ content }}
+          <div class="post-body">{{ content }}</div>
         </article>
 
         {% if page.lat %}
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <figure class="my-4">
           <div id="post-map" class="rounded-3 border" style="height: 260px;"></div>
-          <figcaption class="text-muted small mt-1">
+          <figcaption class="post-map-cap mt-2">
             Where this happened &middot; <a href="/travelmap/">see the whole journey &rarr;</a>
           </figcaption>
         </figure>
@@ -60,12 +95,12 @@
         </script>
         {% endif %}
 
-        <p class="mt-5 mb-0"><a href="/posts">&larr; All stories</a></p>
+        <p class="mt-5 mb-0"><a class="backlink" href="/posts/">&larr; All stories</a></p>
 
       </div>
 
-      <footer class="text-center text-muted small mt-4">
-        <p>Built by <a href="https://builtby.ninja/" class="text-muted">Ninja</a>.</p>
+      <footer class="text-center mt-4">
+        <p class="post-foot">Built by <a href="https://builtby.ninja/" style="color:var(--ink)">Ninja</a>.</p>
       </footer>
     </main>
 
