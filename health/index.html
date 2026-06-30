@@ -1,66 +1,88 @@
-<!DOCTYPE HTML>
-<html>
-<head>  
-<script>
-window.onload = function () {
-
-var chart = new CanvasJS.Chart("chartContainer", {
-	animationEnabled: true,
-	theme: "light1", //"light1", "dark1", "dark2"
-	title:{
-		text: "My Health after 'The Accident'"             
-	},
-	toolTip:{
-		shared: true
-	},
-	data:[{
-		type: "stackedBar100",
-		toolTipContent: "{label}<br><b>{name}:</b> {y} (#percent%)",
-		showInLegend: true, 
-		name: "Fixed",
-		color: "#11852b",
-		dataPoints: [
-            { y: 0, label: "Right foot surgery" },
-            { y: 75, label: "Chest injury, left side (Closed fracture of 5-9 ribs)" },
-			{ y: 40, label: "Chest injury (Manipulation of rib 8)" },
-			{ y: 66, label: "Chest injury (Closed fracture sternum)" },
-			{ y: 75, label: "Leg injury, right side (Closed fracture of the lower)" },
-			{ y: 75, label: "Knee injury, right side (Closed fracture of the patella)" },
-			{ y: 25, label: "Arm injury, left side (Closed fracture of the scaphoid)" },
-			{ y: 10, label: "Arm injury, left side (Nerve damage)" },
-			{ y: 66, label: "Toe injury, right side (Fracture of great toe)" },
-			{ y: 70, label: "Arm injury, right side (Closed fracture triquetral)" },
-			{ y: 80, label: "Abdomen or pelvis injury (Contusion, anterior abdominal wall)" }
-		]
-		},
-        {
-		type: "stackedBar100",
-		toolTipContent: "{label}<br><b>{name}:</b> {y} (#percent%)",
-		showInLegend: true, 
-		name: "Still Broken",
-		color: "#ff0000",
-		dataPoints: [
-            { y: 100, label: "Right foot surgery" },
-            { y: 25, label: "Chest injury, left side (Closed fracture of 5-9 ribs)" },
-			{ y: 60, label: "Chest injury (Manipulation of rib 8)" },
-			{ y: 34, label: "Chest injury (Closed fracture sternum)" },
-			{ y: 25, label: "Leg injury, right side (Closed fracture of the lower)" },
-			{ y: 25, label: "Knee injury, right side (Closed fracture of the patella)" },
-			{ y: 75, label: "Arm injury, left side (Closed fracture of the scaphoid)" },
-			{ y: 90, label: "Arm injury, left side (Nerve damage)" },
-			{ y: 34, label: "Toe injury, right side (Fracture of great toe)" },
-			{ y: 30, label: "Arm injury, right side (Closed fracture triquetral)" },
-			{ y: 20, label: "Abdomen or pelvis injury (Contusion, anterior abdominal wall)" }
-		]
-		}]
-});
-chart.render();
-
-}
-</script>
+---
+title: Health
+description: Recovery tracker — how Andy's injuries from 'The Accident' are healing.
+map: true
+---
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+  {% include head.html %}
+  <style>
+    body { background: #fbca12; }
+    #wrap {
+      position: absolute; top: 52px; left: 16px; right: 16px; bottom: 16px;
+      background: #fff; border-radius: 6px; padding: 16px 18px 10px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.3);
+    }
+    #chart { width: 100%; height: 100%; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
 </head>
 <body>
-<div id="chartContainer" style="height: 300px; width: 100%;"></div>
-<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+
+<a id="home-link" href="/">←</a>
+<div id="title">Health</div>
+
+<div id="wrap"><canvas id="chart"></canvas></div>
+
+<script>
+  Chart.defaults.font.family = "'Space Mono', ui-monospace, monospace";
+  Chart.defaults.color = '#1a1813';
+
+  // [label, fixed %, still-broken %] — each row totals 100.
+  var injuries = [
+    ["Right foot surgery",                                        0, 100],
+    ["Chest injury, left side (Closed fracture of 5-9 ribs)",    75,  25],
+    ["Chest injury (Manipulation of rib 8)",                     40,  60],
+    ["Chest injury (Closed fracture sternum)",                   66,  34],
+    ["Leg injury, right side (Closed fracture of the lower)",    75,  25],
+    ["Knee injury, right side (Closed fracture of the patella)", 75,  25],
+    ["Arm injury, left side (Closed fracture of the scaphoid)",  25,  75],
+    ["Arm injury, left side (Nerve damage)",                     10,  90],
+    ["Toe injury, right side (Fracture of great toe)",           66,  34],
+    ["Arm injury, right side (Closed fracture triquetral)",      70,  30],
+    ["Abdomen or pelvis injury (Contusion, anterior abdominal wall)", 80, 20]
+  ];
+
+  // Wrap each label onto two lines at the bracket so long names stay readable.
+  var labels = injuries.map(function(d) {
+    return d[0].split(/ (?=\()/);
+  });
+
+  new Chart(document.getElementById('chart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Fixed',        data: injuries.map(function(d){return d[1];}), backgroundColor: '#27ae60' },
+        { label: 'Still broken', data: injuries.map(function(d){return d[2];}), backgroundColor: '#c0392b' }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, min: 0, max: 100, ticks: { callback: function(v){return v + '%';} } },
+        y: { stacked: true, ticks: { font: { size: 11 } } }
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: "How I'm healing after 'The Accident'",
+          font: { family: "'Bricolage Grotesque', system-ui, sans-serif", size: 18, weight: '700' },
+          padding: { bottom: 14 }
+        },
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.x + '%'; }
+          }
+        }
+      }
+    }
+  });
+</script>
+
 </body>
 </html>
