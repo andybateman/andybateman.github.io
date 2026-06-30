@@ -57,7 +57,7 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 - **Technology:** Jekyll static site generator
 - **Hosting:** GitHub Pages (andybateman.github.io)
 - **Domain:** www.andybateman.com
-- **Framework:** Bootstrap SCSS
+- **Framework:** none — a small local utility/reset stylesheet (no Bootstrap)
 - **Plugins:** jekyll-seo-tag, jekyll-sitemap, jekyll-redirect-from
 
 ### 🎮 Interactive Projects
@@ -89,7 +89,7 @@ All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).
 ## Technology Stack
 
 - **Static Site Generator:** Jekyll 4 (local) / GitHub Pages (live build)
-- **Styling:** `custom.scss` + Bootstrap 5.3.3 (CDN); `map.css` for map pages
+- **Styling:** `custom.scss` (local utilities + reset, no Bootstrap); `map.css` for map pages; HTML minified in production via the `compress.html` layout
 - **Type:** Hanken Grotesk (display) + IBM Plex Mono (data), via Google Fonts
 - **Maps:** Leaflet + OpenTopoMap; charts via Chart.js + d3
 - **Hosting:** GitHub Pages (auto-deploy on push to `master`)

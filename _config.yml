@@ -13,6 +13,16 @@ sass:
   sass_dir: _scss
   style: compressed
 
+# HTML minification via the compress layout (penibelst). Strips inter-element
+# whitespace; keeps comments (the ASCII-art easter egg survives). Skipped in
+# development so local serves stay readable; GitHub Pages builds as production.
+compress_html:
+  clippings: all
+  endings: all
+  blanklines: false
+  ignore:
+    envs: [development]
+
 defaults:
   - scope:
       path: ""

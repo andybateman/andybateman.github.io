@@ -13,6 +13,15 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 ## [3.1.0] - 2026-06-30
 
 ### Changed
+- **Performance: dropped Bootstrap from the content pages.** It was loaded on
+  ~60 pages but only ~35 utility classes were used and no JS components at all.
+  Replaced those utilities with a faithful local subset in `custom.scss` (plus a
+  minimal reset for what Bootstrap's Reboot provided) and removed the Bootstrap
+  CSS link and JS bundle — roughly 50 KB off the critical path per page. Markup
+  unchanged. (Spacle keeps its own Bootstrap.)
+- **Performance: HTML minification** via the GitHub-Pages-safe `compress.html`
+  layout (penibelst), applied to home, 404, the 57 posts and the Stories index.
+  Stories index −30%, home −9%. Runs in production only; comments kept
 - **Modernised the type system** — display face moved from Bricolage Grotesque
   to **Hanken Grotesk** (wordmark, hero, post titles and headings at a true 800
   weight); mono utility moved from Space Mono to **IBM Plex Mono** (nav, dates,
