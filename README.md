@@ -1,6 +1,8 @@
 # Andy Bateman Personal Website & Projects
 
-A comprehensive personal website and portfolio project featuring Jekyll-based static site generation, interactive games, and organized project management using the PARA method.
+A personal website and portfolio project featuring Jekyll-based static site generation, interactive games, and organised project management using the PARA method.
+
+**Keywords:** personal website, Jekyll, GitHub Pages, static site, portfolio, www.andybateman.com, The Logbook theme, travel blog, kitjunkie archive, travel map, Leaflet, OpenTopoMap, Hanken Grotesk, IBM Plex Mono, Flickr photo albums, Wellington Hills, New Zealand Hills, Mohoe coffee map, hiking, SEO
 
 ## Overview
 
@@ -88,7 +90,7 @@ All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).
 
 - **Static Site Generator:** Jekyll 4 (local) / GitHub Pages (live build)
 - **Styling:** `custom.scss` + Bootstrap 5.3.3 (CDN); `map.css` for map pages
-- **Type:** Bricolage Grotesque (display) + Space Mono (data), via Google Fonts
+- **Type:** Hanken Grotesk (display) + IBM Plex Mono (data), via Google Fonts
 - **Maps:** Leaflet + OpenTopoMap; charts via Chart.js + d3
 - **Hosting:** GitHub Pages (auto-deploy on push to `master`)
 - **SEO/build plugins:** jekyll-seo-tag, jekyll-sitemap, jekyll-redirect-from
@@ -121,7 +123,7 @@ bundle exec jekyll build     # one-off → _site/
 ## Content
 
 ### Blog Posts
-The site includes 50+ blog posts covering:
+The site includes 57 blog posts (2001–2011) covering:
 - Travel experiences (Tahiti, Fiji, New Zealand, Australia, Malaysia, Nepal)
 - Kit reviews and gear recommendations
 - Personal updates and life events
@@ -140,7 +142,7 @@ The site includes 50+ blog posts covering:
 - **Primary Color:** #FBCA12 (Andy Bright Yellow)
 - **Ink:** #1A1813 (near-black text)
 - **Accent:** #C0392B (Marker Red — from the map pins; used for links, category tags, active nav)
-- **Display face:** Bricolage Grotesque · **Mono face:** Space Mono
+- **Display face:** Hanken Grotesk · **Mono face:** IBM Plex Mono
 - **Logo:** `images/logo.svg` (solid) + `images/logo-hover.svg` (outline on hover), from `ab-05.svg`
 - **Personality:** Bold, creative, approachable, energetic
 
@@ -159,6 +161,13 @@ This project uses the **PARA method** for organization:
 - **Archives:** Completed and inactive items
 
 ## Recent Updates
+
+### Latest Changes (2026-06-30)
+- **Type system modernised** — display → **Hanken Grotesk**, mono → **IBM Plex Mono** (replacing Bricolage Grotesque + Space Mono)
+- **Health & Sam Nikiel** brought onto the shared head/Logbook theme; the Health chart migrated CanvasJS → Chart.js
+- **Link audit** — fixed dead kitjunkie.org links (world-map → travel map, dead `/kit/` → `/posts/`, unwrapped dead pages), tidied the Spacle CDNs, and repointed 8 of 11 dead photo-gallery links to **Flickr**
+- Removed dead Universal Analytics from NZ Hills and Sam Nikiel
+- See `CHANGELOG.md` for the full 3.1.0 entry
 
 ### Latest Changes (2026-06-27)
 - **Restored the story blog** — 57 travel posts (2001–2011) with a new readable layout
@@ -217,4 +226,4 @@ This project is actively maintained and updated regularly.
 
 ---
 
-*Last Updated: 27 June 2026*
+*Last Updated: 30 June 2026*

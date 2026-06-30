@@ -25,12 +25,16 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   MIT, SRI-pinned, no trial watermark) — themed horizontal stacked bar, green
   "fixed" / marker-red "still broken". All injuries and percentages unchanged.
   Added the back-home link and title chip used by the other chart pages
-- Sam Nikiel restyled to "The Logbook" type system (Bricolage Grotesque names,
-  Space Mono dates/locations, marker-red accent); photo background, cycling
-  guestbook and all 17 entries kept, emails/IPs stay private
-- Refreshed the 20 README keywords to reflect the 3.0.0 redesign — added the
-  travel/story blog, the kitjunkie history, "The Logbook" theme and the travel
-  map; dropped stale terms (internal folder id, Bootstrap, generic "web design")
+- Sam Nikiel restyled to "The Logbook" type system (display names, mono
+  dates/locations, marker-red accent); photo background, cycling guestbook and
+  all 17 entries kept, emails/IPs stay private
+- **Repointed dead photo-gallery links to Flickr** — the old kitjunkie.org
+  Gallery2 is gone (links 404 via the andybateman.com redirect). 8 of 11
+  NZ-trip locations now point to their Flickr album; Taupo, Napier and Nelson
+  Lakes await their album IDs (tracked in the project `TODO.md`)
+- README refreshed — type system corrected to Hanken Grotesk + IBM Plex Mono,
+  a 20-keyword line added, and a recent-updates entry for this release. The
+  project-folder README's 20 keywords were also refreshed for the redesign
 
 ### Fixed
 - Removed dead Universal Analytics (`UA-22038364-1`, `analytics.js`) still firing
@@ -38,6 +42,14 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   via the shared head; UA has been shut down since July 2023
 - Dropped Sam Nikiel's defunct Bootstrap 3.2.0 maxcdn dependency (loaded over a
   protocol-relative URL); the shared head supplies everything the page needs
+- **Link audit** — swept every internal and external link. Internal nav all
+  resolves. Fixed dead kitjunkie.org links: world-map → `/travelmap/`, Fiji
+  bare URL → relative part 1, flask cross-ref relativised, dead `/kit/` index →
+  `/posts/`, subscribe unwrapped, two wedding image links unwrapped (images are
+  local and still show). The ~40 period third-party links in the stories are
+  mostly alive and left as historical
+- Spacle game: Bootstrap 5.1.3 → 5.3.3 (reusing the site SRI hash) and the
+  protocol-relative jQuery UI CSS made `https`
 
 ## [3.0.1] - 2026-06-27
 
