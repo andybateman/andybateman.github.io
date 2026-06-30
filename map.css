@@ -8,7 +8,7 @@ html, body { height: 100%; margin: 0; padding: 0; }
   position: absolute; top: 10px; left: 50px; z-index: 1000;
   background: #fff; padding: 6px 10px 6px 8px; border-radius: 4px;
   box-shadow: 0 1px 5px rgba(0,0,0,.3);
-  font-family: "Space Mono", ui-monospace, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-weight: 700; font-size: .8rem;
   text-transform: uppercase; letter-spacing: .07em;
   color: #1a1813; border-left: 4px solid #c0392b;
@@ -18,7 +18,7 @@ html, body { height: 100%; margin: 0; padding: 0; }
   position: absolute; top: 10px; left: 10px; z-index: 1000;
   background: #fff; padding: 6px 9px; border-radius: 4px;
   box-shadow: 0 1px 5px rgba(0,0,0,.3);
-  font-family: "Space Mono", ui-monospace, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-weight: 700; font-size: 1rem;
   text-decoration: none; color: #1a1813;
 }

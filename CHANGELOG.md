@@ -4,14 +4,40 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 
 ## [Unreleased]
 
+### Planned
+- Apply the type system to the home body and interactive games (Will's hero,
+  macaroon, Spacle)
+- Verify Wellington Hills visited data (only Rocky Lookout is currently marked)
+- Performance: trim or subset Bootstrap; enable HTML compression
+
+## [3.1.0] - 2026-06-30
+
 ### Changed
+- **Modernised the type system** — display face moved from Bricolage Grotesque
+  to **Hanken Grotesk** (wordmark, hero, post titles and headings at a true 800
+  weight); mono utility moved from Space Mono to **IBM Plex Mono** (nav, dates,
+  coordinates, map/chart title chips, logbook years). One font-load point in
+  `_includes/head.html`; all referencing files updated to match
+- **Health and Sam Nikiel brought onto the shared head/theme** — the last two
+  pages still hand-rolling their own `<head>` and bypassing the layout. Both now
+  use `_includes/head.html`, inheriting site fonts, favicon, SEO and GA4
+- Health chart migrated from CanvasJS to **Chart.js** (already used on NZ Hills;
+  MIT, SRI-pinned, no trial watermark) — themed horizontal stacked bar, green
+  "fixed" / marker-red "still broken". All injuries and percentages unchanged.
+  Added the back-home link and title chip used by the other chart pages
+- Sam Nikiel restyled to "The Logbook" type system (Bricolage Grotesque names,
+  Space Mono dates/locations, marker-red accent); photo background, cycling
+  guestbook and all 17 entries kept, emails/IPs stay private
 - Refreshed the 20 README keywords to reflect the 3.0.0 redesign — added the
   travel/story blog, the kitjunkie history, "The Logbook" theme and the travel
   map; dropped stale terms (internal folder id, Bootstrap, generic "web design")
 
-### Planned
-- Apply the type system to the home body and interactive games
-- Performance: trim or subset Bootstrap; enable HTML compression
+### Fixed
+- Removed dead Universal Analytics (`UA-22038364-1`, `analytics.js`) still firing
+  on NZ Hills and Sam Nikiel. NZ Hills was double-loading — GA4 already arrives
+  via the shared head; UA has been shut down since July 2023
+- Dropped Sam Nikiel's defunct Bootstrap 3.2.0 maxcdn dependency (loaded over a
+  protocol-relative URL); the shared head supplies everything the page needs
 
 ## [3.0.1] - 2026-06-27
 
