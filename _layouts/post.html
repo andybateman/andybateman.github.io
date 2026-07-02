@@ -16,39 +16,6 @@ layout: compress
 <html lang="en" class="h-100">
   <head>
     {% include head.html %}
-    <style>
-      :root{
-        --ink:#1a1813; --brand:#fbca12; --marker:#c0392b; --muted:#7c7459;
-        --display:"Hanken Grotesk",system-ui,sans-serif;
-        --mono:"IBM Plex Mono",ui-monospace,monospace;
-      }
-      body.post{background:var(--brand);color:var(--ink);text-shadow:none;box-shadow:none;
-        font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
-      .sheet{max-width:720px;}
-      .topbar .brand{font-family:var(--display);font-weight:800;font-size:1.15rem;
-        color:var(--ink);text-decoration:none;letter-spacing:-.01em;}
-      .topbar nav a{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
-        letter-spacing:.08em;color:var(--ink);text-decoration:none;margin-left:1.1rem;
-        padding-bottom:.15rem;border-bottom:2px solid transparent;}
-      .topbar nav a:hover{border-bottom-color:var(--ink);}
-      .topbar nav a.here{border-bottom-color:var(--marker);}
-      .post-title{font-family:var(--display);font-weight:800;letter-spacing:-.025em;
-        line-height:1.02;font-size:clamp(2rem,5.5vw,3rem);margin:0 0 .6rem;}
-      .post-meta{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;
-        letter-spacing:.04em;color:var(--muted);margin:0 0 2rem;display:flex;gap:.7rem;align-items:center;}
-      .post-meta .tag{color:#fff;background:var(--marker);padding:.12rem .5rem;border-radius:2px;
-        font-size:.66rem;letter-spacing:.06em;}
-      .post-body{font-size:1.075rem;line-height:1.7;}
-      .post-body p{margin:0 0 1.15rem;}
-      .post-body a{color:var(--marker);text-underline-offset:2px;}
-      .post-body img{max-width:100%;height:auto;border-radius:6px;}
-      .post-map-cap{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;
-        letter-spacing:.04em;color:var(--muted);}
-      .post-map-cap a{color:var(--marker);}
-      .backlink{font-family:var(--mono);font-size:.8rem;text-transform:uppercase;
-        letter-spacing:.06em;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--marker);}
-      .post-foot{font-family:var(--mono);font-size:.72rem;color:var(--muted);}
-    </style>
   </head>
   <body class="post">
 
@@ -76,14 +43,14 @@ layout: compress
         </article>
 
         {% if page.lat %}
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
         <figure class="my-4">
           <div id="post-map" class="rounded-3 border" style="height: 260px;"></div>
           <figcaption class="post-map-cap mt-2">
             Where this happened &middot; <a href="/travelmap/">see the whole journey &rarr;</a>
           </figcaption>
         </figure>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
         <script>
           (function () {
             var m = L.map('post-map', { scrollWheelZoom: false }).setView([{{ page.lat }}, {{ page.lng }}], 6);

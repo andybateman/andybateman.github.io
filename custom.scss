@@ -16,20 +16,17 @@ http://www.andybateman.com
  */
 
 
-$primary-color: #000;
 $alternate-color: #fff;
 $background-color: #fbca10;
-$link-color: #a51122;
 
-/* Custom default button */
-.btn-secondary {
-  color: $primary-color;
-  text-shadow: none; /* Prevent inheritance from `body` */
-}
-.btn-secondary:hover,
-.btn-secondary:focus {
-  color: $background-color;
-  text-shadow: none; /* Prevent inheritance from `body` */
+/* Logbook design tokens — shared by the post layout and inline accents */
+:root {
+  --ink: #1a1813;
+  --brand: #fbca12;
+  --marker: #c0392b;
+  --muted: #7c7459;
+  --display: "Hanken Grotesk", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 /*
@@ -163,3 +160,88 @@ body {
   .my-md-5 { margin-top: 3rem !important; margin-bottom: 3rem !important; }
   .p-md-5 { padding: 3rem !important; }
 }
+
+/*
+ * Story pages (post layout) — moved here from an inline <style> in
+ * _layouts/post.html so the 57 story pages share the cached stylesheet.
+ */
+
+body.post {
+  background: var(--brand);
+  color: var(--ink);
+  text-shadow: none;
+  box-shadow: none;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.sheet { max-width: 720px; }
+.topbar .brand {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -.01em;
+}
+.topbar nav a {
+  font-family: var(--mono);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink);
+  text-decoration: none;
+  margin-left: 1.1rem;
+  padding-bottom: .15rem;
+  border-bottom: 2px solid transparent;
+}
+.topbar nav a:hover { border-bottom-color: var(--ink); }
+.topbar nav a.here { border-bottom-color: var(--marker); }
+.post-title {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -.025em;
+  line-height: 1.02;
+  font-size: clamp(2rem, 5.5vw, 3rem);
+  margin: 0 0 .6rem;
+}
+.post-meta {
+  font-family: var(--mono);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+  margin: 0 0 2rem;
+  display: flex;
+  gap: .7rem;
+  align-items: center;
+}
+.post-meta .tag {
+  color: #fff;
+  background: var(--marker);
+  padding: .12rem .5rem;
+  border-radius: 2px;
+  font-size: .66rem;
+  letter-spacing: .06em;
+}
+.post-body { font-size: 1.075rem; line-height: 1.7; }
+.post-body p { margin: 0 0 1.15rem; }
+.post-body a { color: var(--marker); text-underline-offset: 2px; }
+.post-body img { max-width: 100%; height: auto; border-radius: 6px; }
+.post-map-cap {
+  font-family: var(--mono);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+.post-map-cap a { color: var(--marker); }
+.backlink {
+  font-family: var(--mono);
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--marker);
+}
+.post-foot { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
