@@ -28,6 +28,10 @@ end
 # Required to `jekyll serve` on Ruby 3.0+ (webrick is no longer bundled).
 gem "webrick", "~> 1.8"
 
+# Linting: checks built HTML for broken internal links, images and anchors.
+#   bundle exec htmlproofer _site --disable-external --no-enforce-https
+gem "html-proofer", group: :development
+
 # Standard-library gems unbundled in Ruby 3.4 / 4.0.
 gem "csv"
 gem "base64"

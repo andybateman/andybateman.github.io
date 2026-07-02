@@ -115,6 +115,14 @@ bundle exec jekyll serve     # http://localhost:4000 (rebuilds on save)
 bundle exec jekyll build     # one-off → _site/
 ```
 
+### Linting
+
+```bash
+JEKYLL_ENV=production bundle exec jekyll build
+bundle exec htmlproofer _site --disable-external --no-enforce-https \
+  --checks "Links,Images,Scripts,Favicon,OpenGraph"
+```
+
 > **Note:** the `Gemfile` uses modern Jekyll 4 + `liquid ~> 4.0.4` rather than
 > the `github-pages` gem, which pins a Jekyll too old to run on current Ruby.
 > Output is equivalent for this site; the live build is unaffected (plugins are
