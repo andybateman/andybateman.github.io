@@ -8,7 +8,43 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)
 - Verify Wellington Hills visited data (only Rocky Lookout is currently marked)
-- Performance: trim or subset Bootstrap; enable HTML compression
+- Map the last 3 dead gallery links to Flickr albums (Taupo, Napier, Nelson
+  Lakes — album IDs needed; the albums page only exposes them via JS)
+
+## [3.1.1] - 2026-07-02
+
+### Added
+- **Linting**: `html-proofer` added to the Gemfile (development group; local
+  only, GitHub Pages ignores the Gemfile). Checks the built site's internal
+  links, images, scripts, favicons and OpenGraph tags — command in the README.
+  The full site now lints clean
+
+### Changed
+- **Performance: post styles moved into the shared stylesheet.** The `post`
+  layout inlined ~2 KB of CSS into every one of the 57 story pages; those rules
+  (and the Logbook `:root` design tokens) now live in `custom.scss`, so story
+  pages shrink and the CSS rides the already-cached `custom.css`. Compiled
+  output verified declaration-for-declaration identical
+- **Security: SRI hashes on every Leaflet tag.** The per-post mini-map,
+  Wellington Hills and the travel map loaded `leaflet.js` (and the post map its
+  CSS) without integrity attributes; all now pinned with the same sha256 hashes
+  the shared head uses
+
+### Fixed
+- Spacle: mystery-object image had no `alt` text (worded so it doesn't spoil
+  the answer), invalid `width="230em"` attributes, and an empty meta
+  description
+- Games (hero, macaroon, Spacle): no favicon/apple-touch-icon links — the only
+  three pages without them, as they hand-roll their `<head>`
+
+### Removed
+- `icons/` (8 files, ~100 KB): iOS AppIcon PNGs and a banner SVG uploaded with
+  the very first commit and never referenced by any version of the site
+- `samnikiel/samnikiel.sqlite`: raw guestbook database — unreferenced (the page
+  fetches `samnikiel.json`) and not something to serve publicly; recoverable
+  from git history
+- Dead CSS in `custom.scss`: `.btn-secondary` rules (no Bootstrap buttons left
+  anywhere) and the unused `$primary-color`/`$link-color` variables
 
 ## [3.1.0] - 2026-06-30
 
