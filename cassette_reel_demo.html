@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cassette Reel Demo — Andy Bateman</title>
+<style>
+  :root {
+    --bg: #f0f1f3;
+    --panel: #ffffff;
+    --line: #d0d3d8;
+    --text: #1a1a1a;
+    --dim: #6b7080;
+    --accent: #FBCA12;
+    --leader: #2a6db8;
+    --stage: #e8eaed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px 16px 48px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+  .sub { color: var(--dim); font-size: 13px; margin: 0 0 20px; }
+  canvas { width: 100%; height: auto; display: block; border-radius: 10px; background: var(--stage); }
+  input[type=color] {
+    width: 42px; height: 30px; padding: 2px; cursor: pointer;
+    background: #ffffff; border: 1px solid var(--line); border-radius: 6px;
+    vertical-align: middle;
+  }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-top: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  label { font-size: 13px; color: var(--dim); }
+  select, button {
+    background: #e0e2e6; color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 12px; font-size: 14px; cursor: pointer;
+  }
+  button:hover, select:hover { border-color: #999; }
+  button.on { background: var(--accent); border-color: var(--accent); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button:disabled:hover { border-color: var(--line); }
+  input[type=range] { width: 100%; accent-color: var(--accent); margin: 14px 0 4px; height: 22px; }
+  input[type=text] {
+    background: #ffffff; color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 10px; font-size: 14px; min-width: 260px;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  .scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 500; }
+  th.v, td.v { text-align: right; }
+  .note { font-size: 12px; color: var(--dim); margin-top: 14px; }
+  .warn { font-size: 12px; color: #8a5a00; background: #fff6d9; border: 1px solid #f0dea0; border-radius: 6px; padding: 10px 12px; margin-top: 14px; }
+  code { background: #e0e2e6; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  .big { font-size: 26px; font-variant-numeric: tabular-nums; }
+  .dimnote { font-size: 12px; color: var(--dim); }
+  .dimnote b { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <svg width="36" height="36" viewBox="0 0 418 406" xmlns="http://www.w3.org/2000/svg">
+      <g transform="scale(0.8) translate(52, 50.75)">
+        <g id="Group">
+          <path id="Path" fill="#FBCA12" stroke="none" d="M 516.700012 109.5 L 589.299988 109.5 C 609.099976 109.5 623.200012 115.399994 631.599976 127.100006 C 636.5 134 639 142 639 151.100006 C 639 160.200012 636 170.399994 630 177.199997 C 626.900024 180.799988 622.400024 184.099991 616.5 187 C 625.099976 190.299988 631.599976 194 635.799988 198.099991 C 643.299988 205.399994 647.099976 215.5 647.099976 228.399994 C 647.099976 241.299988 643.700012 249 636.900024 257.799988 C 626.700012 270.899994 610.5 277.5 588.200012 277.5 L 516.700012 277.5 L 516.700012 109.5 Z M 580.799988 180.5 C 590.5 180.5 598.099976 179.199997 603.5 176.5 C 612 172.299988 616.200012 164.799988 616.200012 153.899994 C 616.200012 143 611.700012 135.5 602.700012 131.700012 C 597.599976 129.600006 590.099976 128.5 580 128.5 L 539 128.5 L 539 180.5 L 580.799988 180.5 Z M 588.5 258.100006 C 602.599976 258.100006 612.599976 254.100006 618.599976 246 C 622.400024 240.899994 624.299988 234.699997 624.299988 227.5 C 624.299988 215.299988 618.799988 207 607.799988 202.599991 C 601.900024 200.199997 594.200012 199.099991 584.599976 199.099991 L 539 199.099991 L 539 258.199982 L 588.5 258.199982 Z"/>
+          <path id="path1" fill="#FBCA12" stroke="none" d="M 736.400024 203.399994 C 741.099976 202.799988 744.299988 200.799988 745.900024 197.5 C 746.799988 195.699997 747.299988 193 747.299988 189.599991 C 747.299988 182.599991 744.799988 177.399994 739.799988 174.299988 C 734.799988 171.099991 727.700012 169.5 718.400024 169.5 C 709.099976 169.5 700.099976 172.399994 695.599976 178.199997 C 693.099976 181.399994 691.5 186.199997 690.700012 192.599991 L 671.5 192.599991 C 671.900024 177.5 676.799988 166.899994 686.200012 161 C 695.599976 155.100006 706.5 152.100006 718.900024 152.100006 C 731.299988 152.100006 745 154.799988 754 160.299988 C 762.900024 165.799988 767.400024 174.299988 767.400024 185.899994 L 767.400024 256.5 C 767.400024 258.600006 767.799988 260.399994 768.700012 261.600006 C 769.599976 262.899994 771.400024 263.5 774.200012 263.5 C 777 263.5 776.099976 263.5 777.299988 263.299988 C 778.400024 263.199982 779.700012 263 781 262.799988 L 781 278 C 777.799988 278.899994 775.400024 279.5 773.700012 279.699982 C 772 279.899994 769.700012 280 766.799988 280 C 759.700012 280 754.599976 277.5 751.400024 272.5 C 749.700012 269.799988 748.5 266.100006 747.900024 261.199982 C 743.700012 266.699982 737.700012 271.5 729.799988 275.5 C 721.900024 279.5 713.299988 281.600006 703.799988 281.600006 C 694.299988 281.600006 683.200012 278.199982 675.900024 271.299988 C 668.700012 264.399994 665.099976 255.799988 665.099976 245.399994 C 665.099976 235 668.599976 225.299988 675.700012 219 C 682.799988 212.799988 692.099976 208.899994 703.599976 207.5 L 736.400024 203.399994 Z M 693.099976 259 C 697.400024 262.399994 702.599976 264.100006 708.5 264.100006 C 714.400024 264.100006 722.799988 262.399994 729.5 259.100006 C 740.900024 253.5 746.700012 244.399994 746.700012 231.799988 L 746.700012 215.199997 C 744.200012 216.799988 741 218.099991 737 219.199997 C 733 220.299988 729.200012 221 725.400024 221.5 L 713 223.099991 C 705.5 224.099991 699.900024 225.699997 696.200012 227.799988 C 689.799988 231.399994 686.599976 237.099991 686.599976 244.899994 C 686.599976 252.699982 688.799988 255.5 693.099976 258.899994 Z"/>
+          <path id="path2" fill="#FBCA12" stroke="none" d="M 805.200012 120.799988 L 826 120.799988 L 826 155 L 845.599976 155 L 845.599976 171.799988 L 826 171.799988 L 826 251.699982 C 826 256 827.400024 258.799988 830.299988 260.299988 C 831.900024 261.100006 834.599976 261.600006 838.299988 261.600006 C 842 261.600006 840.400024 261.600006 841.5 261.600006 C 842.599976 261.600006 844 261.399994 845.5 261.199982 L 845.5 277.600006 C 843.099976 278.299988 840.700012 278.799988 838.099976 279.100006 C 835.5 279.399994 832.799988 279.600006 829.799988 279.600006 C 820.200012 279.600006 813.700012 277.100006 810.200012 272.199982 C 806.799988 267.299988 805.099976 260.899994 805.099976 253 L 805.099976 171.899994 L 788.5 171.899994 L 788.5 155.100006 L 805.099976 155.100006 L 805.099976 120.899994 Z"/>
+          <path id="path3" fill="#FBCA12" stroke="none" d="M 860.700012 201.699997 L 918.099976 201.699997 L 918.099976 222.899994 L 860.700012 222.899994 L 860.700012 201.699997 Z"/>
+          <path id="path4" fill="#FBCA12" stroke="none" d="M 949 109.5 L 1065.5 109.5 L 1065.5 130.100006 L 971.700012 130.100006 L 971.700012 181.099991 L 1054.199951 181.099991 L 1054.199951 201.099991 L 971.700012 201.099991 L 971.700012 277.5 L 948.900024 277.5 L 948.900024 109.5 Z"/>
+          <path id="path5" fill="#FBCA12" stroke="none" d="M 1087.199951 109.5 L 1108.099976 109.5 L 1108.099976 132.799988 L 1087.199951 132.799988 L 1087.199951 109.5 Z M 1087.199951 155.600006 L 1108.099976 155.600006 L 1108.099976 277.5 L 1087.199951 277.5 L 1087.199951 155.600006 Z"/>
+          <path id="path6" fill="#FBCA12" stroke="none" d="M 1139.800049 109.5 L 1160.400024 109.5 L 1160.400024 277.5 L 1139.800049 277.5 L 1139.800049 109.5 Z"/>
+          <path id="path7" fill="#FBCA12" stroke="none" d="M 1267 158.399994 C 1275.099976 162.5 1281.300049 167.799988 1285.5 174.199997 C 1289.599976 180.399994 1292.300049 187.599991 1293.699951 195.799988 C 1294.900024 201.399994 1295.5 210.399994 1295.5 222.799988 L 1206.400024 222.799988 C 1206.800049 235.299988 1209.699951 245.299988 1215.099976 252.799988 C 1220.5 260.299988 1229 264.100006 1240.400024 264.100006 C 1251.800049 264.100006 1259.599976 260.5 1265.900024 253.399994 C 1269.5 249.299988 1272 244.5 1273.5 239 L 1293.699951 239 C 1293.199951 243.5 1291.400024 248.5 1288.400024 254 C 1285.400024 259.5 1282 264 1278.300049 267.600006 C 1272.099976 273.699982 1264.400024 277.799988 1255.300049 280 C 1250.400024 281.199982 1244.800049 281.799988 1238.599976 281.799988 C 1223.400024 281.799988 1210.599976 276.299988 1200.099976 265.199982 C 1189.599976 254.100006 1184.300049 238.599991 1184.300049 218.599991 C 1184.300049 198.599991 1189.599976 183 1200.199951 170.699997 C 1210.800049 158.399994 1224.699951 152.299988 1241.800049 152.299988 C 1258.900024 152.299988 1258.800049 154.299988 1266.900024 158.399994 Z M 1274.300049 206.5 C 1273.5 197.599991 1271.5 190.5 1268.5 185.099991 C 1262.900024 175.199997 1253.599976 170.199997 1240.5 170.199997 C 1227.400024 170.199997 1223.300049 173.599991 1216.900024 180.399994 C 1210.5 187.199997 1207.199951 195.899994 1206.800049 206.399994 L 1274.300049 206.399994 Z"/>
+          <path id="path8" fill="#FBCA12" stroke="none" d="M 1333.800049 239.099991 C 1334.400024 246 1336.199951 251.199982 1339.099976 254.899994 C 1344.400024 261.5 1353.599976 264.899994 1366.699951 264.899994 C 1379.800049 264.899994 1381.300049 263.199982 1387.199951 259.899994 C 1393.099976 256.600006 1396.099976 251.5 1396.099976 244.5 C 1396.099976 237.5 1393.699951 235.199997 1389 232.5 C 1386 230.799988 1380 228.899994 1371.099976 226.699997 L 1354.5 222.599991 C 1343.900024 220 1336.099976 217.099991 1331 213.899994 C 1322 208.299988 1317.5 200.599991 1317.5 190.799988 C 1317.5 181 1321.699951 169.799988 1330.199951 162.700012 C 1338.699951 155.5 1350 151.899994 1364.300049 151.899994 C 1378.599976 151.899994 1396.5 157.299988 1404.800049 168.099991 C 1410 175 1412.5 182.399994 1412.300049 190.299988 L 1392.900024 190.299988 C 1392.5 185.699997 1390.800049 181.5 1387.900024 177.699997 C 1383.099976 172.299988 1374.699951 169.599991 1362.699951 169.599991 C 1350.699951 169.599991 1348.699951 171.099991 1344.599976 174 C 1340.5 177 1338.5 180.899994 1338.5 185.699997 C 1338.5 190.5 1341.199951 195.299988 1346.599976 198.5 C 1349.699951 200.399994 1354.300049 202.099991 1360.400024 203.5 L 1374.300049 206.799988 C 1389.400024 210.399994 1399.5 213.899994 1404.599976 217.199997 C 1412.599976 222.5 1416.599976 230.699997 1416.599976 242 C 1416.599976 253.299988 1412.400024 262.299988 1404 270.299988 C 1395.599976 278.199982 1382.900024 282.199982 1365.699951 282.199982 C 1348.5 282.199982 1334.199951 278.100006 1326.5 269.799988 C 1318.800049 261.5 1314.699951 251.299988 1314.199951 239.099991 L 1334 239.099991 Z"/>
+        </g>
+        <path id="path9" fill="#FBCA12" stroke="none" d="M 208.699997 -0.5 C 268.200012 1.100006 317.600006 21.100006 357.100006 59.299988 C 396.5 97.5 416.899994 145.399994 418.299988 203 C 416.899994 260.600006 396.5 308.5 357.100006 346.699982 C 317.700012 384.899994 268.200012 404.699982 208.699997 406 C 183.600006 406 159.899994 402 137.5 393.899994 C 115.100006 385.899994 94.800003 374.699982 76.5 360.5 L -0.9 405.899994 L 38.400002 321.199982 C 26.099998 304.600006 16.5 286.199982 9.5 266.199982 C 2.5 246.100006 -0.9 225.099991 -0.9 203 C 0.5 145.399994 20.900002 97.5 60.300003 59.299988 C 99.699997 21 149.199997 1.100006 208.699997 -0.5 Z M 205.800003 279.399994 L 205.800003 202.899994 C 205.300003 181.099991 197.5 163 182.699997 148.700012 C 167.800003 134.399994 149.199997 126.899994 126.800003 126.399994 C 104.699997 126.899994 86.199997 134.399994 71.300003 148.700012 C 56.400002 163 48.699997 181.099991 48.199997 202.899994 C 48.699997 224.5 56.400002 242.5 71.300003 256.899994 C 86.199997 271.399994 104.699997 278.899994 126.800003 279.399994 C 143.699997 279.100006 158.699997 274.5 171.800003 265.5 L 171.800003 221.299988 C 168 230 162.100006 237 154.199997 242.199997 C 146.300003 247.399994 137.100006 250 126.800003 250 C 113.199997 249.699982 101.800003 245.199982 92.599998 236.299988 C 83.5 227.399994 78.599998 216.299988 78.099998 202.899994 C 78.599998 189.5 83.5 178.299988 92.599998 169.299988 C 101.699997 160.299988 113.100006 155.700012 126.800003 155.399994 C 140.699997 155.700012 152.199997 160.299988 161.399994 169.299988 C 170.5 178.299988 175.399994 189.5 175.899994 202.899994 L 175.899994 279.399994 L 205.800003 279.399994 Z M 290.5 279.399994 C 312.600006 278.899994 331.100006 271.399994 346 256.899994 C 360.899994 242.399994 368.600006 224.399994 369.100006 202.899994 C 368.600006 181.099991 360.799988 163 346 148.700012 C 331.100006 134.399994 312.600006 126.899994 290.5 126.399994 C 273.600006 126.700012 258.600006 131.200012 245.5 139.899994 L 245.5 184.099991 C 249.299988 175.599991 255.200012 168.799988 263.100006 163.599991 C 271 158.399994 280.100006 155.700012 290.5 155.399994 C 304.100006 155.700012 315.600006 160.299988 324.899994 169.299988 C 334.200012 178.299988 339 189.5 339.200012 202.899994 C 338.899994 216.299988 334.100006 227.399994 324.899994 236.299988 C 315.600006 245.199982 304.200012 249.699982 290.5 250 C 276.600006 249.699982 265.100006 245.199982 255.899994 236.299988 C 246.799988 227.399994 241.899994 216.299988 241.399994 202.899994 L 241.399994 126.399994 L 211.5 126.399994 L 211.5 202.899994 C 212 224.5 219.699997 242.5 234.600006 256.899994 C 249.5 271.399994 268.100006 278.899994 290.5 279.399994 Z"/>
+      </g>
+    </svg>
+    <div>
+      <h1 style="margin:0">Cassette reel demo</h1>
+      <p class="sub" style="margin:0 0 0">Shell and reel geometry taken from the technical drawings. Reel sizes follow R(t) = sqrt(r&sup2; + (v&middot;&tau;/&pi;)t).</p>
+    </div>
+  </div>
+
+  <canvas id="c" width="1400" height="880"></canvas>
+
+  <div class="panel">
+    <input type="range" id="scrub" min="0" max="1" step="0.00002" value="0">
+    <div class="scale" id="scale"></div>
+    <canvas id="g" width="1400" height="380" style="margin-top:14px"></canvas>
+    <div class="row" style="margin-top:14px">
+      <button id="play">Play</button>
+      <label>Speed
+        <select id="rate">
+          <option value="1">1&times; real time</option>
+          <option value="30">30&times;</option>
+          <option value="120" selected>120&times;</option>
+          <option value="600">600&times;</option>
+        </select>
+      </label>
+      <label>Tape
+        <select id="type">
+          <option value="C60">C60, 30 min/side, 18 &micro;m</option>
+          <option value="C90" selected>C90, 45 min/side, 12 &micro;m</option>
+          <option value="C120">C120, 60 min/side, 9 &micro;m</option>
+        </select>
+      </label>
+      <label>Style
+        <select id="style">
+          <option value="Brand" selected>Brand</option>
+          <option value="Ferric">Ferric</option>
+          <option value="Chrome">Chrome</option>
+          <option value="Olive">Olive</option>
+          <option value="Crimson">Crimson</option>
+        </select>
+      </label>
+      <button id="labelon" class="on">Label on</button>
+      <button id="clearshell" class="on">Clear shell</button>
+      <button id="cutaway">Cutaway</button>
+      <button id="spokes">Hub marks</button>
+      <button id="leadon" class="on">Leaders on</button>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <label>Title
+        <input type="text" id="title" value="Cassette Demo" maxlength="42">
+      </label>
+      <label>Artist
+        <input type="text" id="artist" value="Andy Bateman" maxlength="34">
+      </label>
+      <label>Background
+        <input type="color" id="bg" value="#e8eaed">
+      </label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="big" id="clock">00:00</div>
+    <table>
+      <tr><th>Quantity</th><th class="v">Supply (left)</th><th class="v">Take up (right)</th></tr>
+      <tr><td>Pack radius</td><td class="v" id="rs"></td><td class="v" id="rt"></td></tr>
+      <tr><td>Pack diameter</td><td class="v" id="ds"></td><td class="v" id="dt"></td></tr>
+      <tr><td>Circumference</td><td class="v" id="cs"></td><td class="v" id="ct"></td></tr>
+      <tr><td>Rotation</td><td class="v" id="ws"></td><td class="v" id="wt"></td></tr>
+      <tr><td>Turns so far</td><td class="v" id="ns"></td><td class="v" id="nt"></td></tr>
+      <tr><td>Tape on reel</td><td class="v" id="ls"></td><td class="v" id="lt"></td></tr>
+      <tr><td>Lead in band, true size</td><td class="v" id="lis"></td><td class="v" id="lit"></td></tr>
+      <tr><td>Lead out band, true size</td><td class="v" id="los"></td><td class="v" id="lot"></td></tr>
+      <tr><td>Gap between packs</td><td class="v" colspan="2" id="gap"></td></tr>
+    </table>
+    <div class="note" id="cross"></div>
+    <div class="warn" id="leadwarn"></div>
+  </div>
+
+  <div class="panel">
+    <div class="dimnote" style="margin-top:0">
+      <b>Dimensions, from the technical drawings.</b>
+      Reel hub flange <code>&oslash;21.5 mm</code>, so the tape pack starts at <code>10.75 mm</code> radius.
+      Hub drive bore <code>&oslash;13 mm</code> with six teeth. Tape width <code>3.81 mm</code>. Shell thickness <code>13.0 mm</code>.
+      Shell <code>100.4 &plusmn;0.3 &times; 63.8 &plusmn;0.8 mm</code>, hub centres <code>42.5 &plusmn;0.3 mm</code> apart on the vertical centreline at <code>31.9 mm</code>.
+      I had previously read the <code>27.9 &plusmn;0.15</code> dimension as hub centre up from the bottom edge, which put the hubs 4 mm low and made a full pack reach past the tape path.
+      Shell spindle apertures <code>&oslash;10 +0.4</code>. Capstan holes <code>48 &plusmn;0.2 mm</code> apart, inner pins <code>28 &plusmn;0.15 mm</code> apart.
+      Tape path <code>3.4 &plusmn;0.2 mm</code> up from the bottom edge. Corner bosses <code>3 mm</code> in from each edge, <code>R2.5</code>.
+      <br><br>
+      <b>Tape constants.</b> Pack inner radius <code>10.75 mm</code>, tape speed <code>47.625 mm/s</code> (1.875 in/s), full pack <code>24.63 mm</code> radius.
+      Packs clear each other by <code>4.49 mm</code> at the tightest point, which is always the crossover, and a full pack sits <code>4.32 mm</code> clear of the shell edge.
+      Pack areas sum to the same total on every frame, which is the correctness check.
+      <br><br>
+      <b>Tape threading.</b> The ribbon is a taut belt, not a straight line. It leaves the supply pack on a true tangent, wraps the corner guide, runs along the underside of both guides, wraps the far guide and winds onto the take up pack.
+      Only the corner guides are actually touched. The capstan holes sit <code>0.45 mm</code> above the taut run and the inner pins <code>1.80 mm</code> above it, so the ribbon passes cleanly beneath them rather than cutting through.
+      <br><br>
+      <b>Source conflicts.</b> The blueprint gives the shell as <code>100.0 &times; 63.5</code> and is marked reference only, while the IEC drawing gives <code>100.4 &plusmn;0.3 &times; 63.8 &plusmn;0.8</code> with tolerances. The IEC figures are used here.
+      The <code>&oslash;13</code> hub bore and the <code>&oslash;10</code> shell aperture are different features, not a conflict.
+    </div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+// ---- Model -----------------------------------------------------------
+// Tape constants
+// HUB is the inner radius of the wound tape pack, which is the outside of the
+// reel hub flange: blueprint gives that flange as dia 21.5 mm.
+var HUB = 10.75;         // mm
+var V   = 47.625;        // mm/s, linear tape speed (1.875 in/s)
+
+// Leader durations. NOTE: both unverified. I could not find a spec for how
+// long the lead in or lead out runs on a normal cassette. Assumptions.
+var LEAD_IN  = 6.0;      // seconds of leader before the magnetic tape starts
+var LEAD_OUT = 6.0;      // seconds of leader after the magnetic tape ends
+
+var TAPES = {
+  C60:  { tau: 0.018, side: 1800 },
+  C90:  { tau: 0.012, side: 2700 },
+  C120: { tau: 0.009, side: 3600 }
+};
+
+var tape = "C90";
+function k()     { return V * TAPES[tape].tau / Math.PI; }    // mm^2/s
+function side()  { return TAPES[tape].side; }                 // s
+function rFull() { return Math.sqrt(HUB*HUB + k()*side()); }  // mm
+
+function rTake(t)   { return Math.sqrt(HUB*HUB + k()*t); }
+function rSupply(t) { var R = rFull(); return Math.sqrt(Math.max(HUB*HUB, R*R - k()*t)); }
+
+// ---- Leader geometry -------------------------------------------------
+// Leader is tape, so it occupies an annulus of area (length x thickness) like
+// any other run. It is NOT a fixed fraction of the radial span.
+//
+// Lead in plays first, so on the supply reel it is the OUTERMOST annulus and
+// on the take up reel it is the INNERMOST, sitting against the hub.
+// Lead out plays last, so on the supply reel it is the INNERMOST annulus,
+// against the hub, and on the take up reel it is the OUTERMOST.
+//
+// Each fixed boundary is a fixed layer in a pack, so its radius is constant.
+//
+// Simplification: this ignores the leader already threaded through the path
+// and the turn or two pre wound on the take up hub at the start of a side.
+// It also uses the magnetic tape thickness for the leader, where real leader
+// stock is usually thicker. Both noted in the pack.
+function rLeadInSupplyInner()  { var R = rFull(); return Math.sqrt(Math.max(HUB*HUB, R*R - k()*LEAD_IN)); }
+function rLeadOutSupplyOuter() { return Math.sqrt(HUB*HUB + k()*LEAD_OUT); }
+function rLeadOutTakeInner()   { return Math.sqrt(HUB*HUB + k()*Math.max(0, side() - LEAD_OUT)); }
+
+// Bands present on each reel at time t, as {r0, r1, anchor, kind}.
+function supplyBands(t) {
+  var out = [], Rs = rSupply(t);
+  // lead out sits against the hub and is the last thing to leave
+  var loOuter = Math.min(rLeadOutSupplyOuter(), Rs);
+  if (loOuter > HUB) out.push({ r0: HUB, r1: loOuter, anchor: "inner", kind: "out" });
+  // lead in is the outermost band, thinning as the pack unwinds down to it
+  if (t < LEAD_IN) {
+    var liInner = rLeadInSupplyInner();
+    if (Rs > liInner) out.push({ r0: liInner, r1: Rs, anchor: "outer", kind: "in" });
+  }
+  return out;
+}
+function takeBands(t) {
+  var out = [], Rt = rTake(t);
+  // lead in winds on first, so it is against the hub, locking at t = LEAD_IN
+  var liOuter = rTake(Math.min(t, LEAD_IN));
+  if (liOuter > HUB) out.push({ r0: HUB, r1: liOuter, anchor: "inner", kind: "in" });
+  // lead out arrives last, as the outermost band
+  var loInner = rLeadOutTakeInner();
+  if (Rt > loInner) out.push({ r0: loInner, r1: Rt, anchor: "outer", kind: "out" });
+  return out;
+}
+
+// Turns wound on by time t. Closed form of the integral of v dt / (2 pi R)
+// with R = sqrt(h^2 + Kt), giving (v/2pi) * (2/K) * (sqrt(h^2+Kt) - h).
+// Solved rather than accumulated, so scrubbing to any position is exact.
+function turnsOn(t) {
+  var K = k();
+  return (V/(2*Math.PI)) * (2/K) * (Math.sqrt(HUB*HUB + K*t) - HUB);
+}
+function turnsOff(t) {
+  var K = k(), R = rFull();
+  return (V/(2*Math.PI)) * (2/K) * (R - Math.sqrt(Math.max(HUB*HUB, R*R - K*t)));
+}
+
+// The packs are equal at exactly half the side, since area grows linearly
+// with time. The radius there is not the arithmetic middle, which is the
+// square root curve showing up.
+function crossTime() { return side() / 2; }
+
+// ---- State -----------------------------------------------------------
+var t = 0;                   // elapsed seconds on this side
+var playing = false;
+var rate = 120;
+var showSpokes = false;      // off by default: the radial marker is a debug aid
+                             // for watching rotation, not part of the cassette
+var labelOn    = true;       // full face label over the shell
+var cutaway    = false;      // hide the shell face to inspect the whole pack
+var clearShell = true;       // translucent smoke shell, so the reels read
+                             // through the case rather than only through the
+                             // aperture. Matches the clear cassettes on the
+                             // reference sheet.
+var SHELL_ALPHA = 0.42;      // face opacity when the shell is clear
+var APRON_ALPHA = 0.55;      // apron is a thicker moulding, so less see through
+var CAP_ALPHA   = 0.30;      // window surround, the background behind the reels
+var leaderOn   = true;       // draw the leaders at all
+var thetaT = 0, thetaS = 0;  // hub angles, radians
+
+var cv  = document.getElementById("c");
+var ctx = cv.getContext("2d");
+
+var gv  = document.getElementById("g");
+var gtx = gv.getContext("2d");
+
+// ---- Shell geometry, from the technical drawings ---------------------
+// Every figure below is read off a dimensioned drawing, in millimetres.
+var TAU = Math.PI * 2;          // full circle. Never approximate this: an
+                                // approximated value silently breaks reversed
+                                // arcs, which is how the leader bands failed.
+var PX = 12.0;                  // pixels per mm
+var SHELL_W = 100.4;            // 100.4 +/-0.3 (IEC; blueprint says 100.0)
+var SHELL_H = 63.8;             // 63.8 +/-0.8 (IEC; blueprint says 63.5)
+var HUB_SPACING = 42.5;         // 42.5 +/-0.3 between hub centres
+// Hub centreline. I previously read the 27.9 +/-0.15 dimension as hub centre up
+// from the bottom edge, which put the hubs 4 mm BELOW the shell centre and left
+// a full pack reaching 60.53 mm, past the 60.40 mm tape path. The packs then
+// covered the tape path and hid the leader ribbon. Centred is both correct
+// looking and clears the path by 3.87 mm.
+var HUB_CY = SHELL_H / 2;       // 31.9 from either edge
+var HUB_BORE = 6.5;             // dia 13.0 drive bore, from the reel detail
+var HUB_TOOTH = 4.6;            // inner radius of the six drive teeth
+var TOOTH_HALF = 0.17;          // half angular width of a tooth, radians
+var TOOTH_OVERLAP = 0.35;       // mm the tooth runs past the bore into the
+                                // flange, so the two merge without a seam
+var BG_COLOR  = "#e8eaed";      // stage colour seen through the hub bores
+// The graph keeps its own light panel colour on purpose. It is a data chart,
+// not part of the cassette, and its axis text is fixed dark, so following the
+// stage colour would make it unreadable the moment you pick something dark.
+var GRAPH_BG  = "#e8eaed";
+var HUB_WHITE = "#ffffff";      // spool colour, bright white on a real reel
+var HUB_EDGE  = "#c4c7cc";      // just enough edge to read against the label
+var PATH_Y_FROM_BOTTOM = 3.4;   // 3.4 +/-0.2
+var PATH_Y = SHELL_H - PATH_Y_FROM_BOTTOM;  // 60.4 from the top edge
+var CAPSTAN_SPACING = 48.0;     // 48 +/-0.2
+var PIN_SPACING = 28.0;         // 28 +/-0.15
+var GUIDE_X = 13.2;             // corner guide, in from each edge
+var GUIDE_R = 1.2;
+var CAPSTAN_R = 2.25;
+var PIN_R = 0.9;
+var ROLLER_Y = PATH_Y - 1.5;    // capstans and pins sit just above the path
+var SHELL_R = 3.5;              // outer corner radius, 3 to 4 mm on a real
+                                // shell, varying by manufacturer and mould.
+                                // This used to be passed as a raw 8, which is
+                                // PIXELS not mm: 8/12 = 0.67 mm, 5.2x too
+                                // tight. Every other dimension goes through
+                                // mm(), so the radius now does too.
+var CORNER_INSET = 3.0;         // 3 mm in from each edge
+
+// Write protect tab recesses, the two rectangular cavities in the top edge.
+// Placed to clear the corner screws, which span x 1.4..4.6 and 95.8..99.0,
+// with 2.0 mm either side, and to sit 4.1 mm above the label top at 8.70.
+// Only drawn on a clear shell: on an opaque one the cavity is inside the
+// moulding and you would not see it from the front face.
+var TAB_W = 5.0, TAB_H = 4.6, TAB_INSET = 6.6;
+var SHELL_FILL;                 // shell body colour, reused for the open bore
+var SCREW_R = 1.6;              // screw head radius
+var BOTTOM_SCREW_Y = 54.5;      // centre screw on the lower lip. Clears the
+                                // capstan holes, which start at 56.65.
+// Full face label, sized 110% wide and 80% tall against the previous version.
+// The 110% is clamped: 110% of the old 91.4 mm is 100.54 mm, which is 0.14 mm
+// wider than the whole shell, so the label would hang off the edge. It is held
+// to a 1.0 mm margin instead, giving 98.4 mm, which is 107.7%.
+var LAB_X0 = 1.0,   LAB_Y0 = 8.70,  LAB_X1 = 99.4, LAB_Y1 = 46.10;
+
+// Top edge of the yellow brand stripe. Named because the side letter box is
+// centred between the label top and this line.
+var STRIPE_Y = 21.0;
+
+// Reel window, half its previous height at 13.3 mm, still centred on the hub
+// line. The hub flanges span y 21.15..42.65, so at this height the window now
+// crops them top and bottom rather than enclosing them. That is closer to a
+// real cassette, where the aperture is a narrow viewing slot. Toggle the label
+// off to see the full reel geometry.
+var WIN_X0 = 16.0,  WIN_Y0 = 25.25, WIN_X1 = 84.4, WIN_Y1 = 38.55;
+
+// Tape styles. Brand is the palette already used in the page CSS: accent
+// #FBCA12, ink #1a1a1a, dim #6b7080, panel near white. The rest are drawn from
+// the families on the reference sheet. Only colour changes between styles, so
+// every dimension and all the reel maths is untouched by the choice.
+// clear: whether the shell is moulded from translucent plastic. Ferric, Olive
+// and Crimson are solid coloured shells, so the reels are only visible through
+// the centre aperture, and the write protect cavities in the top edge are not
+// visible from the front face either. Brand and Chrome are smoke/clear.
+var STYLES = {
+  Brand:   { clear:true,  face:"#fbfbfc", ink:"#1a1a1a", dim:"#6b7080", stripe:"#FBCA12",
+             shell:"#c8cad0", shellEdge:"#9a9da5", apron:"#b9bcc3", capsule:"#2f3238" },
+  Ferric:  { clear:false, face:"#efe6d0", ink:"#2b2118", dim:"#6e5f4a", stripe:"#d9622b",
+             shell:"#2e2a26", shellEdge:"#1d1a17", apron:"#3a352f", capsule:"#1e1b18" },
+  Chrome:  { clear:true,  face:"#eef1f4", ink:"#12243a", dim:"#5d6b7d", stripe:"#2a6db8",
+             shell:"#d5d8dc", shellEdge:"#a8adb4", apron:"#c3c7cc", capsule:"#2b2f36" },
+  Olive:   { clear:false, face:"#efe9d2", ink:"#2a2a1e", dim:"#6a6a4e", stripe:"#9aa844",
+             shell:"#23262a", shellEdge:"#14161a", apron:"#2e3237", capsule:"#191c20" },
+  Crimson: { clear:false, face:"#f2e9e2", ink:"#2a1416", dim:"#7a5a54", stripe:"#d2352c",
+             shell:"#1f1f22", shellEdge:"#121214", apron:"#2a2a2e", capsule:"#141416" }
+};
+
+// A style can only be see through if the plastic is translucent in the first
+// place. Everything that draws transparency asks this, not clearShell direct.
+function shellIsClear() {
+  return clearShell && STYLES[styleName].clear;
+}
+var styleName = "Brand";
+
+var LAB_FACE, LAB_INK, LAB_DIM, LAB_RULE, LAB_STRIPE;
+var SHELL_EDGE, APRON_FILL, CAP_FILL;
+
+function applyStyle(name) {
+  var st = STYLES[name] || STYLES.Brand;
+  styleName  = name;
+  LAB_FACE   = st.face;
+  LAB_INK    = st.ink;
+  LAB_DIM    = st.dim;
+  LAB_STRIPE = st.stripe;
+  LAB_RULE   = hexToRgba(st.ink, 0.20);
+  SHELL_FILL = st.shell;
+  SHELL_EDGE = st.shellEdge;
+  APRON_FILL = st.apron;
+  CAP_FILL   = st.capsule;
+}
+
+function hexToRgba(hex, a) {
+  var h = hex.replace("#", "");
+  return "rgba(" + parseInt(h.substr(0,2),16) + "," +
+                   parseInt(h.substr(2,2),16) + "," +
+                   parseInt(h.substr(4,2),16) + "," + a + ")";
+}
+
+// Handwritten stack for the title, so it reads as written on rather than
+// printed. All system faces, nothing fetched, so it still works offline.
+var HAND_FONT = '"Segoe Script", "Bradley Hand", "Brush Script MT", "Snell Roundhand", "Comic Sans MS", cursive';
+var labelText  = "Cassette Demo";
+var artistText = "Andy Bateman";
+
+// Tape pack base colour, #322722, split into channels for the layer shading.
+var PACK_BASE = "#322722";
+var PACK_R = 50, PACK_G = 39, PACK_B = 34;
+
+// Label corner chamfer, matching the angled corners on the reference artwork.
+// Lower apron, the moulded front lip that carries the drive openings. Every
+// cassette on the reference sheet has it: a panel narrower at the top than the
+// bottom, with angled shoulders, sitting below the label. Proportions are read
+// off the artwork, but it is placed against the dimensioned figures so it
+// contains the existing hole positions and the tape path.
+var APRON_Y0 = 47.0;     // top edge, 0.9 mm below the label
+var APRON_TOP_X0 = 24.0, APRON_TOP_X1 = 76.4;
+var APRON_BOT_X0 = 14.0, APRON_BOT_X1 = 86.4;
+var APRON_SHOULDER_Y = 52.5;   // where the angled shoulders meet vertical
+
+// Moulded window surround. On the reference art this is a dark capsule the
+// label is cut around, not an outline on the label itself.
+var CAP_X0 = 14.0, CAP_Y0 = 19.0, CAP_X1 = 86.4, CAP_Y1 = 44.8;
+var CAP_R  = 6.0;
+
+var PIN_SQ = 1.7;        // inner openings are square on the reference art
+
+// Side ears, the little tabs proud of each edge below the label. Clear of the
+// label bottom at 46.10 and of the corner screws, which span y 59.2..62.4.
+// Ears, measured off the STL by true cross-section rather than guessed from
+// artwork. Side walls sit at x 0.814 and 100.814 on a dead on 100.000 mm body,
+// the ears reach x 0 and 101.628, and they span z 7.10 to 21.96 above the
+// bottom edge. Against the 63.8 mm case height that gives:
+//   height     14.81 mm = 0.2321 of case height, just under a quarter
+//   centre     14.49 mm up from the bottom edge = 0.2271
+//   protrusion  0.82 mm each side = 0.0129 of height, 0.00814 of width
+// My earlier figures, eyeballed off the anatomy drawing, had them 3.53x too
+// short and 1.34x too proud.
+var EAR_H = 14.81, EAR_OUT = 0.82;
+var EAR_CY = SHELL_H - 14.49;            // 49.31 from the top edge
+var EAR_Y0 = EAR_CY - EAR_H / 2, EAR_Y1 = EAR_CY + EAR_H / 2;
+
+// Side letter box, vertically centred between the label top at 8.70 and the
+// yellow stripe at 21.0. Midpoint 14.85, so the box spans 11.95..17.75 with an
+// equal 3.25 mm margin above and below. It used to sit at 9.6..15.4, which was
+// hard up against the top of the label.
+var A_SIZE = 5.8;
+var A_Y0   = (LAB_Y0 + STRIPE_Y) / 2 - A_SIZE / 2;
+
+// Ruled writing line for the artist. With the A box centred the block sits
+// lower, so there is only room for one rule: at a 2.8 mm hand the cap top
+// lands at 17.00, which is 0.45 mm below the title descender at 16.55, and the
+// descenders reach 19.60, a clear 1.40 mm above the stripe. A second rule at
+// the old 2.6 mm spacing would land at 21.6, inside the stripe.
+var RULE_1 = 19.0;
+
+var LAB_CHAMFER = 3.2;   // mm
+var WIN_RADIUS  = 5.0;   // mm, cutout corner rounding
+var RIBBON_W = 3;               // ribbon stroke width, constant. It used to
+                                // fatten to 5 during a leader, which read as a
+                                // thickness change rather than a colour change.
+var ox = 0, oy = 0;             // shell origin in px, set each frame
+
+function mm(v) { return v * PX; }
+function X(v)  { return ox + v * PX; }
+function Y(v)  { return oy + v * PX; }
+
+// Tangent point from an external point to a circle. side -1 picks the
+// leftmost of the two solutions, +1 the rightmost.
+function tangent(ccx, ccy, R, ptx, pty, side) {
+  var dx = ptx - ccx, dy = pty - ccy;
+  var dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist <= R) return [ccx + side*R, ccy];
+  var alpha = Math.acos(R / dist), base = Math.atan2(dy, dx);
+  var p1 = [ccx + R*Math.cos(base+alpha), ccy + R*Math.sin(base+alpha)];
+  var p2 = [ccx + R*Math.cos(base-alpha), ccy + R*Math.sin(base-alpha)];
+  if (side < 0) return p1[0] < p2[0] ? p1 : p2;
+  return p1[0] > p2[0] ? p1 : p2;
+}
+
+// ---- Tape threading --------------------------------------------------
+// The ribbon is a taut belt running over a chain of circles, not a polyline
+// through their centres. Each circle carries a side s: -1 means the centre
+// sits on the far side of the tape from perp(travel), i.e. the tape passes
+// underneath it. For a segment between two circles the tape leaves one on a
+// true tangent and meets the next on a true tangent, and it turns through an
+// arc across the face of each circle in between.
+//
+// Geometry: centre = T + r*s*perp(u), so T = centre - r*s*perp(u), and
+// d . perp(u) = r2*s2 - r1*s1 gives the travel direction directly.
+function wrapTangent(c1, c2) {
+  var dx = c2.x - c1.x, dy = c2.y - c1.y;
+  var L = Math.sqrt(dx*dx + dy*dy);
+  var A = c2.r * c2.s - c1.r * c1.s;
+  var ratio = A / L;
+  if (ratio >  1) ratio =  1;
+  if (ratio < -1) ratio = -1;
+  var phi = Math.atan2(dy, dx) - Math.asin(ratio);
+  var px = -Math.sin(phi), py = Math.cos(phi);   // perp(u)
+  return {
+    t1: { x: c1.x - c1.r * c1.s * px, y: c1.y - c1.r * c1.s * py },
+    t2: { x: c2.x - c2.r * c2.s * px, y: c2.y - c2.r * c2.s * py }
+  };
+}
+
+// Only the two corner guides are genuinely in contact. A taut tape touching
+// both guide undersides runs at y = 61.60 mm, and every other fitting sits
+// above that line: the capstan holes by 0.45 mm and the inner pins by 1.80 mm.
+// Adding those to the chain forces the wrap to run backwards, which shows up
+// as a 352 to 358 degree loop around the fitting instead of a shallow arc.
+function tapeChain(Rs, Rt) {
+  var cxS = SHELL_W/2 - HUB_SPACING/2;
+  var cxT = SHELL_W/2 + HUB_SPACING/2;
+  return [
+    { x: X(cxS),           y: Y(HUB_CY), r: mm(Rs),      s: -1 },
+    { x: X(GUIDE_X),       y: Y(PATH_Y), r: mm(GUIDE_R), s: -1 },
+    { x: X(SHELL_W-GUIDE_X), y: Y(PATH_Y), r: mm(GUIDE_R), s: -1 },
+    { x: X(cxT),           y: Y(HUB_CY), r: mm(Rt),      s: -1 }
+  ];
+}
+
+function drawReel(cxmm, cymm, R, theta, bands) {
+  var cx = X(cxmm), cy = Y(cymm);
+  var hubPx = mm(HUB), rPx = mm(R);
+  var i, a;
+
+  // Magnetic tape pack, based on #322722 = rgb(50,39,34). Ferric oxide is dark
+  // brown, not black. Drawn as many thin concentric rings with a very small
+  // variation in tone so the pack reads as wound layers rather than a flat
+  // disc. The variation is keyed off the ring index through a fixed hash, not
+  // a per frame random, so it stays put as the reel turns and the pack grows
+  // rather than crawling or shimmering.
+  ctx.fillStyle = PACK_BASE;
+  ctx.beginPath(); ctx.arc(cx, cy, rPx, 0, TAU); ctx.fill();
+
+  var step = 1.1;                          // px between drawn layers
+  for (var rr = rPx; rr > hubPx; rr -= step) {
+    var idx = Math.round(rr / step);
+    var hsh = Math.abs(Math.sin(idx * 12.9898) * 43758.5453);
+    hsh = hsh - Math.floor(hsh);           // deterministic, in [0,1)
+    var d   = (hsh - 0.5) * 6;             // +/- 3 per channel, barely visible
+    var lit = (rr / rPx) * 5;              // a touch warmer toward the outside
+    ctx.strokeStyle = "rgb(" + Math.round(PACK_R + d + lit) + "," +
+                               Math.round(PACK_G + d + lit * 0.8) + "," +
+                               Math.round(PACK_B + d + lit * 0.6) + ")";
+    ctx.lineWidth = step + 0.4;            // slight overlap, no seams
+    ctx.beginPath(); ctx.arc(cx, cy, rr - step / 2, 0, TAU); ctx.stroke();
+  }
+
+  // leader bands, painted outermost first so an inner band overlays correctly
+  if (bands && bands.length) {
+    var sorted = bands.slice().sort(function (a, b) { return b.r1 - a.r1; });
+    for (i = 0; i < sorted.length; i++) {
+      var b = sorted[i];
+      if (b.r1 - b.r0 <= 1e-9) continue;
+      var r0 = mm(b.r0), r1 = mm(b.r1);
+      r0 = Math.max(hubPx, Math.min(r0, rPx));
+      r1 = Math.max(hubPx, Math.min(r1, rPx));
+      if (r1 <= r0) continue;
+      // Ring drawn as two separate full-circle subpaths filled even-odd.
+      // Cutting the hole by reversing the inner arc depends on arc direction
+      // and silently fails with an approximated two-pi end angle.
+      ctx.fillStyle = "#2a6db8";
+      ctx.beginPath();
+      ctx.moveTo(cx + r1, cy);
+      ctx.arc(cx, cy, r1, 0, TAU);
+      ctx.moveTo(cx + r0, cy);
+      ctx.arc(cx, cy, r0, 0, TAU);
+      ctx.fill("evenodd");
+    }
+  }
+
+  // pack edge
+  ctx.strokeStyle = "#1a120c";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx, cy, rPx, 0, TAU); ctx.stroke();
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(theta);
+
+  // rotation marker across the pack
+  if (showSpokes) {
+    ctx.strokeStyle = "rgba(251,202,18,0.95)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(hubPx, 0); ctx.lineTo(rPx, 0); ctx.stroke();
+  }
+
+  // Hub flange, dia 21.5 from the reel detail. Bright white, as the spools
+  // actually are: they were a mid grey, which read as dull plastic against the
+  // dark tape pack.
+  ctx.fillStyle = HUB_WHITE;
+  ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.fill();
+  ctx.strokeStyle = HUB_EDGE;
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.stroke();
+
+  // Drive bore, dia 13.0. A genuine hole straight through the cassette, so it
+  // shows the background behind it, opaquely, whatever the shell is doing.
+  // It used to take the shell colour, which on a solid style rendered as a
+  // near black disc rather than an opening.
+  //
+  // The bore sits inside the window aperture, so nothing is painted over it
+  // afterwards and this fill is what you see.
+  ctx.fillStyle = BG_COLOR;
+  ctx.beginPath(); ctx.arc(0, 0, mm(HUB_BORE), 0, TAU); ctx.fill();
+
+  // Six drive teeth projecting into the bore, drawn as annular sectors so both
+  // edges are true arcs.
+  //
+  // They used to be quadrilaterals, which put a straight CHORD across the
+  // outer end. A chord lies inside its circle, short of the rim by the
+  // sagitta: r(1-cos(0.17)) = 0.094 mm, about 1.1 px here. That left a thin
+  // dark crescent of bore at the tip of every tooth.
+  //
+  // The outer arc also runs TOOTH_OVERLAP past the bore, into the flange.
+  // Teeth and flange are both HUB_WHITE, so the overlap is invisible and the
+  // two merge with no seam at the rim.
+  ctx.fillStyle = HUB_WHITE;
+  for (i = 0; i < 6; i++) {
+    a = i * Math.PI * 2 / 6;
+    ctx.beginPath();
+    ctx.arc(0, 0, mm(HUB_TOOTH), a - TOOTH_HALF, a + TOOTH_HALF);
+    ctx.arc(0, 0, mm(HUB_BORE + TOOTH_OVERLAP), a + TOOTH_HALF, a - TOOTH_HALF, true);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function draw() {
+  var W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  ox = (W - SHELL_W*PX) / 2;
+  oy = 34;
+
+  var Rt = rTake(t), Rs = rSupply(t);
+  var cxS = SHELL_W/2 - HUB_SPACING/2;
+  var cxT = SHELL_W/2 + HUB_SPACING/2;
+  var i;
+
+  var sb = leaderOn ? supplyBands(t) : null;
+  var tb = leaderOn ? takeBands(t)   : null;
+
+  // Shell body. This pass is the BACK wall of the shell, behind the reels; the
+  // pass after the reels is the front wall. On a clear shell both have to be
+  // translucent, otherwise the area behind the reels reads as an opaque slab
+  // with a translucent film over it, which is what it used to do.
+  //
+  // The two passes stacking is correct rather than a bug: where you look
+  // through empty shell you pass through both walls, and where a reel sits you
+  // see it through the front wall only. That is how a real clear cassette
+  // looks. The ears take the same fill, being part of the same moulding.
+  ctx.fillStyle = shellIsClear() ? hexToRgba(SHELL_FILL, SHELL_ALPHA) : SHELL_FILL;
+  ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
+  drawEars();
+  roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill(); ctx.stroke();
+
+
+  // The yellow title strip that used to sit here is gone. It was a holdover
+  // from before the full face label existed, and once the label was added it
+  // sat behind it doing nothing. The side letter and tape type now live on the
+  // label itself. The shell's own translucent window rect went with it, since
+  // the label window and its frame define the aperture now.
+
+  // Lower apron first, then the openings that sit on it.
+  drawApron();
+  drawFittings();
+
+  // moulded window capsule, then the counter scale printed inside it
+  drawCapsule();
+  drawScale();
+
+  // Ribbon, drawn BEFORE the reels so the packs cover the run into each hub.
+  // Tangent out of the supply pack, arc around the near guide, straight run
+  // beneath the shell fittings, arc around the far guide, onto the take up.
+  var chain = tapeChain(Rs, Rt);
+  var segs = [];
+  for (i = 0; i < chain.length - 1; i++) segs.push(wrapTangent(chain[i], chain[i+1]));
+
+  var onLeadIn  = leaderOn && t < LEAD_IN;
+  var onLeadOut = leaderOn && t > side() - LEAD_OUT;
+  var onLeader  = onLeadIn || onLeadOut;
+  // Stroked exactly once, before the reels and the shell face, so the whole
+  // run sits on one plane in one colour. It used to be drawn twice: the full
+  // path here, then the bottom run again over the shell face. With a
+  // translucent shell the lower stroke showed through dimmed while the upper
+  // one was full strength, so the same ribbon read as two tones side by side.
+  strokeTapePath(segs, chain, onLeader);
+
+  drawReel(cxS, HUB_CY, Rs, -thetaS, sb);
+  drawReel(cxT, HUB_CY, Rt, -thetaT, tb);
+
+  // Shell face back over the top, with the aperture punched out, so the reels
+  // sit INSIDE the case rather than on top of it. Everything outside the
+  // aperture is covered. Drawn as the shell outline and the capsule as two
+  // subpaths filled even-odd.
+  if (!cutaway) {
+    // Face over the reels. When the shell is clear this is a translucent tint
+    // rather than an opaque fill, so the packs read through the plastic and
+    // darken it slightly, which is what a smoke shell actually does. The
+    // aperture is still punched out, so it stays completely unobstructed.
+    ctx.beginPath();
+    subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
+    subRoundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
+    ctx.fillStyle = shellIsClear() ? hexToRgba(SHELL_FILL, SHELL_ALPHA) : SHELL_FILL;
+    ctx.fill("evenodd");
+
+    // Sheen across the top of the face, the giveaway that it is moulded
+    // plastic rather than a flat tint. Only when clear.
+    if (shellIsClear()) {
+      var sg = ctx.createLinearGradient(X(0), Y(0), X(0), Y(SHELL_H));
+      sg.addColorStop(0,    "rgba(255,255,255,0.30)");
+      sg.addColorStop(0.35, "rgba(255,255,255,0.08)");
+      sg.addColorStop(0.6,  "rgba(255,255,255,0.00)");
+      sg.addColorStop(1,    "rgba(255,255,255,0.10)");
+      ctx.beginPath();
+      subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
+      subRoundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
+      ctx.fillStyle = sg;
+      ctx.fill("evenodd");
+    }
+
+    // aperture lip, so the opening reads as a moulded edge not a paint join
+    ctx.strokeStyle = CAP_FILL;
+    ctx.lineWidth = 2;
+    roundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
+    ctx.stroke();
+
+    // shell outline, redrawn since the fill above covered it
+    ctx.strokeStyle = SHELL_EDGE;
+    ctx.lineWidth = 2;
+    roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
+    ctx.stroke();
+
+    // The apron and its openings sit on the shell face, so they have to come
+    // back over the top too.
+    drawApron();
+    drawFittings();
+
+    // Tab cavities, only on a clear shell where you can see into the moulding.
+    if (shellIsClear()) drawWriteProtectTabs();
+  }
+
+  // Label over the top, with the reel window punched through it.
+  if (labelOn) drawLabel();
+
+  // Shell fixings last, so they sit above the label like real screws.
+  drawScrew(CORNER_INSET, CORNER_INSET);
+  drawScrew(SHELL_W - CORNER_INSET, CORNER_INSET);
+  drawScrew(CORNER_INSET, SHELL_H - CORNER_INSET);
+  drawScrew(SHELL_W - CORNER_INSET, SHELL_H - CORNER_INSET);
+  drawScrew(SHELL_W / 2, BOTTOM_SCREW_Y);
+
+  // labels below the shell
+  ctx.fillStyle = "#444444";
+  ctx.font = "17px -apple-system, Segoe UI, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("supply", X(cxS), Y(SHELL_H) + 30);
+  ctx.fillText("take up", X(cxT), Y(SHELL_H) + 30);
+  ctx.font = "14px -apple-system, Segoe UI, sans-serif";
+  ctx.fillStyle = "#6b7080";
+  ctx.fillText("tape threaded as a taut belt: wraps both corner guides, passes beneath the capstan holes and pins",
+               X(SHELL_W/2), Y(SHELL_H) + 56);
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  subRoundRect(x, y, w, h, r);
+}
+
+// Rectangle with its four corners cut off at 45 degrees, appended to the
+// current path. The reference artwork has angled label corners rather than
+// radiused ones, which reads as a die cut sticker instead of a drawn box.
+function subChamferRect(x, y, w, h, c) {
+  ctx.moveTo(x + c, y);
+  ctx.lineTo(x + w - c, y);
+  ctx.lineTo(x + w,     y + c);
+  ctx.lineTo(x + w,     y + h - c);
+  ctx.lineTo(x + w - c, y + h);
+  ctx.lineTo(x + c,     y + h);
+  ctx.lineTo(x,         y + h - c);
+  ctx.lineTo(x,         y + c);
+  ctx.closePath();
+}
+
+// Same shape but appended to the current path, so several can be combined in
+// one path and filled or clipped even-odd to punch a hole.
+function subRoundRect(x, y, w, h, r) {
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+// ---- Label and fixings -----------------------------------------------
+
+// Moulded capsule around the reel aperture, drawn on the shell behind the
+// label. This is a filled region, not a stroke on the label: the hairline
+// outline removed earlier read as a drawn box, whereas this is the darker
+// moulding the label is die cut around on every cassette in the reference.
+function drawCapsule() {
+  // On a clear shell the moulded surround is the same translucent plastic, so
+  // the background you see between and behind the reels tints rather than
+  // reading as a solid dark slab.
+  ctx.fillStyle = shellIsClear() ? hexToRgba(CAP_FILL, CAP_ALPHA) : CAP_FILL;
+  roundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
+  ctx.fill();
+}
+
+// Side ears. Small moulded tabs standing proud of the left and right edges,
+// below the label line. Drawn before the shell body so the body's own fill and
+// rounded corners sit over the inner end of each tab and hide the join.
+function drawEars() {
+  var yTop = Y(EAR_Y0), h = mm(EAR_Y1 - EAR_Y0), w = mm(EAR_OUT + 2.0);
+  ctx.beginPath();
+  subRoundRect(X(0) - mm(EAR_OUT), yTop, w, h, mm(0.8));
+  subRoundRect(X(SHELL_W) - mm(2.0), yTop, w, h, mm(0.8));
+  ctx.fill(); ctx.stroke();
+}
+
+// Drive openings and guides that sit on the shell face. Pulled out of draw()
+// because the shell face is painted twice: once as the base, and again over
+// the reels so they read as being inside the case.
+function drawFittings() {
+  ctx.fillStyle = "#8e9199";
+  [-1, 1].forEach(function (s) {
+    ctx.beginPath();
+    ctx.arc(X(SHELL_W/2 + s*CAPSTAN_SPACING/2), Y(ROLLER_Y), mm(CAPSTAN_R), 0, TAU);
+    ctx.fill();
+  });
+  // Inner openings are square on the reference art, not round. Their spacing,
+  // 28 mm, is unchanged and still from the dimensioned drawing.
+  [-1, 1].forEach(function (s) {
+    ctx.beginPath();
+    subRoundRect(X(SHELL_W/2 + s*PIN_SPACING/2) - mm(PIN_SQ)/2,
+                 Y(ROLLER_Y) - mm(PIN_SQ)/2, mm(PIN_SQ), mm(PIN_SQ), mm(0.35));
+    ctx.fill();
+  });
+
+  // head opening in the middle of the front edge
+  ctx.fillStyle = "#9a9da5";
+  roundRect(X(SHELL_W/2 - 6), Y(ROLLER_Y - 2.1), mm(12), mm(3.2), mm(0.4)); ctx.fill();
+
+  // corner guides
+  ctx.fillStyle = "#b0b5bc"; ctx.strokeStyle = "#8e9199"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(X(GUIDE_X), Y(PATH_Y), mm(GUIDE_R), 0, TAU); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(X(SHELL_W-GUIDE_X), Y(PATH_Y), mm(GUIDE_R), 0, TAU); ctx.fill(); ctx.stroke();
+}
+
+// Stroke the threaded tape path, hub to hub, in a single pass.
+function strokeTapePath(segs, chain, onLeader) {
+  var i;
+  ctx.strokeStyle = onLeader ? "#2a6db8" : "#4a3828";
+  ctx.lineWidth = RIBBON_W;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+
+  ctx.moveTo(chain[0].x, chain[0].y);              // hub centre, covered by the pack
+  ctx.lineTo(segs[0].t1.x, segs[0].t1.y);          // tangent off the supply pack
+  for (i = 1; i < chain.length - 1; i++) {
+    var c = chain[i], en = segs[i-1].t2, ex = segs[i].t1;
+    // arc() draws the straight run into the arc start for us
+    ctx.arc(c.x, c.y, c.r,
+            Math.atan2(en.y - c.y, en.x - c.x),
+            Math.atan2(ex.y - c.y, ex.x - c.x),
+            c.s === -1);
+  }
+  ctx.lineTo(segs[segs.length-1].t2.x, segs[segs.length-1].t2.y);
+  ctx.lineTo(chain[chain.length-1].x, chain[chain.length-1].y);
+  ctx.stroke();
+}
+
+// Write protect tab cavities in the top edge. On a clear shell you see down
+// into the recess, so it reads as a darker well with a lip, not a flat patch.
+// Mirrored pair: a cassette has one per side, A on the left and B on the right.
+function drawWriteProtectTabs() {
+  [TAB_INSET, SHELL_W - TAB_INSET - TAB_W].forEach(function (x0) {
+    // Cavity floor. Flush with the top edge and open at the top: the recess is
+    // cut INTO the edge, so only the two bottom corners are radiused. It used
+    // to start at y = -0.4, overshooting the edge by 0.4 mm, and rounded all
+    // four corners, which curved the mouth away from the edge instead of
+    // meeting it square.
+    var r = mm(0.5);
+    ctx.fillStyle = hexToRgba(SHELL_EDGE, 0.55);
+    ctx.beginPath();
+    ctx.moveTo(X(x0), Y(0));
+    ctx.lineTo(X(x0), Y(TAB_H) - r);
+    ctx.arcTo(X(x0), Y(TAB_H), X(x0) + r, Y(TAB_H), r);
+    ctx.lineTo(X(x0 + TAB_W) - r, Y(TAB_H));
+    ctx.arcTo(X(x0 + TAB_W), Y(TAB_H), X(x0 + TAB_W), Y(TAB_H) - r, r);
+    ctx.lineTo(X(x0 + TAB_W), Y(0));
+    ctx.closePath();
+    ctx.fill();
+
+    // inner shadow down the sides and across the bottom of the well
+    ctx.strokeStyle = hexToRgba(SHELL_EDGE, 0.85);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(X(x0), Y(0));
+    ctx.lineTo(X(x0), Y(TAB_H) - r);
+    ctx.arcTo(X(x0), Y(TAB_H), X(x0) + r, Y(TAB_H), r);
+    ctx.lineTo(X(x0 + TAB_W) - r, Y(TAB_H));
+    ctx.arcTo(X(x0 + TAB_W), Y(TAB_H), X(x0 + TAB_W), Y(TAB_H) - r, r);
+    ctx.lineTo(X(x0 + TAB_W), Y(0));
+    ctx.stroke();
+
+    // highlight on the lower lip, where the moulding catches the light
+    ctx.strokeStyle = "rgba(255,255,255,0.45)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(X(x0 + 0.3), Y(TAB_H + 0.5));
+    ctx.lineTo(X(x0 + TAB_W - 0.3), Y(TAB_H + 0.5));
+    ctx.stroke();
+  });
+}
+
+// Lower apron, the front lip carrying the drive openings.
+function drawApron() {
+  ctx.fillStyle = shellIsClear() ? hexToRgba(APRON_FILL, APRON_ALPHA) : APRON_FILL;
+  ctx.strokeStyle = SHELL_EDGE;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(X(APRON_TOP_X0), Y(APRON_Y0));
+  ctx.lineTo(X(APRON_TOP_X1), Y(APRON_Y0));
+  ctx.lineTo(X(APRON_BOT_X1), Y(APRON_SHOULDER_Y));
+  ctx.lineTo(X(APRON_BOT_X1), Y(SHELL_H - 1.2));
+  ctx.lineTo(X(APRON_BOT_X0), Y(SHELL_H - 1.2));
+  ctx.lineTo(X(APRON_BOT_X0), Y(APRON_SHOULDER_Y));
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+}
+
+// Tape counter scale, printed on the shell in the gap between the two hub
+// flanges and seen through the window. The flanges end at x 39.70 and 60.70,
+// so the 21 mm gap centres on the shell centreline at 50.20. Drawn before the
+// reels, so a growing pack covers it, which is what happens on a real shell.
+function drawScale() {
+  var y = Y(HUB_CY), x0 = X(41.4), x1 = X(59.0), n = 12, i;
+
+  // Light, because the scale is now printed inside the dark moulded capsule.
+  // It was near black at 45%, which was fine on the bare shell but vanished
+  // once the capsule went in behind it.
+  ctx.strokeStyle = "rgba(236,238,242,0.55)";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+
+  for (i = 0; i <= n; i++) {
+    var x = x0 + (x1 - x0) * i / n;
+    var major = (i % 6 === 0);            // taller mark at each end and centre
+    var half  = (major ? mm(2.2) : (i % 3 === 0 ? mm(1.4) : mm(0.9))) / 2;
+    ctx.lineWidth = major ? 1.6 : 1;
+    ctx.beginPath(); ctx.moveTo(x, y - half); ctx.lineTo(x, y + half); ctx.stroke();
+  }
+}
+
+function drawScrew(xmm, ymm) {
+  var x = X(xmm), y = Y(ymm), r = mm(SCREW_R);
+
+  // moulded recess the screw sits in
+  ctx.fillStyle = "#a8acb3";
+  ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+
+  // head, lit from the top left
+  var g = ctx.createRadialGradient(x - r*0.35, y - r*0.35, r*0.1, x, y, r*0.84);
+  g.addColorStop(0, "#dcdfe4");
+  g.addColorStop(1, "#8d939b");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, r*0.84, 0, TAU); ctx.fill();
+  ctx.strokeStyle = "#6f757d"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(x, y, r*0.84, 0, TAU); ctx.stroke();
+
+  // cross head slot
+  ctx.strokeStyle = "#5a6068";
+  ctx.lineWidth = Math.max(1.4, r*0.17);
+  ctx.lineCap = "butt";
+  ctx.beginPath();
+  ctx.moveTo(x - r*0.46, y); ctx.lineTo(x + r*0.46, y);
+  ctx.moveTo(x, y - r*0.46); ctx.lineTo(x, y + r*0.46);
+  ctx.stroke();
+}
+
+// Largest handwritten size that fits the width, down to a floor. Handwriting
+// faces vary a lot in width between platforms, so measuring beats guessing.
+function fitHandFont(txt, maxW, startMm) {
+  var size = mm(startMm), floor = mm(1.6), f;
+  for (;;) {
+    f = Math.round(size) + "px " + HAND_FONT;
+    ctx.font = f;
+    if (ctx.measureText(txt).width <= maxW || size <= floor) return f;
+    size -= 1;
+  }
+}
+
+function drawLabel() {
+  var lw = LAB_X1 - LAB_X0, lh = LAB_Y1 - LAB_Y0;
+  var ww = WIN_X1 - WIN_X0, wh = WIN_Y1 - WIN_Y0;
+  var fBody  = Math.round(mm(2.2)) + "px -apple-system, Segoe UI, sans-serif";
+  var fSmall = Math.round(mm(1.9)) + "px -apple-system, Segoe UI, sans-serif";
+
+  // Label face with the reel window punched out, as one even-odd path so the
+  // reels drawn underneath show through.
+  ctx.beginPath();
+  subChamferRect(X(LAB_X0), Y(LAB_Y0), mm(lw), mm(lh), mm(LAB_CHAMFER));
+  subRoundRect(X(WIN_X0), Y(WIN_Y0), mm(ww), mm(wh), mm(WIN_RADIUS));
+  ctx.fillStyle = LAB_FACE;
+  ctx.fill("evenodd");
+
+  // Everything below is confined to the label face, so nothing paints over the
+  // window and hides the reels.
+  ctx.save();
+  ctx.beginPath();
+  subChamferRect(X(LAB_X0), Y(LAB_Y0), mm(lw), mm(lh), mm(LAB_CHAMFER));
+  subRoundRect(X(WIN_X0), Y(WIN_Y0), mm(ww), mm(wh), mm(WIN_RADIUS));
+  ctx.clip("evenodd");
+
+  // Brand stripe just above the window, accent yellow over a thin ink rule.
+  ctx.fillStyle = LAB_STRIPE;
+  ctx.fillRect(X(LAB_X0), Y(STRIPE_Y), mm(lw), mm(2.4));
+  ctx.fillStyle = LAB_INK;
+  ctx.fillRect(X(LAB_X0), Y(STRIPE_Y + 2.4), mm(lw), mm(1.0));
+
+  // Side letter in its box. Moved up slightly so a title set on its vertical
+  // centre clears the ruled lines, which used to run straight through it.
+  ctx.fillStyle = LAB_INK;
+  ctx.fillRect(X(3.5), Y(A_Y0), mm(A_SIZE), mm(A_SIZE));
+  ctx.fillStyle = LAB_FACE;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = "600 " + Math.round(mm(A_SIZE * 0.71)) + "px -apple-system, Segoe UI, sans-serif";
+  ctx.fillText("A", X(3.5 + A_SIZE / 2), Y(A_Y0 + A_SIZE / 2));
+
+  // ruled writing lines, now both below the title
+  ctx.strokeStyle = LAB_RULE;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(X(3.5), Y(RULE_1)); ctx.lineTo(X(96.9), Y(RULE_1));
+  ctx.stroke();
+
+  // Editable title, handwritten, vertically centred on the A box. Shrunk to
+  // fit if it is too long for the space rather than running under the stripe.
+  var titleX = X(3.5 + A_SIZE + 1.8);
+  var titleMax = X(96.9) - titleX;
+  ctx.fillStyle = LAB_INK;
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  ctx.font = fitHandFont(labelText, titleMax, 3.4);
+  ctx.fillText(labelText, titleX, Y(A_Y0 + A_SIZE / 2));
+
+  // Artist, written on the first ruled line below the title. Left aligned with
+  // the title so the two form a clean column, and sitting ON the rule the way
+  // you would actually write on a label, so descenders hang below it.
+  //
+  // It used to start at x 4.2, which is underneath the A box, and sat at
+  // baseline 16.1 against a rule at 16.4: the box clipped the first few
+  // letters and the rule struck through the descenders.
+  if (artistText) {
+    ctx.fillStyle = LAB_DIM;
+    ctx.textBaseline = "alphabetic";
+    ctx.font = fitHandFont(artistText, X(96.9) - titleX, 2.8);
+    ctx.fillText(artistText, titleX, Y(RULE_1));
+  }
+
+  // tape type and formulation, in the gutter left of the window
+  ctx.font = "600 " + fBody;
+  ctx.fillText(tape, X(3.0), Y(29.2));
+  ctx.fillStyle = LAB_DIM;
+  ctx.font = fSmall;
+  ctx.fillText("Normal Bias", X(3.0), Y(32.6));
+  ctx.fillText("EQ-120\u00B5s", X(3.0), Y(35.6));
+
+  // noise reduction, in the gutter right of the window
+  ctx.fillStyle = LAB_INK;
+  ctx.font = fSmall;
+  ctx.fillText("Noise", X(86.0), Y(29.2));
+  ctx.fillText("Reduction", X(86.0), Y(32.2));
+  ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1;
+  [["IN", 33.8], ["OUT", 36.8]].forEach(function (d) {
+    ctx.strokeRect(X(86.0), Y(d[1]), mm(2.0), mm(2.0));
+    ctx.fillText(d[0], X(89.0), Y(d[1] + 1.8));
+  });
+
+  ctx.restore();
+
+  // No stroke around the window. The label is simply cut away there, so the
+  // shell shows through the aperture; an outline round the inside of the label
+  // read as a drawn box rather than a cutout.
+}
+
+// ---- Readout ---------------------------------------------------------
+function fmtClock(s) {
+  var m = Math.floor(s/60), ss = Math.floor(s%60);
+  return (m<10?"0":"") + m + ":" + (ss<10?"0":"") + ss;
+}
+function set(id, v) { document.getElementById(id).textContent = v; }
+
+function bandWidth(list, kind) {
+  if (!list) return null;
+  for (var i = 0; i < list.length; i++) if (list[i].kind === kind) return list[i].r1 - list[i].r0;
+  return 0;
+}
+function fmtBand(w) {
+  if (w === null) return "off";
+  return w > 0 ? w.toFixed(4) + " mm" : "none";
+}
+
+function readout() {
+  var Rt = rTake(t), Rs = rSupply(t);
+  set("clock", fmtClock(t) + "  /  " + fmtClock(side()) + "   " + tape + " side A");
+  set("rs", Rs.toFixed(2) + " mm");     set("rt", Rt.toFixed(2) + " mm");
+  set("ds", (2*Rs).toFixed(2) + " mm"); set("dt", (2*Rt).toFixed(2) + " mm");
+  set("cs", (2*Math.PI*Rs/10).toFixed(2) + " cm");
+  set("ct", (2*Math.PI*Rt/10).toFixed(2) + " cm");
+  set("ws", (60*V/(2*Math.PI*Rs)).toFixed(1) + " rpm");
+  set("wt", (60*V/(2*Math.PI*Rt)).toFixed(1) + " rpm");
+  set("ns", turnsOff(t).toFixed(0) + " off");
+  set("nt", turnsOn(t).toFixed(0) + " on");
+  var total = V*side()/1000;
+  set("ls", (total - V*t/1000).toFixed(1) + " m");
+  set("lt", (V*t/1000).toFixed(1) + " m");
+
+  var sb = leaderOn ? supplyBands(t) : null;
+  var tb = leaderOn ? takeBands(t)   : null;
+  set("lis", fmtBand(bandWidth(sb, "in")));
+  set("lit", fmtBand(bandWidth(tb, "in")));
+  set("los", fmtBand(bandWidth(sb, "out")));
+  set("lot", fmtBand(bandWidth(tb, "out")));
+  set("gap", (HUB_SPACING - Rs - Rt).toFixed(2) + " mm clear");
+
+  var xt = crossTime();
+  var msg = "Reels match at " + fmtClock(xt) + ", radius " + rTake(xt).toFixed(2) +
+            " mm. That is exactly half the side, since area grows linearly with time. " +
+            "The radius is what sits off centre: " + rTake(xt).toFixed(2) +
+            " mm against an arithmetic middle of " + ((HUB + rFull())/2).toFixed(2) + " mm.";
+  var area = Math.PI*(Rt*Rt - HUB*HUB) + Math.PI*(Rs*Rs - HUB*HUB);
+  var ref  = Math.PI*(rFull()*rFull() - HUB*HUB);
+  msg += "  Area check: " + (100*area/ref).toFixed(3) + "% of one full pack, should read 100.000%.";
+  document.getElementById("cross").textContent = msg;
+
+  var maxBand = rTake(LEAD_IN) - HUB;
+  var w;
+  if (!leaderOn) {
+    w = "Leaders are off. The pack is drawn as magnetic tape end to end, and the reel maths is " +
+        "unchanged either way, since leader occupies the same area as any other tape of the same " +
+        "length. Switch them on to see where the first and last " + LEAD_IN.toFixed(1) + " s sit in the pack.";
+  } else {
+    w = "Lead in and lead out are " + LEAD_IN.toFixed(1) + " s each, about " +
+        (V*LEAD_IN/10).toFixed(1) + " cm of tape and " + turnsOn(LEAD_IN).toFixed(1) +
+        " turns on a bare hub. At true scale the widest band is " + maxBand.toFixed(4) +
+        " mm, which is " + (maxBand*PX).toFixed(2) + " of a pixel here, so it cannot be seen. " +
+        "The reel bands are always drawn true to scale, so they read as a faint " +
+        "hairline at best. The blue tape path across the bottom is the visible " +
+        "indicator, running blue for the first and last " + LEAD_IN.toFixed(1) + " s." +
+        " Both leader durations are assumptions, not sourced figures.";
+  }
+  document.getElementById("leadwarn").textContent = w;
+}
+
+function buildScale() {
+  var el = document.getElementById("scale");
+  el.innerHTML = "";
+  var step = side() <= 1800 ? 300 : 600;
+  for (var s = 0; s <= side(); s += step) {
+    var d = document.createElement("span");
+    d.textContent = fmtClock(s);
+    el.appendChild(d);
+  }
+}
+
+function anglesFor(tt) {
+  thetaT = turnsOn(tt)  * 2 * Math.PI;
+  thetaS = turnsOff(tt) * 2 * Math.PI;
+}
+
+// ---- Graph -----------------------------------------------------------
+// Both pack radii against elapsed time, with the playhead tracking the slider.
+function drawGraph() {
+  var W = gv.width, H = gv.height;
+  var L = 78, R = 26, T = 22, B = 52;
+  var pw = W - L - R, ph = H - T - B;
+  var S = side(), Rf = rFull();
+  var yMin = 8, yMax = 27;                       // mm, fixed so tape types compare
+
+  function px(tt) { return L + pw * (tt / S); }
+  function py(mmv) { return T + ph * (1 - (mmv - yMin) / (yMax - yMin)); }
+
+  gtx.clearRect(0, 0, W, H);
+  gtx.fillStyle = GRAPH_BG;
+  gtx.fillRect(0, 0, W, H);
+
+  // leader zones at each end
+  if (leaderOn) {
+    gtx.fillStyle = "rgba(42,109,184,0.13)";
+    gtx.fillRect(px(0), T, px(LEAD_IN) - px(0), ph);
+    gtx.fillRect(px(S - LEAD_OUT), T, px(S) - px(S - LEAD_OUT), ph);
+  }
+
+  gtx.font = "15px -apple-system, Segoe UI, sans-serif";
+  gtx.textBaseline = "middle";
+  for (var m = 10; m <= 26; m += 2) {
+    gtx.strokeStyle = "#c0c3c8";
+    gtx.lineWidth = 1;
+    gtx.beginPath(); gtx.moveTo(L, py(m)); gtx.lineTo(L + pw, py(m)); gtx.stroke();
+    gtx.fillStyle = "#6b7080";
+    gtx.textAlign = "right";
+    gtx.fillText(m + " mm", L - 10, py(m));
+  }
+
+  gtx.setLineDash([5, 5]);
+  gtx.strokeStyle = "#b0b3b8";
+  [HUB, Rf].forEach(function (d) {
+    gtx.beginPath(); gtx.moveTo(L, py(d)); gtx.lineTo(L + pw, py(d)); gtx.stroke();
+  });
+  gtx.setLineDash([]);
+
+  gtx.textAlign = "center";
+  gtx.textBaseline = "top";
+  for (var s = 0; s <= S; s += 600) {
+    gtx.strokeStyle = "#c0c3c8";
+    gtx.beginPath(); gtx.moveTo(px(s), T); gtx.lineTo(px(s), T + ph); gtx.stroke();
+    gtx.fillStyle = "#6b7080";
+    gtx.fillText(fmtClock(s), px(s), T + ph + 10);
+  }
+
+  function curve(fn, colour) {
+    gtx.strokeStyle = colour;
+    gtx.lineWidth = 3;
+    gtx.beginPath();
+    for (var i = 0; i <= 400; i++) {
+      var tt = S * i / 400, x = px(tt), y = py(fn(tt));
+      if (i === 0) gtx.moveTo(x, y); else gtx.lineTo(x, y);
+    }
+    gtx.stroke();
+  }
+  curve(rSupply, "#5aa9e6");
+  curve(rTake,   "#FBCA12");
+
+  var xt = crossTime(), xr = rTake(xt);
+  gtx.strokeStyle = "rgba(224,163,60,0.55)";
+  gtx.setLineDash([4, 4]); gtx.lineWidth = 1.5;
+  gtx.beginPath(); gtx.moveTo(px(xt), T); gtx.lineTo(px(xt), T + ph); gtx.stroke();
+  gtx.setLineDash([]);
+  gtx.fillStyle = "#FBCA12";
+  gtx.beginPath(); gtx.arc(px(xt), py(xr), 5, 0, TAU); gtx.fill();
+  gtx.textAlign = "center"; gtx.textBaseline = "bottom";
+  gtx.font = "14px -apple-system, Segoe UI, sans-serif";
+  gtx.fillStyle = "#8a6a00";
+  gtx.fillText("cross " + xr.toFixed(2) + " mm", px(xt), py(xr) - 12);
+
+  var Rt = rTake(t), Rs = rSupply(t);
+  gtx.strokeStyle = "#333333";
+  gtx.lineWidth = 1.5;
+  gtx.beginPath(); gtx.moveTo(px(t), T); gtx.lineTo(px(t), T + ph); gtx.stroke();
+  gtx.fillStyle = "#FBCA12";
+  gtx.beginPath(); gtx.arc(px(t), py(Rt), 6, 0, TAU); gtx.fill();
+  gtx.fillStyle = "#5aa9e6";
+  gtx.beginPath(); gtx.arc(px(t), py(Rs), 6, 0, TAU); gtx.fill();
+
+  gtx.textAlign = "left"; gtx.textBaseline = "middle";
+  gtx.font = "15px -apple-system, Segoe UI, sans-serif";
+  gtx.fillStyle = "#FBCA12";
+  gtx.fillRect(L + 8, T + 12, 22, 3);
+  gtx.fillStyle = "#8a6a00";
+  gtx.fillText("take up " + Rt.toFixed(2) + " mm", L + 38, T + 13);
+  gtx.fillStyle = "#5aa9e6";
+  gtx.fillRect(L + 210, T + 12, 22, 3);
+  gtx.fillText("supply " + Rs.toFixed(2) + " mm", L + 240, T + 13);
+
+  gtx.fillStyle = "#6b7080";
+  gtx.textAlign = "right"; gtx.textBaseline = "bottom";
+  gtx.font = "13px -apple-system, Segoe UI, sans-serif";
+  gtx.fillText("pack radius against elapsed time, " + tape +
+               (leaderOn ? ", leader zones shaded" : ""), L + pw, H - 8);
+}
+
+function frame() { draw(); drawGraph(); readout(); }
+
+// ---- Controls --------------------------------------------------------
+var scrub = document.getElementById("scrub");
+
+function setTime(newT) {
+  t = Math.max(0, Math.min(side(), newT));
+  anglesFor(t);
+  scrub.value = t / side();
+  frame();
+}
+
+scrub.addEventListener("input", function () {
+  setTime(parseFloat(scrub.value) * side());
+});
+
+document.getElementById("play").addEventListener("click", function () {
+  playing = !playing;
+  this.textContent = playing ? "Pause" : "Play";
+  this.classList.toggle("on", playing);
+  last = performance.now();
+  if (playing) requestAnimationFrame(loop);
+});
+
+document.getElementById("rate").addEventListener("change", function () {
+  rate = parseFloat(this.value);
+});
+
+document.getElementById("type").addEventListener("change", function () {
+  var frac = t / side();
+  tape = this.value;
+  buildScale();
+  setTime(frac * side());
+});
+
+document.getElementById("clearshell").addEventListener("click", function () {
+  if (this.disabled) return;
+  clearShell = !clearShell;
+  syncClearButton();
+  frame();
+});
+
+document.getElementById("cutaway").addEventListener("click", function () {
+  cutaway = !cutaway;
+  this.classList.toggle("on", cutaway);
+  frame();
+});
+
+document.getElementById("style").addEventListener("change", function () {
+  applyStyle(this.value);
+  syncClearButton();
+  frame();
+});
+
+// Clear shell is meaningless on a solid style, so grey it out and say why.
+function syncClearButton() {
+  var b = document.getElementById("clearshell"), can = STYLES[styleName].clear;
+  b.disabled = !can;
+  b.classList.toggle("on", can && clearShell);
+  b.textContent = !can ? "Solid moulding"
+                       : (clearShell ? "Clear shell" : "Solid shell");
+}
+
+document.getElementById("title").addEventListener("input", function () {
+  labelText = this.value;
+  frame();
+});
+
+document.getElementById("artist").addEventListener("input", function () {
+  artistText = this.value;
+  frame();
+});
+
+document.getElementById("bg").addEventListener("input", function () {
+  applyBackground(this.value);
+  frame();
+});
+
+// Drives both the canvas stage and the bore fill from one value, so the hole
+// always matches whatever sits behind the cassette.
+function applyBackground(hex) {
+  BG_COLOR = hex;
+  document.documentElement.style.setProperty("--stage", hex);
+}
+
+document.getElementById("labelon").addEventListener("click", function () {
+  labelOn = !labelOn;
+  this.classList.toggle("on", labelOn);
+  this.textContent = labelOn ? "Label on" : "Label off";
+  frame();
+});
+
+document.getElementById("spokes").addEventListener("click", function () {
+  showSpokes = !showSpokes;
+  this.classList.toggle("on", showSpokes);
+  frame();
+});
+
+document.getElementById("leadon").addEventListener("click", function () {
+  leaderOn = !leaderOn;
+  this.classList.toggle("on", leaderOn);
+  this.textContent = leaderOn ? "Leaders on" : "Leaders off";
+  frame();
+});
+
+document.addEventListener("keydown", function (e) {
+  // Space used to start and stop playback. That made it impossible to type a
+  // space into the title or artist field, so the shortcut is gone; use the
+  // Play button.
+  //
+  // The arrow shortcuts had the same problem in a quieter way. This handler is
+  // on document, so left and right fired wherever focus was, and pressing them
+  // inside a text field scrubbed the tape instead of moving the caret. They
+  // now stand down whenever a field has focus.
+  var el = e.target, tag = el && el.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||
+      (el && el.isContentEditable)) return;
+
+  if (e.key === "ArrowRight") { setTime(t + (e.shiftKey ? 60 : 5)); e.preventDefault(); }
+  if (e.key === "ArrowLeft")  { setTime(t - (e.shiftKey ? 60 : 5)); e.preventDefault(); }
+});
+
+var last = performance.now();
+function loop(now) {
+  var dt = (now - last) / 1000;
+  last = now;
+  if (playing) {
+    setTime(t + dt * rate);
+    if (t >= side()) {
+      playing = false;
+      var b = document.getElementById("play");
+      b.textContent = "Play"; b.classList.remove("on");
+    }
+    requestAnimationFrame(loop);
+  }
+}
+
+applyStyle(styleName);
+applyBackground(document.getElementById("bg").value);
+syncClearButton();
+labelText  = document.getElementById("title").value;
+artistText = document.getElementById("artist").value;
+buildScale();
+setTime(0);
+</script>
+</body>
+</html>
