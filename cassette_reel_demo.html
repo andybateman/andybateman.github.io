@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cassette Reel Demo — Andy Bateman</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
   :root {
     --bg: #f0f1f3;
@@ -94,7 +96,7 @@
     <div class="scale" id="scale"></div>
     <canvas id="g" width="1400" height="380" style="margin-top:14px"></canvas>
     <div class="row" style="margin-top:14px">
-      <button id="play">Play</button>
+      <button type="button" id="play">Play</button>
       <label>Speed
         <select id="rate">
           <option value="1">1&times; real time</option>
@@ -119,11 +121,11 @@
           <option value="Crimson">Crimson</option>
         </select>
       </label>
-      <button id="labelon" class="on">Label on</button>
-      <button id="clearshell" class="on">Clear shell</button>
-      <button id="cutaway">Cutaway</button>
-      <button id="spokes">Hub marks</button>
-      <button id="leadon" class="on">Leaders on</button>
+      <button type="button" id="labelon" class="on">Label on</button>
+      <button type="button" id="clearshell" class="on">Clear shell</button>
+      <button type="button" id="cutaway">Cutaway</button>
+      <button type="button" id="spokes">Hub marks</button>
+      <button type="button" id="leadon" class="on">Leaders on</button>
     </div>
     <div class="row" style="margin-top:12px">
       <label>Title
@@ -141,7 +143,8 @@
   <div class="panel">
     <div class="big" id="clock">00:00</div>
     <table>
-      <tr><th>Quantity</th><th class="v">Supply (left)</th><th class="v">Take up (right)</th></tr>
+      <thead><tr><th scope="col">Quantity</th><th scope="col" class="v">Supply (left)</th><th scope="col" class="v">Take up (right)</th></tr></thead>
+      <tbody>
       <tr><td>Pack radius</td><td class="v" id="rs"></td><td class="v" id="rt"></td></tr>
       <tr><td>Pack diameter</td><td class="v" id="ds"></td><td class="v" id="dt"></td></tr>
       <tr><td>Circumference</td><td class="v" id="cs"></td><td class="v" id="ct"></td></tr>
@@ -151,6 +154,7 @@
       <tr><td>Lead in band, true size</td><td class="v" id="lis"></td><td class="v" id="lit"></td></tr>
       <tr><td>Lead out band, true size</td><td class="v" id="los"></td><td class="v" id="lot"></td></tr>
       <tr><td>Gap between packs</td><td class="v" colspan="2" id="gap"></td></tr>
+      </tbody>
     </table>
     <div class="note" id="cross"></div>
     <div class="warn" id="leadwarn"></div>

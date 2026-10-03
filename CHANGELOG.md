@@ -11,6 +11,23 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 - Map the last 3 dead gallery links to Flickr albums (Taupo, Napier, Nelson
   Lakes — album IDs needed; the albums page only exposes them via JS)
 
+## [3.1.2] - 2026-10-03
+
+### Fixed
+- **Lint pass** (html-proofer, html-validate, stylelint, ESLint over inline
+  scripts). The full site now passes html-proofer with every README check,
+  including Favicon
+- Spacle: the game script sat after `</body>`, which made browsers open a
+  second implicit `<head>`. It now sits inside `<body>`. Its game state
+  (`$objects`, `$object`, `$guess`, `$distance`) used undeclared implicit
+  globals. These are now declared, and a guess made before `spacle.json`
+  loads no longer throws
+- Cassette reel demo: added the favicon/apple-touch-icon links, the only
+  page without them. Added `type="button"` to its controls, and gave its
+  readout table a `<thead>`/`<tbody>` with `scope="col"` headers
+- "We arrived on four wheels": dropped WordPress filename `title`s from two
+  decorative (`alt=""`) images
+
 ## [3.1.1] - 2026-07-02
 
 ### Added

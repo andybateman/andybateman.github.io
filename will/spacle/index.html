@@ -92,9 +92,10 @@
         </p>
       </footer>
     </div>
-  </body>
 
-  <script>
+    <script>
+    var $objects = [], $object;
+
     $.getJSON("spacle.json", function (result) {
       $objects = result;
       $object = result[Math.floor(Math.random() * result.length)];
@@ -135,8 +136,9 @@
     });
 
     $("form").submit(function (e) {
-      $distance = null;
-      $guess = $("#floatingInput").val().replace(/[^a-z\s]/gi, '').trim();
+      if (!$object) return false; // spacle.json not loaded yet
+      var $distance = null;
+      var $guess = $("#floatingInput").val().replace(/[^a-z\s]/gi, '').trim();
       $.each($objects, function (i, val) {
         if ($guess.toLowerCase() == val.label.toLowerCase()) {
           $distance = Math.abs(val.AU - $object.AU);
@@ -161,5 +163,6 @@
       $("#floatingInput").val('');
       return false;
     });
-  </script>
+    </script>
+  </body>
 </html>
