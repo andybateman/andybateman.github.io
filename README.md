@@ -66,6 +66,7 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 - **Macaroon Game** (`will/macaroon/`) - Will's game with interactive elements
 - **QR Code Generator** (`qr/`) - QR code generation page
 - **Health Tracker** (`health/`) - Personal health tracking page
+- **Terminal Logo Turtle** (`termlogo/`) - A Logo interpreter with turtle graphics running in the browser (the Python engine through Pyodide, loaded from the jsDelivr CDN). Static files built from [andybateman/termlogo](https://github.com/andybateman/termlogo): from that repository run `python3 tools/build_web.py --out ../andybateman.github.io/termlogo`, which replaces the folder. Live at `/termlogo/`
 
 ### 📍 Maps & Location-Based Content
 All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).

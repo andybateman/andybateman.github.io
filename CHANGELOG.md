@@ -4,6 +4,13 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 
 ## [Unreleased]
 
+### Added
+- **Terminal Logo Turtle** at `/termlogo/`: the browser version of the Logo
+  interpreter from andybateman/termlogo, as plain static files (page, worker,
+  package zip, examples; about 0.1 MB). Python runs in the browser through
+  Pyodide, loaded from the jsDelivr CDN on first use, so nothing is sent to a
+  server. Passes the html-proofer README checks
+
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)
