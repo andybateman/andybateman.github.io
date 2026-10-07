@@ -11,6 +11,11 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Pyodide, loaded from the jsDelivr CDN on first use, so nothing is sent to a
   server. Passes the html-proofer README checks. Linked from the masthead nav
   as "Logo"
+- `/termlogo/` updated to Terminal Logo Turtle 1.1.0: smoother animation, `LABEL`
+  text in PNG/SVG downloads, share links, typing into running programs and a
+  Stop that keeps the workspace. A small service worker (`termlogo/coi-sw.js`,
+  scoped to that folder) supplies the headers shared memory needs; the page falls
+  back to plain mode if the browser will not run it
 
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
