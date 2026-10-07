@@ -5,30 +5,30 @@
  },
  {
   "name": "flower",
-  "code": "; Twelve squares rotated into a flower\nto square :s\n  repeat 4 [fd :s rt 90]\nend\nto flower\n  repeat 12 [square 25 rt 30]\nend\ncs setpc 4 flower\n"
+  "code": "; Twelve squares rotated into a flower\nto square :s\n  repeat 4 [fd :s rt 90]\nend\nto flower\n  repeat 12 [square 25 rt 30]\nend\nfitwindow 90 ; fit a 90-step window to the canvas\ncs setpc 4 flower\n"
  },
  {
   "name": "koch",
-  "code": "; Koch snowflake\nto koch :len :depth\n  if :depth = 0 [fd :len stop]\n  koch :len / 3 :depth - 1 lt 60\n  koch :len / 3 :depth - 1 rt 120\n  koch :len / 3 :depth - 1 lt 60\n  koch :len / 3 :depth - 1\nend\nto snowflake :len :depth\n  repeat 3 [koch :len :depth rt 120]\nend\ncs pu setxy -30 15 pd setpc 3 snowflake 60 3\n"
+  "code": "; Koch snowflake\nto koch :len :depth\n  if :depth = 0 [fd :len stop]\n  koch :len / 3 :depth - 1 lt 60\n  koch :len / 3 :depth - 1 rt 120\n  koch :len / 3 :depth - 1 lt 60\n  koch :len / 3 :depth - 1\nend\nto snowflake :len :depth\n  repeat 3 [koch :len :depth rt 120]\nend\nfitwindow 90 ; fit a 90-step window to the canvas\ncs pu setxy -17.5 -30 pd setpc 3 snowflake 60 3\n"
  },
  {
   "name": "spiral",
-  "code": "; Tail-recursive spiral that stops at the edge of the screen\nto spiral :s\n  if :s > 35 [stop]\n  fd :s rt 91\n  spiral :s + 1\nend\ncs setpc 6 spiral 1\n"
+  "code": "; Tail-recursive spiral that stops once its side passes 35 steps\nto spiral :s\n  if :s > 35 [stop]\n  fd :s rt 91\n  spiral :s + 1\nend\nfitwindow 70 ; fit a 70-step window to the canvas\ncs setpc 6 spiral 1\n"
  },
  {
   "name": "stars",
-  "code": "; Lists, templates and colour\nto star :n\n  repeat 5 [fd :n rt 144]\nend\nforeach [1 2 4 5 6 9 12 14] [\n  setpc ?\n  pu setxy (-50 + 12 * repcount) (10 * sin 40 * repcount) pd\n  star 10\n]\n"
+  "code": "; Lists, templates and colour\nto star :n\n  repeat 5 [fd :n rt 144]\nend\nfitwindow 120 ; fit a 120-step window to the canvas\ncs\nforeach [1 2 4 5 6 9 12 14] [\n  setpc ?\n  pu setxy (-50 + 12 * repcount) (10 * sin 40 * repcount) pd\n  star 10\n]\n"
  },
  {
   "name": "stencil demo",
-  "code": "; A stencil to print: block letters \"OK\" over a star.\n; Pen size is the slot width in mm (1 step = 1 mm). Run:\n;   termlogo examples/stencil_demo.logo -o demo.stl\n; Islands (the middle of the O and the star) are bridged automatically.\n\nto letter.o\n  pu setxy 0 0 pd setheading 0\n  repeat 2 [fd 40 rt 90 fd 28 rt 90]\nend\nto letter.k\n  pu setxy 40 0 pd setheading 0 fd 40\n  pu setxy 40 20 pd setheading 45 fd 28\n  pu setxy 40 20 pd setheading 135 fd 28\nend\nto star :s repeat 5 [fd :s rt 144] end\ncs setpensize 3 setpc 7\nletter.o letter.k\nsetpensize 1.6\npu setxy 6 -48 pd seth 72 star 46\n"
+  "code": "; A stencil to print: block letters \"OK\" over a star.\n; Pen size is the slot width in mm (1 step = 1 mm). Run:\n;   termlogo examples/stencil_demo.logo -o demo.stl\n; Islands (the middle of the O and the star) are bridged automatically.\n\nto letter.o\n  pu setxy 0 0 pd setheading 0\n  repeat 2 [fd 40 rt 90 fd 28 rt 90]\nend\nto letter.k\n  pu setxy 40 0 pd setheading 0 fd 40\n  pu setxy 40 20 pd setheading 45 fd 28\n  pu setxy 40 20 pd setheading 135 fd 28\nend\nto star :s repeat 5 [fd :s rt 144] end\nfitwindow 160 ; fit the view (the stencil keeps 1 step = 1 mm)\ncs setpensize 3 setpc 7\nletter.o letter.k\nsetpensize 1.6\npu setxy 6 -48 pd seth 72 star 46\n"
  },
  {
   "name": "stencil fill",
-  "code": "; A stencil with cut-out areas: a filled window, and two FILLED shapes. Run:\n;   termlogo examples/stencil_fill.logo -o fill.stl\n; FILL cuts out the area enclosed by the lines already drawn. The small square\n; inside the window is left as an island and is bridged automatically.\n; FILLED cuts out the shape the turtle traces, with the pen up or down.\n\ncs setpensize 2\nrepeat 4 [fd 30 rt 90]\npu setxy 10 10 pd repeat 4 [fd 10 rt 90]\npu setxy 5 5 pd setpc 2 fill\nsetpc 4 pu setxy 45 0 pd filled 6 [repeat 3 [fd 30 rt 120]]\npu setxy -40 0 filled 1 [repeat 36 [fd 3 rt 10]]\nht\n"
+  "code": "; A stencil with cut-out areas: a filled window, and two FILLED shapes. Run:\n;   termlogo examples/stencil_fill.logo -o fill.stl\n; FILL cuts out the area enclosed by the lines already drawn. The small square\n; inside the window is left as an island and is bridged automatically.\n; FILLED cuts out the shape the turtle traces, with the pen up or down.\n\nfitwindow 160 ; fit the view (the stencil keeps 1 step = 1 mm)\ncs setpensize 2\nrepeat 4 [fd 30 rt 90]\npu setxy 10 10 pd repeat 4 [fd 10 rt 90]\npu setxy 5 5 pd setpc 2 fill\nsetpc 4 pu setxy 45 0 pd filled 6 [repeat 3 [fd 30 rt 120]]\npu setxy -40 0 filled 1 [repeat 36 [fd 3 rt 10]]\nht\n"
  },
  {
   "name": "tree",
-  "code": "; Recursive binary tree\nto tree :size\n  if :size < 3 [stop]\n  fd :size\n  lt 25 tree :size * 0.7\n  rt 50 tree :size * 0.7\n  lt 25\n  bk :size\nend\ncs pu bk 30 pd setpc 2 tree 28\n"
+  "code": "; Recursive binary tree\nto tree :size\n  if :size < 3 [stop]\n  fd :size\n  lt 25 tree :size * 0.7\n  rt 50 tree :size * 0.7\n  lt 25\n  bk :size\nend\nfitwindow 100 ; fit a 100-step window to the canvas\ncs pu bk 41 pd setpc 2 tree 28\n"
  }
 ]

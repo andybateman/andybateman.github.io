@@ -1,0 +1,1207 @@
+[
+ {
+  "category": "Control",
+  "entries": [
+   {
+    "name": "repeat",
+    "usage": "repeat n [instructions]",
+    "about": "Run the instructions n times. REPCOUNT gives the current count."
+   },
+   {
+    "name": "forever",
+    "usage": "forever [instructions]",
+    "about": "Run the instructions until an error, STOP or Ctrl-C."
+   },
+   {
+    "name": "repcount",
+    "usage": "repcount",
+    "about": "The number of the current REPEAT/FOREVER/FOREACH pass, starting at 1."
+   },
+   {
+    "name": "if",
+    "usage": "if test [then]",
+    "about": "Run the list if test is true. (if test [then] [else]) also works in parentheses."
+   },
+   {
+    "name": "ifelse",
+    "usage": "ifelse test [then] [else]",
+    "about": "Run one list or the other. Outputs the list's value if it has one."
+   },
+   {
+    "name": "test",
+    "usage": "test condition",
+    "about": "Remember a condition for IFTRUE and IFFALSE."
+   },
+   {
+    "name": "iftrue",
+    "usage": "iftrue [instructions]",
+    "about": "Run the list if the last TEST was true. Alias: IFT."
+   },
+   {
+    "name": "iffalse",
+    "usage": "iffalse [instructions]",
+    "about": "Run the list if the last TEST was false. Alias: IFF."
+   },
+   {
+    "name": "while",
+    "usage": "while [condition] [instructions]",
+    "about": "Repeat while the condition list outputs true."
+   },
+   {
+    "name": "until",
+    "usage": "until [condition] [instructions]",
+    "about": "Repeat until the condition list outputs true."
+   },
+   {
+    "name": "do.while",
+    "usage": "do.while [instructions] [condition]",
+    "about": "Run once, then repeat while the condition is true."
+   },
+   {
+    "name": "do.until",
+    "usage": "do.until [instructions] [condition]",
+    "about": "Run once, then repeat until the condition is true."
+   },
+   {
+    "name": "for",
+    "usage": "for [var start limit step] [instructions]",
+    "about": "Count var from start to limit. Step is optional."
+   },
+   {
+    "name": "stop",
+    "usage": "stop",
+    "about": "Leave the current procedure."
+   },
+   {
+    "name": "output",
+    "usage": "output value",
+    "about": "Leave the current procedure, returning value. Alias: OP."
+   },
+   {
+    "name": "bye",
+    "usage": "bye",
+    "about": "Leave Logo."
+   },
+   {
+    "name": "run",
+    "usage": "run [instructions]",
+    "about": "Run a list as code. Outputs the last value if it makes one."
+   },
+   {
+    "name": "runresult",
+    "usage": "runresult [instructions]",
+    "about": "Like RUN, but outputs a list holding the value, or [] if none."
+   },
+   {
+    "name": "wait",
+    "usage": "wait n",
+    "about": "Pause for n sixtieths of a second (and redraw the canvas)."
+   },
+   {
+    "name": "catch",
+    "usage": "catch \"tag [instructions]",
+    "about": "Run the list; THROW \"tag jumps back here. CATCH \"ERROR traps errors."
+   },
+   {
+    "name": "throw",
+    "usage": "throw \"tag",
+    "about": "Jump to the matching CATCH. (throw \"tag value) passes a value."
+   },
+   {
+    "name": "goto",
+    "usage": "goto \"tag",
+    "about": "Jump to TAG \"tag in the same procedure. Works from inside IF, REPEAT and other lists."
+   },
+   {
+    "name": "tag",
+    "usage": "tag \"name",
+    "about": "Mark a place for GOTO. Does nothing when run."
+   },
+   {
+    "name": ".maybeoutput",
+    "usage": ".maybeoutput value",
+    "about": "Output the value if the input made one; if it made none, behave like STOP."
+   },
+   {
+    "name": "error",
+    "usage": "error",
+    "about": "After CATCH \"ERROR caught something, outputs [code message procedure line]."
+   }
+  ]
+ },
+ {
+  "category": "Variables and procedures",
+  "entries": [
+   {
+    "name": "make",
+    "usage": "make \"name value",
+    "about": "Set a variable. Names are case-insensitive and scope is dynamic."
+   },
+   {
+    "name": "name",
+    "usage": "name value \"name",
+    "about": "Like MAKE with the inputs the other way round."
+   },
+   {
+    "name": "thing",
+    "usage": "thing \"name",
+    "about": "The value of a variable. :name is shorthand."
+   },
+   {
+    "name": "local",
+    "usage": "local \"name",
+    "about": "Make a variable local to the current procedure. (local \"a \"b) takes several."
+   },
+   {
+    "name": "localmake",
+    "usage": "localmake \"name value",
+    "about": "Make and set a local variable."
+   },
+   {
+    "name": "global",
+    "usage": "global \"name",
+    "about": "Declare a global variable."
+   },
+   {
+    "name": "namep",
+    "usage": "namep \"name",
+    "about": "True if the variable exists. Alias: NAME?"
+   },
+   {
+    "name": "procedurep",
+    "usage": "procedurep \"name",
+    "about": "True if a procedure of that name is defined. Aliases: PROCEDURE?, DEFINEDP."
+   },
+   {
+    "name": "primitivep",
+    "usage": "primitivep \"name",
+    "about": "True if the name is a built-in command. Alias: PRIMITIVE?"
+   },
+   {
+    "name": "erase",
+    "usage": "erase \"name",
+    "about": "Delete a procedure. Alias: ER."
+   },
+   {
+    "name": "erall",
+    "usage": "erall",
+    "about": "Delete every procedure and variable."
+   },
+   {
+    "name": "define",
+    "usage": "define \"name [[inputs] [line] ...]",
+    "about": "Build a procedure from a list."
+   },
+   {
+    "name": "text",
+    "usage": "text \"name",
+    "about": "A procedure's definition as a list, suitable for DEFINE."
+   },
+   {
+    "name": "pots",
+    "usage": "pots",
+    "about": "Print the title line of every procedure."
+   },
+   {
+    "name": "pons",
+    "usage": "pons",
+    "about": "Print every global variable as a MAKE line."
+   },
+   {
+    "name": "po",
+    "usage": "po \"name",
+    "about": "Print a procedure's full definition."
+   },
+   {
+    "name": "load",
+    "usage": "load \"file",
+    "about": "Run a Logo source file, adding its procedures."
+   },
+   {
+    "name": "save",
+    "usage": "save \"file",
+    "about": "Write all procedures and variables to a file that LOAD can read back."
+   }
+  ]
+ },
+ {
+  "category": "Templates",
+  "entries": [
+   {
+    "name": "foreach",
+    "usage": "foreach list template",
+    "about": "Run the template once per item, with ? as the item."
+   },
+   {
+    "name": "map",
+    "usage": "map template list",
+    "about": "A list of the template's value for each item. Eg: map [? * 2] [1 2 3]"
+   },
+   {
+    "name": "filter",
+    "usage": "filter template list",
+    "about": "The items for which the template is true."
+   },
+   {
+    "name": "find",
+    "usage": "find template list",
+    "about": "The first item for which the template is true, else []."
+   },
+   {
+    "name": "reduce",
+    "usage": "reduce template list",
+    "about": "Combine items with a two-input template (?1, ?2). Eg: reduce [?1 + ?2] [1 2 3]"
+   },
+   {
+    "name": "apply",
+    "usage": "apply template [inputs]",
+    "about": "Call a template or procedure name with a list of inputs."
+   },
+   {
+    "name": "invoke",
+    "usage": "invoke template input...",
+    "about": "Call a template with the inputs given (use parentheses for several)."
+   }
+  ]
+ },
+ {
+  "category": "Input and output",
+  "entries": [
+   {
+    "name": "print",
+    "usage": "print thing",
+    "about": "Print a word or list without its outer brackets. Alias: PR."
+   },
+   {
+    "name": "type",
+    "usage": "type thing",
+    "about": "Print without a newline."
+   },
+   {
+    "name": "show",
+    "usage": "show thing",
+    "about": "Print a list with its brackets."
+   },
+   {
+    "name": "readword",
+    "usage": "readword",
+    "about": "Read a line of typed input as one word. Alias: RW."
+   },
+   {
+    "name": "readlist",
+    "usage": "readlist",
+    "about": "Read a line of typed input as a list. Alias: RL."
+   },
+   {
+    "name": "cleartext",
+    "usage": "cleartext",
+    "about": "Clear the text area. Alias: CT."
+   },
+   {
+    "name": "readchar",
+    "usage": "readchar",
+    "about": "Wait for one key and output it (Enter gives a newline), or [] at the end of input. From a file when SETREAD is in use. Escape stops. Alias: RC."
+   },
+   {
+    "name": "readchars",
+    "usage": "readchars n",
+    "about": "Output the next n characters, or [] at the end of input. Alias: RCS."
+   },
+   {
+    "name": "keyp",
+    "usage": "keyp",
+    "about": "True if a key has been pressed and READCHAR has not yet taken it (or the file has more to read). Alias: KEY?."
+   },
+   {
+    "name": "cursor",
+    "usage": "cursor",
+    "about": "Output [column row] of the text cursor in the text area under the canvas. Counts from 0."
+   },
+   {
+    "name": "setcursor",
+    "usage": "setcursor [column row]",
+    "about": "Move the text cursor within the text area (80 columns by 5 rows at most); TYPE and PRINT then overwrite what is there. Lasts for one command in the REPL. Does nothing outside the REPL."
+   }
+  ]
+ },
+ {
+  "category": "Files",
+  "entries": [
+   {
+    "name": "openread",
+    "usage": "openread \"file",
+    "about": "Open a file for reading. SETREAD then makes READWORD, READLIST, READCHAR and EOFP use it."
+   },
+   {
+    "name": "openwrite",
+    "usage": "openwrite \"file",
+    "about": "Create or empty a file for writing. SETWRITE then makes PRINT, TYPE and SHOW write to it."
+   },
+   {
+    "name": "openappend",
+    "usage": "openappend \"file",
+    "about": "Open a file for writing at its end."
+   },
+   {
+    "name": "openupdate",
+    "usage": "openupdate \"file",
+    "about": "Open an existing file (or a new one) for reading and writing from the start."
+   },
+   {
+    "name": "close",
+    "usage": "close \"file",
+    "about": "Close a file opened with one of the OPEN commands."
+   },
+   {
+    "name": "closeall",
+    "usage": "closeall",
+    "about": "Close every open file."
+   },
+   {
+    "name": "allopen",
+    "usage": "allopen",
+    "about": "Output the list of open files."
+   },
+   {
+    "name": "setread",
+    "usage": "setread \"file",
+    "about": "Read from this open file. SETREAD [] goes back to the keyboard."
+   },
+   {
+    "name": "setwrite",
+    "usage": "setwrite \"file",
+    "about": "Write PRINT, TYPE and SHOW output to this open file. SETWRITE [] goes back to the screen."
+   },
+   {
+    "name": "reader",
+    "usage": "reader",
+    "about": "Output the file being read, or [] for the keyboard."
+   },
+   {
+    "name": "writer",
+    "usage": "writer",
+    "about": "Output the file being written, or [] for the screen."
+   },
+   {
+    "name": "readpos",
+    "usage": "readpos",
+    "about": "Output the current position in the read file."
+   },
+   {
+    "name": "setreadpos",
+    "usage": "setreadpos n",
+    "about": "Move to position n in the read file."
+   },
+   {
+    "name": "writepos",
+    "usage": "writepos",
+    "about": "Output the current position in the write file."
+   },
+   {
+    "name": "setwritepos",
+    "usage": "setwritepos n",
+    "about": "Move to position n in the write file."
+   },
+   {
+    "name": "eofp",
+    "usage": "eofp",
+    "about": "True if the read file has nothing more to read. Alias: EOF?."
+   },
+   {
+    "name": "filep",
+    "usage": "filep \"file",
+    "about": "True if the file exists. Alias: FILE?."
+   },
+   {
+    "name": "erasefile",
+    "usage": "erasefile \"file",
+    "about": "Delete a file. Alias: ERF."
+   }
+  ]
+ },
+ {
+  "category": "Words and lists",
+  "entries": [
+   {
+    "name": "word",
+    "usage": "word a b",
+    "about": "Join words. (word a b c) takes more."
+   },
+   {
+    "name": "list",
+    "usage": "list a b",
+    "about": "Make a list of the inputs. (list a b c) takes more."
+   },
+   {
+    "name": "sentence",
+    "usage": "sentence a b",
+    "about": "Join inputs into one flat list. Alias: SE."
+   },
+   {
+    "name": "fput",
+    "usage": "fput item list",
+    "about": "Put an item at the front of a list."
+   },
+   {
+    "name": "lput",
+    "usage": "lput item list",
+    "about": "Put an item at the end of a list."
+   },
+   {
+    "name": "combine",
+    "usage": "combine a b",
+    "about": "FPUT if b is a list, otherwise WORD."
+   },
+   {
+    "name": "reverse",
+    "usage": "reverse list",
+    "about": "Reverse a list or word."
+   },
+   {
+    "name": "remove",
+    "usage": "remove item list",
+    "about": "The list without any copies of item."
+   },
+   {
+    "name": "remdup",
+    "usage": "remdup list",
+    "about": "The list with duplicates removed."
+   },
+   {
+    "name": "iseq",
+    "usage": "iseq from to",
+    "about": "The integers from..to as a list. Counts down if from > to."
+   },
+   {
+    "name": "rseq",
+    "usage": "rseq from to count",
+    "about": "count evenly spaced numbers from..to."
+   },
+   {
+    "name": "first",
+    "usage": "first thing",
+    "about": "First item of a list, or first letter of a word."
+   },
+   {
+    "name": "last",
+    "usage": "last thing",
+    "about": "Last item or letter."
+   },
+   {
+    "name": "butfirst",
+    "usage": "butfirst thing",
+    "about": "All but the first item or letter. Alias: BF."
+   },
+   {
+    "name": "butlast",
+    "usage": "butlast thing",
+    "about": "All but the last item or letter. Alias: BL."
+   },
+   {
+    "name": "item",
+    "usage": "item n thing",
+    "about": "The nth item or letter (counting from 1)."
+   },
+   {
+    "name": "pick",
+    "usage": "pick list",
+    "about": "A random item."
+   },
+   {
+    "name": "count",
+    "usage": "count thing",
+    "about": "How many items or letters."
+   },
+   {
+    "name": "member",
+    "usage": "member item list",
+    "about": "The list from the first match onwards, else []."
+   },
+   {
+    "name": "memberp",
+    "usage": "memberp item list",
+    "about": "True if the item is in the list. Alias: MEMBER?"
+   },
+   {
+    "name": "emptyp",
+    "usage": "emptyp thing",
+    "about": "True for [] or the empty word. Alias: EMPTY?"
+   },
+   {
+    "name": "listp",
+    "usage": "listp thing",
+    "about": "True if a list. Alias: LIST?"
+   },
+   {
+    "name": "wordp",
+    "usage": "wordp thing",
+    "about": "True if a word. Alias: WORD?"
+   },
+   {
+    "name": "numberp",
+    "usage": "numberp thing",
+    "about": "True if a number. Alias: NUMBER?"
+   },
+   {
+    "name": "equalp",
+    "usage": "equalp a b",
+    "about": "True if equal (words ignore case). Same as a = b. Alias: EQUAL?"
+   },
+   {
+    "name": "notequalp",
+    "usage": "notequalp a b",
+    "about": "True if not equal. Same as a <> b. Alias: NOTEQUAL?"
+   },
+   {
+    "name": "beforep",
+    "usage": "beforep a b",
+    "about": "True if word a sorts before b. Alias: BEFORE?"
+   },
+   {
+    "name": "uppercase",
+    "usage": "uppercase word",
+    "about": "Convert to upper case."
+   },
+   {
+    "name": "lowercase",
+    "usage": "lowercase word",
+    "about": "Convert to lower case."
+   },
+   {
+    "name": "char",
+    "usage": "char n",
+    "about": "The character with that code."
+   },
+   {
+    "name": "ascii",
+    "usage": "ascii char",
+    "about": "The code of a character."
+   }
+  ]
+ },
+ {
+  "category": "Arrays and property lists",
+  "entries": [
+   {
+    "name": "array",
+    "usage": "array size  or  (array size origin)",
+    "about": "Make an array of empty lists. Items count from 1, or from origin. Written {a b c}, or {a b c}@0 for origin 0."
+   },
+   {
+    "name": "mdarray",
+    "usage": "mdarray [sizes]  or  (mdarray [sizes] origin)",
+    "about": "Make an array of arrays, for example mdarray [3 4]."
+   },
+   {
+    "name": "listtoarray",
+    "usage": "listtoarray list  or  (listtoarray list origin)",
+    "about": "Make an array holding the list's members."
+   },
+   {
+    "name": "arraytolist",
+    "usage": "arraytolist array",
+    "about": "The array's members as a list."
+   },
+   {
+    "name": "arrayp",
+    "usage": "arrayp thing",
+    "about": "True if the thing is an array. Alias: ARRAY?."
+   },
+   {
+    "name": "setitem",
+    "usage": "setitem n array value",
+    "about": "Change member n of the array. All variables holding that array see the change."
+   },
+   {
+    "name": "mditem",
+    "usage": "mditem [i j] array",
+    "about": "Member of a multi-dimensional array."
+   },
+   {
+    "name": "mdsetitem",
+    "usage": "mdsetitem [i j] array value",
+    "about": "Change a member of a multi-dimensional array."
+   },
+   {
+    "name": "pprop",
+    "usage": "pprop \"plist \"prop value",
+    "about": "Set a property on a property list."
+   },
+   {
+    "name": "gprop",
+    "usage": "gprop \"plist \"prop",
+    "about": "Output the property's value, or [] if it has none."
+   },
+   {
+    "name": "remprop",
+    "usage": "remprop \"plist \"prop",
+    "about": "Remove a property."
+   },
+   {
+    "name": "plist",
+    "usage": "plist \"plist",
+    "about": "Output the property list as [prop value prop value]."
+   },
+   {
+    "name": "plists",
+    "usage": "plists",
+    "about": "Output the names of all property lists."
+   },
+   {
+    "name": "pps",
+    "usage": "pps",
+    "about": "Print every property list as PPROP commands."
+   },
+   {
+    "name": "erps",
+    "usage": "erps",
+    "about": "Erase every property list."
+   }
+  ]
+ },
+ {
+  "category": "Logic",
+  "entries": [
+   {
+    "name": "and",
+    "usage": "and a b",
+    "about": "True if all inputs are true. Inputs may be [lists] to run. (and a b c) takes more."
+   },
+   {
+    "name": "or",
+    "usage": "or a b",
+    "about": "True if any input is true."
+   },
+   {
+    "name": "not",
+    "usage": "not a",
+    "about": "Reverse true and false."
+   }
+  ]
+ },
+ {
+  "category": "Arithmetic",
+  "entries": [
+   {
+    "name": "sum",
+    "usage": "sum a b",
+    "about": "Add. (sum a b c) takes more. Same as a + b."
+   },
+   {
+    "name": "difference",
+    "usage": "difference a b",
+    "about": "a - b."
+   },
+   {
+    "name": "product",
+    "usage": "product a b",
+    "about": "Multiply. (product a b c) takes more. Same as a * b."
+   },
+   {
+    "name": "quotient",
+    "usage": "quotient a b",
+    "about": "a / b. With one input, 1 / a."
+   },
+   {
+    "name": "remainder",
+    "usage": "remainder a b",
+    "about": "Remainder with the sign of a."
+   },
+   {
+    "name": "modulo",
+    "usage": "modulo a b",
+    "about": "Remainder with the sign of b."
+   },
+   {
+    "name": "intquotient",
+    "usage": "intquotient a b",
+    "about": "Whole-number division."
+   },
+   {
+    "name": "minus",
+    "usage": "minus a",
+    "about": "Negate."
+   },
+   {
+    "name": "abs",
+    "usage": "abs a",
+    "about": "Absolute value."
+   },
+   {
+    "name": "int",
+    "usage": "int a",
+    "about": "Drop the fraction."
+   },
+   {
+    "name": "round",
+    "usage": "round a",
+    "about": "Nearest whole number."
+   },
+   {
+    "name": "sqrt",
+    "usage": "sqrt a",
+    "about": "Square root."
+   },
+   {
+    "name": "power",
+    "usage": "power a b",
+    "about": "a to the power b. Same as a ^ b."
+   },
+   {
+    "name": "exp",
+    "usage": "exp a",
+    "about": "e to the power a."
+   },
+   {
+    "name": "ln",
+    "usage": "ln a",
+    "about": "Natural logarithm."
+   },
+   {
+    "name": "log10",
+    "usage": "log10 a",
+    "about": "Base-10 logarithm."
+   },
+   {
+    "name": "pi",
+    "usage": "pi",
+    "about": "3.14159..."
+   },
+   {
+    "name": "sin",
+    "usage": "sin degrees",
+    "about": "Sine of an angle in degrees."
+   },
+   {
+    "name": "cos",
+    "usage": "cos degrees",
+    "about": "Cosine of an angle in degrees."
+   },
+   {
+    "name": "tan",
+    "usage": "tan degrees",
+    "about": "Tangent of an angle in degrees."
+   },
+   {
+    "name": "arctan",
+    "usage": "arctan x",
+    "about": "Arc tangent in degrees. (arctan x y) gives the angle of the point."
+   },
+   {
+    "name": "arcsin",
+    "usage": "arcsin x",
+    "about": "Arc sine in degrees."
+   },
+   {
+    "name": "arccos",
+    "usage": "arccos x",
+    "about": "Arc cosine in degrees."
+   },
+   {
+    "name": "random",
+    "usage": "random n",
+    "about": "A random whole number from 0 to n-1 in UCBLogo mode, or 1 to n in Terrapin mode. (random a b) gives a..b in either mode."
+   },
+   {
+    "name": "rerandom",
+    "usage": "rerandom",
+    "about": "Reseed the random numbers. (rerandom seed) makes runs repeatable."
+   },
+   {
+    "name": "lessp",
+    "usage": "lessp a b",
+    "about": "a < b. Alias: LESS?"
+   },
+   {
+    "name": "greaterp",
+    "usage": "greaterp a b",
+    "about": "a > b. Alias: GREATER?"
+   },
+   {
+    "name": "lessequalp",
+    "usage": "lessequalp a b",
+    "about": "a <= b. Alias: LESSEQUAL?"
+   },
+   {
+    "name": "greaterequalp",
+    "usage": "greaterequalp a b",
+    "about": "a >= b. Alias: GREATEREQUAL?"
+   },
+   {
+    "name": "bitand",
+    "usage": "bitand a b",
+    "about": "Bitwise and."
+   },
+   {
+    "name": "bitor",
+    "usage": "bitor a b",
+    "about": "Bitwise or."
+   },
+   {
+    "name": "bitxor",
+    "usage": "bitxor a b",
+    "about": "Bitwise exclusive or."
+   },
+   {
+    "name": "ashift",
+    "usage": "ashift a n",
+    "about": "Shift left by n bits (right if n is negative)."
+   }
+  ]
+ },
+ {
+  "category": "Turtle movement",
+  "entries": [
+   {
+    "name": "forward",
+    "usage": "forward n",
+    "about": "Move n steps in the direction the turtle faces. Alias: FD."
+   },
+   {
+    "name": "back",
+    "usage": "back n",
+    "about": "Move n steps backwards. Aliases: BK, BACKWARD."
+   },
+   {
+    "name": "left",
+    "usage": "left degrees",
+    "about": "Turn anticlockwise. Alias: LT."
+   },
+   {
+    "name": "right",
+    "usage": "right degrees",
+    "about": "Turn clockwise. Alias: RT."
+   },
+   {
+    "name": "home",
+    "usage": "home",
+    "about": "Go to [0 0] facing up."
+   },
+   {
+    "name": "setpos",
+    "usage": "setpos [x y]",
+    "about": "Move to a position."
+   },
+   {
+    "name": "setxy",
+    "usage": "setxy x y",
+    "about": "Move to a position."
+   },
+   {
+    "name": "setx",
+    "usage": "setx x",
+    "about": "Move horizontally to x."
+   },
+   {
+    "name": "sety",
+    "usage": "sety y",
+    "about": "Move vertically to y."
+   },
+   {
+    "name": "setheading",
+    "usage": "setheading degrees",
+    "about": "Face a compass heading (0 is up, 90 is right). Alias: SETH."
+   },
+   {
+    "name": "arc",
+    "usage": "arc degrees radius",
+    "about": "Draw an arc centred on the turtle, clockwise from its heading."
+   },
+   {
+    "name": "dot",
+    "usage": "dot [x y]",
+    "about": "Plot one dot at a position."
+   }
+  ]
+ },
+ {
+  "category": "Turtle queries",
+  "entries": [
+   {
+    "name": "pos",
+    "usage": "pos",
+    "about": "The position as [x y]."
+   },
+   {
+    "name": "xcor",
+    "usage": "xcor",
+    "about": "The x coordinate."
+   },
+   {
+    "name": "ycor",
+    "usage": "ycor",
+    "about": "The y coordinate."
+   },
+   {
+    "name": "heading",
+    "usage": "heading",
+    "about": "The heading in degrees."
+   },
+   {
+    "name": "towards",
+    "usage": "towards [x y]",
+    "about": "The heading that would face that position."
+   },
+   {
+    "name": "distance",
+    "usage": "distance [x y]",
+    "about": "The distance to a position."
+   },
+   {
+    "name": "scrunch",
+    "usage": "scrunch",
+    "about": "The aspect ratio, always [1 1] here."
+   },
+   {
+    "name": "shownp",
+    "usage": "shownp",
+    "about": "True if the turtle is visible. Alias: SHOWN?"
+   },
+   {
+    "name": "pendownp",
+    "usage": "pendownp",
+    "about": "True if the pen is down. Alias: PENDOWN?"
+   },
+   {
+    "name": "penmode",
+    "usage": "penmode",
+    "about": "PAINT, ERASE or REVERSE."
+   },
+   {
+    "name": "pen",
+    "usage": "pen",
+    "about": "The pen state: penup, pendown, penerase or penreverse."
+   },
+   {
+    "name": "pencolor",
+    "usage": "pencolor",
+    "about": "The current pen colour: the original input in UCBLogo mode, or [red green blue alpha] in Terrapin mode. NZ spelling: PENCOLOUR."
+   },
+   {
+    "name": "background",
+    "usage": "background",
+    "about": "The background colour: the original input in UCBLogo mode, or [red green blue alpha] in Terrapin mode. NZ spelling: BACKGROUNDCOLOUR."
+   },
+   {
+    "name": "colors",
+    "usage": "colours",
+    "about": "Available colour names. Terrapin mode uses indexed Web colours; UCBLogo mode uses its existing palette. US spelling: COLORS."
+   },
+   {
+    "name": "pensize",
+    "usage": "pensize",
+    "about": "The pen size as [n n]."
+   },
+   {
+    "name": "wrapp",
+    "usage": "wrapp",
+    "about": "True in WRAP mode. Alias: WRAP?"
+   }
+  ]
+ },
+ {
+  "category": "Pen and colour",
+  "entries": [
+   {
+    "name": "penup",
+    "usage": "penup",
+    "about": "Lift the pen. Alias: PU."
+   },
+   {
+    "name": "pendown",
+    "usage": "pendown",
+    "about": "Lower the pen. Alias: PD."
+   },
+   {
+    "name": "penpaint",
+    "usage": "penpaint",
+    "about": "Draw normally with the pen down. Alias: PPT."
+   },
+   {
+    "name": "penerase",
+    "usage": "penerase",
+    "about": "Pen down, erasing what it crosses. Alias: PE."
+   },
+   {
+    "name": "penreverse",
+    "usage": "penreverse",
+    "about": "Pen down, toggling dots on and off. Alias: PX."
+   },
+   {
+    "name": "setpencolor",
+    "usage": "setpencolour colour",
+    "about": "Set the pen colour. UCBLogo: 0-15, names or RGB 0-100. With --colour-mode terrapin: Web names, 0-138 or RGB 0-255 with optional alpha 0-1. US spelling: SETPENCOLOR."
+   },
+   {
+    "name": "setbackground",
+    "usage": "setbackground colour",
+    "about": "Set the background without changing existing strokes. Uses the selected colour rules; NZ/US spellings are accepted."
+   },
+   {
+    "name": "setpen",
+    "usage": "setpen [penstate colour]",
+    "about": "Set pen state and colour together. Use full state names: PENUP, PENDOWN, PENERASE or PENREVERSE."
+   },
+   {
+    "name": "setalpha",
+    "usage": "setalpha n",
+    "about": "Set the default alpha (0-1) for subsequent pen colours in Terrapin mode. Explicit RGBA inputs override it; background colours use alpha 1 unless supplied."
+   },
+   {
+    "name": "alpha",
+    "usage": "alpha",
+    "about": "The default alpha for subsequent pen colours (initially 1)."
+   },
+   {
+    "name": "setpensize",
+    "usage": "setpensize n",
+    "about": "Pen width in pixels. Alias: SETWIDTH."
+   },
+   {
+    "name": "setpalette",
+    "usage": "setpalette n [r g b]",
+    "about": "Redefine a UCBLogo palette colour (RGB 0-100; UCBLogo mode only)."
+   },
+   {
+    "name": "palette",
+    "usage": "palette n",
+    "about": "A UCBLogo palette colour as [r g b] (UCBLogo mode only)."
+   }
+  ]
+ },
+ {
+  "category": "Screen",
+  "entries": [
+   {
+    "name": "hideturtle",
+    "usage": "hideturtle",
+    "about": "Hide the turtle marker. Alias: HT."
+   },
+   {
+    "name": "showturtle",
+    "usage": "showturtle",
+    "about": "Show the turtle marker. Alias: ST."
+   },
+   {
+    "name": "clearscreen",
+    "usage": "clearscreen",
+    "about": "Clear the drawing and send the turtle home. Alias: CS."
+   },
+   {
+    "name": "clean",
+    "usage": "clean",
+    "about": "Clear the drawing but leave the turtle where it is."
+   },
+   {
+    "name": "wrap",
+    "usage": "wrap",
+    "about": "Turtle wraps round the edges of the canvas."
+   },
+   {
+    "name": "window",
+    "usage": "window",
+    "about": "Turtle may wander off-screen (the default)."
+   },
+   {
+    "name": "fence",
+    "usage": "fence",
+    "about": "Turtle may not leave the canvas: moving out is an error."
+   },
+   {
+    "name": "fill",
+    "usage": "fill",
+    "about": "Flood-fill with the pen colour. In Terrapin mode, the pen must be PENDOWN; (FILL tolerance) accepts 0-1, default 0.5, to cross transparent borders. An area enclosed by pen lines becomes a cut-out in a STENCIL."
+   },
+   {
+    "name": "filled",
+    "usage": "filled colour [instructions]",
+    "about": "Run the instructions, then fill the polygon through every point the turtle visited (pen up or down), back to where it started, and outline it in the pen colour. Where the path crosses itself, alternate regions are filled. The shape becomes a cut-out in a STENCIL."
+   },
+   {
+    "name": "label",
+    "usage": "label thing",
+    "about": "Write text at the turtle's position."
+   },
+   {
+    "name": "setspeed",
+    "usage": "setspeed n",
+    "about": "Watch it draw: 0 is instant, 1 is slow, 5 is the default, 10 is fast. Each step doubles the speed."
+   },
+   {
+    "name": "speed",
+    "usage": "speed",
+    "about": "The current SETSPEED value."
+   },
+   {
+    "name": "setscale",
+    "usage": "setscale n",
+    "about": "Pixels per turtle step (default 1). Extension. 0.5 halves drawings."
+   },
+   {
+    "name": "fitwindow",
+    "usage": "fitwindow n",
+    "about": "Scale so an n x n window (try 1000) fits the canvas, and keep it fitted on resize. Extension. --fit n does the same."
+   },
+   {
+    "name": "textscreen",
+    "usage": "textscreen",
+    "about": "Accepted and ignored. Also FULLSCREEN, SPLITSCREEN (TS, FS, SS)."
+   },
+   {
+    "name": "savepict",
+    "usage": "savepict \"file.svg",
+    "about": "Export the drawing as .svg, .png, .txt or .stl (a stencil). Alias: SAVEPIC."
+   },
+   {
+    "name": "stencil",
+    "usage": "stencil \"file  or  (stencil \"file [options])",
+    "about": "Export a 3D-printable stencil: a flat plate with your pen strokes cut through it as slots and your filled areas (FILL, FILLED) cut out, as a binary STL. The .stl extension is added if the name lacks it. One step is 1 mm and pen size is the slot width (SETPENSIZE 2 for 2 mm). Islands such as the centre of an O are tied back with bridges. A FILL that is not enclosed by pen lines is left out with a warning. Options: thickness 1.2, margin 8, bridge 1.6, bridges 2, width (force every slot), minwidth 0.8, plate [w h], mirror true, pitch 0.2, mm 1, maxgap 15."
+   }
+  ]
+ },
+ {
+  "category": "Help",
+  "entries": [
+   {
+    "name": "help",
+    "usage": "help  or  help name  or  help \"category",
+    "about": "List all commands, or explain one command or a category (turtle, control, arithmetic...)."
+   },
+   {
+    "name": "version",
+    "usage": "version",
+    "about": "Output the version and author of termlogo."
+   }
+  ]
+ },
+ {
+  "category": "Language",
+  "entries": [
+   {
+    "name": "to",
+    "usage": "to name :input ... (lines) end",
+    "about": "Define a procedure. Optional inputs: [:x default]. Rest input: [:rest]."
+   },
+   {
+    "name": "operators",
+    "usage": "+ - * / ^ = <> < > <= >=",
+    "about": "Infix operators. Parenthesised reporters work in expressions, for example (repcount + 1) and right (-1) ^ (repcount + 1). Write 3 - 4, not 3 -4 (a minus after a space is a sign)."
+   },
+   {
+    "name": "words",
+    "usage": "\"word  :variable  [list]",
+    "about": "a b| | Quote a word with \". |a b| holds spaces. ; starts a comment."
+   },
+   {
+    "name": "templates",
+    "usage": "? ?1 ?2 [[a b] body]",
+    "about": "Slots and lambdas used by MAP, FILTER, FOREACH and REDUCE."
+   },
+   {
+    "name": "colours",
+    "usage": "the Colours menu: UCBLogo or Terrapin",
+    "about": "UCBLogo uses palette 0-15 and RGB 0-100. Terrapin uses indexed Web colours, RGB 0-255 and optional alpha 0-1; PENCOLOR and BACKGROUND report RGBA lists. COLOURS lists names. Both grey and gray spellings are accepted."
+   }
+  ]
+ }
+]
