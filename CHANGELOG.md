@@ -16,6 +16,11 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Stop that keeps the workspace. A small service worker (`termlogo/coi-sw.js`,
   scoped to that folder) supplies the headers shared memory needs; the page falls
   back to plain mode if the browser will not run it
+- `/termlogo/` redesigned: the canvas fills the window and follows its size,
+  with a draggable divider, Expand and full screen for more room; a Help panel
+  with a searchable command list (`termlogo/help.json`); Open and Save for
+  programs; pointer coordinates; and a tidier phone layout. Passes the
+  html-proofer README checks
 
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
