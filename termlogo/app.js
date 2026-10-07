@@ -331,7 +331,7 @@ async function startWorker() {
   const size = measureStage();
   requestedSize = wantedSize = size;
   activeColours = ui.colours.value;
-  worker = new Worker(new URL('worker.js?v=bb66b0ee95', import.meta.url), { type: 'module' });
+  worker = new Worker(new URL('worker.js?v=571a82bf79', import.meta.url), { type: 'module' });
   worker.onmessage = ({ data }) => handle(data.kind, data.args);
   worker.onerror = (event) => {
     if (retryWithoutSharedMemory()) return;
@@ -777,7 +777,7 @@ async function loadShared() {
 // ---- examples -------------------------------------------------------------------------------
 async function loadExamples() {
   try {
-    const examples = await (await fetch('examples.json?v=bb66b0ee95')).json();
+    const examples = await (await fetch('examples.json?v=571a82bf79')).json();
     for (const { name, code } of examples) {
       ui.examples.add(new Option(name, code));
       knownPrograms.add(code);
@@ -831,7 +831,7 @@ $('help-open').addEventListener('click', async () => {
   help.showModal();
   if (!helpGroups) {
     try {
-      helpGroups = await (await fetch('help.json?v=bb66b0ee95')).json();
+      helpGroups = await (await fetch('help.json?v=571a82bf79')).json();
     } catch {
       helpGroups = [];
       $('help-count').textContent = 'The command list could not be loaded; type HELP in the ? box instead.';
