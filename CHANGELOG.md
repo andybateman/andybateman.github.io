@@ -9,7 +9,8 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   interpreter from andybateman/termlogo, as plain static files (page, worker,
   package zip, examples; about 0.1 MB). Python runs in the browser through
   Pyodide, loaded from the jsDelivr CDN on first use, so nothing is sent to a
-  server. Passes the html-proofer README checks
+  server. Passes the html-proofer README checks. Linked from the masthead nav
+  as "Logo"
 
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
