@@ -23,6 +23,12 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   programs; pointer coordinates; and a tidier phone layout. Passes the
   html-proofer README checks
 
+- **Tape Deck** at `/tapedeck/`: a features page and a help page for the
+  cassette music player for iPhone, iPad and Mac, as plain static files
+  (about 2 MB, most of it screenshots). Dark, in the app's own yellow;
+  linked from the masthead nav as "Tape Deck". The TestFlight link and a
+  support address are still to come
+
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)

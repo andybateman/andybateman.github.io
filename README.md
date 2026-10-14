@@ -67,6 +67,7 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 - **QR Code Generator** (`qr/`) - QR code generation page
 - **Health Tracker** (`health/`) - Personal health tracking page
 - **Terminal Logo Turtle** (`termlogo/`) - A Logo interpreter with turtle graphics running in the browser (the Python engine through Pyodide, loaded from the jsDelivr CDN). Static files built from [andybateman/termlogo](https://github.com/andybateman/termlogo): from that repository run `python3 tools/build_web.py --out ../andybateman.github.io/termlogo`, which replaces the folder. Live at `/termlogo/`
+- **Tape Deck** (`tapedeck/`) - The features page and help for Tape Deck, the cassette music player for iPhone, iPad and Mac. Plain static files (`index.html`, `help.html`, `style.css`, `img/`) kept in step with [andybateman/tape-deck](https://github.com/andybateman/tape-deck)'s `site/tape-deck/`, where they're drafted; the screenshots come from its `docs/screens/`. Live at `/tapedeck/`
 
 ### 📍 Maps & Location-Based Content
 All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).
