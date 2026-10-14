@@ -37,7 +37,9 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 ### Changed
 - **Masthead nav:** Stories, WLG Hills and NZ Hills taken out of it
   (`_layouts/default.html`). The pages are still there at their addresses,
-  and the stories keep their own bar (Hills, Map, Stories)
+  and the stories' own bar is Hills and Map, Stories gone from it too
+  (`_layouts/post.html`); the stories' index keeps it, marked as the page
+  you're on, and each story its "All stories" link at the foot
 - **`/tapedeck/` up to Tape Deck 4.18:** CarPlay among the platforms, and a
   section for the car and Siri (the lists in runs, the square Now Playing
   picture, carrying on after an announcement, the three Siri phrases); iCloud
