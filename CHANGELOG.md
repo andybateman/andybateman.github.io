@@ -34,6 +34,19 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   in the platforms, and an Apple Watch section in the help (the crown, the
   pencil, the shelf, the complication). Links and pictures checked in a browser
 
+### Changed
+- **Masthead nav:** Stories, WLG Hills and NZ Hills taken out of it
+  (`_layouts/default.html`). The pages are still there at their addresses,
+  and the stories keep their own bar (Hills, Map, Stories)
+- **`/tapedeck/` up to Tape Deck 4.18:** CarPlay among the platforms, and a
+  section for the car and Siri (the lists in runs, the square Now Playing
+  picture, carrying on after an announcement, the three Siri phrases); iCloud
+  Drive's Tape Deck folder and single-track downloads in the library; the sort
+  button. The help has the same, with a section of its own for CarPlay and
+  Siri. Its three pictures with the header in them (`hero.jpg`, `chew.jpg`,
+  `books.jpg`) taken again with the header as it is now. Passes the
+  html-proofer checks
+
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)
