@@ -33,6 +33,7 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   wrist" section on the features page with a picture of the watch, Apple Watch
   in the platforms, and an Apple Watch section in the help (the crown, the
   pencil, the shelf, the complication). Links and pictures checked in a browser
+
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)
