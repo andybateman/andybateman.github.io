@@ -29,6 +29,10 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   linked from the masthead nav as "Tape Deck". The TestFlight link and a
   support address are still to come
 
+- `/tapedeck/` updated for the Apple Watch app (Tape Deck 4.14): an "On your
+  wrist" section on the features page with a picture of the watch, Apple Watch
+  in the platforms, and an Apple Watch section in the help (the crown, the
+  pencil, the shelf, the complication). Links and pictures checked in a browser
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)
