@@ -54,6 +54,14 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Digital Crown say so. Passes the html-proofer checks
 - **`/tapedeck/` up to Tape Deck 4.19.1:** the help's Digital Crown says a bar
   beside the crown shows the level as it changes
+- **README under 10 KB, its metadata hidden** (2026-10-15): it was 10.1 KB
+  with its keywords in plain view. The keywords, status and last-updated date
+  are in an HTML comment under the title now; "Project Structure" and
+  "Recent Updates" moved word for word into `_docs/STRUCTURE.md` and
+  `_docs/UPDATES.md`, which the leading underscore keeps out of the built
+  site, and a table of the documents takes their place. UK spellings, no em
+  dashes, and the post counts dated. Keywords: "hiking" and "SEO" out,
+  "Tape Deck pages" and "Terminal Logo Turtle" in. 7.3 KB
 
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,

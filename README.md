@@ -1,55 +1,24 @@
 # Andy Bateman Personal Website & Projects
 
-A personal website and portfolio project featuring Jekyll-based static site generation, interactive games, and organised project management using the PARA method.
+<!-- Project metadata: read by the project tools, hidden when the README is rendered.
+**Keywords:** personal website, Jekyll, GitHub Pages, static site, portfolio, www.andybateman.com, The Logbook theme, travel blog, kitjunkie archive, travel map, Leaflet, OpenTopoMap, Hanken Grotesk, IBM Plex Mono, Flickr photo albums, Wellington Hills, New Zealand Hills, Mohoe coffee map, Tape Deck pages, Terminal Logo Turtle
+**Status:** Active
+**Last Updated:** 2026-10-15
+-->
 
-**Keywords:** personal website, Jekyll, GitHub Pages, static site, portfolio, www.andybateman.com, The Logbook theme, travel blog, kitjunkie archive, travel map, Leaflet, OpenTopoMap, Hanken Grotesk, IBM Plex Mono, Flickr photo albums, Wellington Hills, New Zealand Hills, Mohoe coffee map, hiking, SEO
+A personal website and portfolio project featuring Jekyll-based static site generation, interactive games, and organised project management using the PARA method.
 
 ## Overview
 
 This project contains the source code and assets for **www.andybateman.com**, a personal website showcasing work, projects, and interactive experiences. The site is built with Jekyll and hosted on GitHub Pages.
 
-## Project Structure
+## Documents
 
-```
-20200609_AndyBateman/
-├── 1_Projects/
-│   ├── Current Site/
-│   │   └── andybateman.github.io (Active Jekyll site)
-│   ├── Features/
-│   │   ├── playground.andybateman.com (Experimental projects)
-│   │   └── signpost (Interactive signpost application)
-│   └── Content Updates/
-│
-├── 2_Areas/
-│   ├── Branding/
-│   ├── Design System/
-│   ├── Content/
-│   └── Performance & SEO/
-│
-├── 3_Resources/
-│   ├── Design Assets/
-│   │   ├── Logos (SVG, AI files)
-│   │   ├── Fonts (glyphter, transfonter)
-│   │   ├── Photos (headshots, passport, etc.)
-│   │   ├── Design files (PSD, LBX, AI)
-│   │   └── Scrapbook/ (historical designs)
-│   ├── Documentation/
-│   │   ├── Resumes (all versions)
-│   │   ├── Spreadsheets (Calendar, Travel, Walks, Pay)
-│   │   ├── Speech files
-│   │   └── Database files
-│   └── Templates/
-│       └── Themeforest template
-│
-└── 4_Archives/
-    ├── Old Versions/
-    │   ├── also_not_current
-    │   ├── not_current
-    │   └── www (original www folder)
-    ├── Backups/
-    │   └── backups (GitLab backups, SQL dumps, etc.)
-    └── Deprecated/
-```
+| Document | What's in it |
+|---|---|
+| [CHANGELOG.md](CHANGELOG.md) | Every change, newest first |
+| [_docs/STRUCTURE.md](_docs/STRUCTURE.md) | The project's folders, by the PARA method |
+| [_docs/UPDATES.md](_docs/UPDATES.md) | The updates of June 2026 and before, from before the changelog took over |
 
 ## Key Features
 
@@ -57,12 +26,12 @@ This project contains the source code and assets for **www.andybateman.com**, a 
 - **Technology:** Jekyll static site generator
 - **Hosting:** GitHub Pages (andybateman.github.io)
 - **Domain:** www.andybateman.com
-- **Framework:** none — a small local utility/reset stylesheet (no Bootstrap)
+- **Framework:** none, a small local utility and reset stylesheet (no Bootstrap)
 - **Plugins:** jekyll-seo-tag, jekyll-sitemap, jekyll-redirect-from
 
 ### 🎮 Interactive Projects
 - **Will's Superhero Adventure** (`will/hero/`) - Interactive text-based game with 9 different superhero personas
-- **Spacle** (`will/spacle/`) - Solar system visualization
+- **Spacle** (`will/spacle/`) - Solar system visualisation
 - **Macaroon Game** (`will/macaroon/`) - Will's game with interactive elements
 - **QR Code Generator** (`qr/`) - QR code generation page
 - **Health Tracker** (`health/`) - Personal health tracking page
@@ -78,8 +47,8 @@ All maps use **Leaflet + OpenTopoMap** (no Google Maps, no API keys).
 - **Sam Nikiel** (`samnikiel/`) - Photo gallery
 
 ### 📖 Stories ("The Logbook")
-- **`posts/`** - 57 travel-blog posts (2001–2011), recovered from the original kitjunkie blog, presented as a chronological journey grouped by year
-- Posts with coordinates show a per-post location mini-map (39 of 57 geotagged)
+- **`posts/`** - 57 travel-blog posts (as at 2026-10-15; 2001–2011), recovered from the original kitjunkie blog, presented as a chronological journey grouped by year
+- Posts with coordinates show a per-post location mini-map (39 of 57 geotagged, as at 2026-10-15)
 
 ### 🎨 Design Assets
 - Custom brand fonts (Batemans-Logos)
@@ -105,7 +74,7 @@ GitHub Pages builds and deploys the live site itself. For local work:
 
 ### Prerequisites
 - Ruby 3.x+ (the macOS system Ruby 2.6 is too old). On this Mac, the Homebrew
-  Ruby works — put it on PATH first.
+  Ruby works: put it on PATH first.
 
 ### Local Development
 
@@ -133,7 +102,7 @@ bundle exec htmlproofer _site --disable-external --no-enforce-https \
 ## Content
 
 ### Blog Posts
-The site includes 57 blog posts (2001–2011) covering:
+The site includes 57 blog posts (as at 2026-10-15; 2001–2011) covering:
 - Travel experiences (Tahiti, Fiji, New Zealand, Australia, Malaysia, Nepal)
 - Kit reviews and gear recommendations
 - Personal updates and life events
@@ -149,59 +118,26 @@ The site includes 57 blog posts (2001–2011) covering:
 ## Branding
 
 ### Andy Bateman Brand
-- **Primary Color:** #FBCA12 (Andy Bright Yellow)
+- **Primary Colour:** #FBCA12 (Andy Bright Yellow)
 - **Ink:** #1A1813 (near-black text)
-- **Accent:** #C0392B (Marker Red — from the map pins; used for links, category tags, active nav)
+- **Accent:** #C0392B (Marker Red, from the map pins; used for links, category tags, active nav)
 - **Display face:** Hanken Grotesk · **Mono face:** IBM Plex Mono
 - **Logo:** `images/logo.svg` (solid) + `images/logo-hover.svg` (outline on hover), from `ab-05.svg`
 - **Personality:** Bold, creative, approachable, energetic
 
 ### Main Street Network Brand
-- **Primary Color:** #9ad17b (Main Street Green)
-- **Secondary Color:** #b1c0a2 (Main Street Sage)
-- **Accent Color:** #c9a2bf (Main Street Mauve)
+- **Primary Colour:** #9ad17b (Main Street Green)
+- **Secondary Colour:** #b1c0a2 (Main Street Sage)
+- **Accent Colour:** #c9a2bf (Main Street Mauve)
 - **Personality:** Technical, reliable, innovative, community-focused
 
 ## Project Management
 
-This project uses the **PARA method** for organization:
+This project uses the **PARA method** for organisation:
 - **Projects:** Active work with clear endpoints
 - **Areas:** Ongoing responsibilities and domains
 - **Resources:** Reference material and assets
 - **Archives:** Completed and inactive items
-
-## Recent Updates
-
-### Latest Changes (2026-06-30)
-- **Type system modernised** — display → **Hanken Grotesk**, mono → **IBM Plex Mono** (replacing Bricolage Grotesque + Space Mono)
-- **Health & Sam Nikiel** brought onto the shared head/Logbook theme; the Health chart migrated CanvasJS → Chart.js
-- **Link audit** — fixed dead kitjunkie.org links (world-map → travel map, dead `/kit/` → `/posts/`, unwrapped dead pages), tidied the Spacle CDNs, and repointed 8 of 11 dead photo-gallery links to **Flickr**
-- Removed dead Universal Analytics from NZ Hills and Sam Nikiel
-- See `CHANGELOG.md` for the full 3.1.0 entry
-
-### Latest Changes (2026-06-27)
-- **Restored the story blog** — 57 travel posts (2001–2011) with a new readable layout
-- **Added the Travel Map** (`travelmap/`) and per-post location maps; recovered 39 posts' coordinates
-- **"The Logbook" theme** — new visual identity (Bricolage Grotesque + Space Mono, marker-red accent); `/posts/` redesigned
-- **Unified the `<head>`** across all pages; map/chart pages now get fonts, GA4, SEO and favicon
-- **Logo → SVG** (ab-05), replacing the base64 PNG sprite; fixed post titles that were rendering as the logo
-- **Local builds fixed** (modern Jekyll Gemfile) and post content cleaned (mojibake, WordPress cruft, dead links)
-- See `CHANGELOG.md` for the full 3.0.0 entry
-
-### Previous Updates
-- Reorganized project structure using PARA method
-- Cleaned up and refactored Will's Superhero Adventure game code
-- Improved code documentation and organization
-- Moved experimental projects to Features section
-- Consolidated design assets and resources
-
-### Game Code Improvements
-- Added comprehensive JSDoc comments
-- Organized code into logical sections
-- Improved variable naming and clarity
-- Used template literals for better readability
-- Separated concerns (DOM, Logic, Configuration)
-- Added configuration constants for magic numbers
 
 ## Deployment
 
@@ -230,10 +166,4 @@ All content and code in this project are proprietary and belong to Andy Bateman 
 
 ## Status
 
-**Status:** Active
-
-This project is actively maintained and updated regularly.
-
----
-
-*Last Updated: 30 June 2026*
+Active, and updated regularly.
