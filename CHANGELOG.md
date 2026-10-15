@@ -54,6 +54,11 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Digital Crown say so. Passes the html-proofer checks
 - **`/tapedeck/` up to Tape Deck 4.19.1:** the help's Digital Crown says a bar
   beside the crown shows the level as it changes
+- **`/tapedeck/` up to Tape Deck 4.20:** albums in the iCloud Drive folder
+  show up while the app is open, and an album folder dropped straight into
+  Music is named by its tags. The help's "No music yet" answer has a picture of
+  the app's new first screen (`img/first-screen.png`, from the iPhone
+  simulator), which shows where music goes. Passes the html-proofer checks
 - **README under 10 KB, its metadata hidden** (2026-10-15): it was 10.1 KB
   with its keywords in plain view. The keywords, status and last-updated date
   are in an HTML comment under the title now; "Project Structure" and
