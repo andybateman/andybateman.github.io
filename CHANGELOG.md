@@ -48,6 +48,10 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Siri. Its three pictures with the header in them (`hero.jpg`, `chew.jpg`,
   `books.jpg`) taken again with the header as it is now. Passes the
   html-proofer checks
+- **`/tapedeck/` up to Tape Deck 4.19:** on the watch the Digital Crown sets
+  the iPhone's volume, and no longer winds the tape; with the tape chewed it
+  still turns the pencil. The features page's "On your wrist" and the help's
+  Digital Crown say so. Passes the html-proofer checks
 
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
