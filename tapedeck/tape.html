@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A tape for you</title>
+<meta name="description" content="A tape made in Tape Deck: its label, its shell and its tracks.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="img/icon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* A tape sent as a link (v4.28): everything about it is after the # in the
+     address, which never leaves the browser; nothing is stored anywhere */
+  .tape { max-width: 760px; margin: 0 auto; }
+  .tape canvas { display: block; width: 100%; max-width: 640px; margin: 8px auto 0; }
+  .tape h1 { margin-bottom: 4px; }
+  .tape .by { color: var(--dim); margin: 0 0 6px; }
+  .sides { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 32px; margin: 26px 0 8px; }
+  .sides section { padding: 0; margin: 0; border: 0; }   /* not the site's sections, spaced for a page of their own */
+  .sides h2 { font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--yellow); margin: 0 0 8px; }
+  .sides ol { margin: 0; padding: 0; list-style: none; counter-reset: tr; }
+  .sides li { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); counter-increment: tr; }
+  .sides li::before { content: counter(tr); color: var(--dim); min-width: 1.6em; text-align: right; }
+  .sides .t { flex: 1; min-width: 0; }
+  .sides .r { display: block; color: var(--dim); font-size: 14px; }
+  .sides .d { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .sides .total { color: var(--dim); font-size: 14px; margin-top: 6px; }
+  .note { color: var(--dim); font-size: 15px; }
+  .broken { text-align: center; padding: 60px 0; }
+</style>
+</head>
+<body>
+
+<nav aria-label="Tape Deck">
+  <div class="wrap">
+    <a class="name" href="./"><img src="img/icon.png" alt="">Tape Deck</a>
+    <a href="./">Features</a>
+    <a href="help.html">Help</a>
+  </div>
+</nav>
+
+<main class="wrap help">
+  <div class="tape" id="tape" hidden>
+    <header class="hero" style="text-align:left;padding-bottom:0">
+      <h1 id="title"></h1>
+      <p class="by" id="by"></p>
+    </header>
+    <canvas id="cv" role="img" aria-label="The cassette"></canvas>
+    <div class="sides" id="sides"></div>
+    <p class="note">A tape made in <a href="./">Tape Deck</a>: its label, its shell and its tracks. The music isn't in the link; play it from your own library.</p>
+  </div>
+  <div class="broken" id="broken" hidden>
+    <h1>This tape didn't come through</h1>
+    <p class="note">The link may have been cut short. Ask for it again, or see <a href="./">what Tape Deck is</a>.</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Tape Deck · <a href="./">Features</a> · <a href="help.html">Help</a></div>
+</footer>
+
+<script>
+  // The label's hands, for the cassette's code to load (setHandFont)
+  window.AB_HAND_FONTS = { caveat: 'fonts/caveat.woff2', gochihand: 'fonts/gochihand.woff2', permanentmarker: 'fonts/permanentmarker.woff2',
+                           reeniebeanie: 'fonts/reeniebeanie.woff2', rocksalt: 'fonts/rocksalt.woff2' };
+</script>
+<script src="js/cassette.js"></script>
+<script>
+(async function () {
+  'use strict';
+  // Another tape's link pasted over this one's: read afresh
+  window.addEventListener('hashchange', () => location.reload());
+  // The tape, from the link: "z" and deflated, or "j" and plain, then base64url JSON (share.js in Tape Deck)
+  async function unpack(s) {
+    const kind = s.charAt(0), b64 = s.slice(1).replace(/-/g, '+').replace(/_/g, '/');
+    const bytes = Uint8Array.from(atob(b64 + '==='.slice((b64.length + 3) % 4)), ch => ch.charCodeAt(0));
+    let text;
+    if (kind === 'z') text = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+    else if (kind === 'j') text = new TextDecoder().decode(bytes);
+    else throw new Error('not a tape');
+    const tape = JSON.parse(text);
+    if (tape.v !== 1 || !Array.isArray(tape.sd)) throw new Error('not a tape');
+    return tape;
+  }
+  const fmt = s => { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  let tape;
+  try { tape = await unpack(decodeURIComponent(location.hash.slice(1))); }
+  catch (e) { document.getElementById('broken').hidden = false; return; }
+
+  const sides = tape.sd.map(side => side.map(([t, d, r]) => ({ t: String(t || ''), d: +d || 0, r: r ? String(r) : '' })));
+  const totals = sides.map(s => s.reduce((a, x) => a + x.d, 0));
+  const side = Math.max(60, ...totals);
+  document.title = (tape.t || 'A tape') + (tape.a ? ', ' + tape.a : '') + ' · Tape Deck';
+  document.getElementById('title').textContent = tape.t || 'A tape';
+  document.getElementById('by').textContent = tape.a || '';
+  document.getElementById('tape').hidden = false;
+
+  // The tracks, a list a side
+  const box = document.getElementById('sides');
+  sides.forEach((s, i) => {
+    const col = el('section');
+    col.appendChild(el('h2', '', sides.length > 1 ? 'Side ' + String.fromCharCode(65 + i) : 'The tape'));
+    const ol = el('ol');
+    s.forEach(x => {
+      const li = el('li'), name = el('span', 't', x.t);
+      if (x.r) name.appendChild(el('span', 'r', x.r));
+      li.appendChild(name); li.appendChild(el('span', 'd', fmt(x.d)));
+      ol.appendChild(li);
+    });
+    col.appendChild(ol);
+    col.appendChild(el('p', 'total', s.length + (s.length === 1 ? ' track, ' : ' tracks, ') + fmt(totals[i])));
+    box.appendChild(col);
+  });
+
+  // The cassette, as the sender's deck drew it, playing
+  const C = window.ABCassette, cv = document.getElementById('cv');
+  C.mount(cv);
+  if (tape.pal) C.setArtPalette({ a: tape.pal[0], b: tape.pal[1], vivid: !!tape.pal[2] });
+  if (tape.s && C.styles.indexOf(tape.s) >= 0) C.setStyle(tape.s);
+  if (typeof tape.cl === 'boolean') C.setClearShell(tape.cl);
+  C.setTapeType(tape.ty || 'II', tape.nr || 'B');
+  C.setSide(side);
+  C.setSlackInstant(true);
+  C.setRunning(true);
+  C.setLoaded(true);
+  C.setHandFont(tape.h || 'neat');
+  C.setWordScale(1.5);   // the label read at a page's width, not a deck's
+  C.setLabel(tape.t || '', tape.a || '', 'C' + (tape.c || Math.max(1, Math.round(2 * side / 60))), sides.length > 1 ? 'A' : '');
+  C.setLabelInfo({ lines: [sides.flat().length + ' tracks', fmt(totals.reduce((a, b) => a + b, 0))], heading: 'Sides',
+                   rows: sides.map((s, i) => ({ text: String.fromCharCode(65 + i) + '  ' + fmt(totals[i]), on: i === 0 })) });
+  // The reels at the tape's own speed, thirty times a second; still with Reduce Motion
+  const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let t = Math.min(side * 0.3, 240), last = performance.now();
+  C.render(t);
+  if (!still) {
+    setInterval(() => {
+      const now = performance.now();
+      t += (now - last) / 1000; last = now;
+      if (t > side) t = 0;
+      C.render(t);
+    }, 33);
+  }
+  document.fonts && document.fonts.ready.then(() => C.render(t));
+})();
+</script>
+</body>
+</html>
