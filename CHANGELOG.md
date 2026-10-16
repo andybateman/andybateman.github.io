@@ -69,14 +69,17 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Music is named by its tags. The help's "No music yet" answer has a picture of
   the app's new first screen (`img/first-screen.png`, from the iPhone
   simulator), which shows where music goes. Passes the html-proofer checks
-- **`/tapedeck/` up to Tape Deck 4.29** (2026-10-16): Apple Music, played as
+- **`/tapedeck/` up to Tape Deck 4.30** (2026-10-16): Apple Music, played as
   tapes, in the features, the help and the privacy page; Tape Deck Server, for
   people serving their own music, linked from the front page and the help;
   Audiobooks and Apple Music from the header's single source button; and in
   the help the tape's place kept per tape, the LED meters, the Home Screen
   widget and its keys, the iMessage stickers, Send this tape and mixtapes.
   New pictures in `tapedeck/img/` for the meters, the source menu and the
-  widget. Each push passed the html-proofer checks
+  widget. For 4.30, the help's Mac-only music folder became "A music folder,
+  or a NAS" (choosing one on the iPhone and iPad, and connecting a NAS through
+  Connect to Server), and the front page says a folder can be played where it
+  is. Each push passed the html-proofer checks
 - **README under 10 KB, its metadata hidden** (2026-10-15): it was 10.1 KB
   with its keywords in plain view. The keywords, status and last-updated date
   are in an HTML comment under the title now; "Project Structure" and
