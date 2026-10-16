@@ -52,8 +52,8 @@
     <dd>If you run a Tape Deck music server, type its address in <b>tape settings › Library › Music server</b>, or on the first screen when there's no music yet. The whole library on it is listed; a track downloads when you play it, and the rest of its album after it.</dd>
     <dt>No server? Run Tape Deck Server</dt>
     <dd><a href="https://github.com/andybateman/tape-deck-server">Tape Deck Server</a> is a free, open-source music server for the app: one Python file, or one Docker container, on any computer, NAS or Raspberry Pi. Point it at a folder of albums laid out as Artist › Album › tracks, put it behind HTTPS (Caddy or Tailscale Serve will do), and type that address into the app. A password keeps it yours, and a second one lets friends play without touching your favourites.</dd>
-    <dt>A music folder on the Mac</dt>
-    <dd>File › Choose Music Folder… (<kbd>⌘O</kbd>) plays a folder where it is, such as one on an external drive, laid out one folder per artist with one per album inside.</dd>
+    <dt>A music folder, or a NAS</dt>
+    <dd>Tape Deck can play a folder where it is, without copying it in, laid out one folder per artist with one per album inside: <b>tape settings › Library › Music folder › Choose</b>, or on the Mac File › Choose Music Folder… (<kbd>⌘O</kbd>). On an iPhone or iPad that can be a folder on a NAS: in the Files app, or in the picker itself, tap ⋯ › <b>Connect to Server</b>, type the NAS's address (such as smb://192.168.1.20), and choose its music folder. Its albums take the place of the music server's copies; when the NAS or the drive can't be reached, its albums are left out until it can.</dd>
     <dt>Formats</dt>
     <dd>MP3, AAC (M4A), FLAC and WAV. Ogg and Opus files are left out, and the app says how many.</dd>
   </dl>
