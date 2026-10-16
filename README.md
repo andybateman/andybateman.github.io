@@ -3,7 +3,7 @@
 <!-- Project metadata: read by the project tools, hidden when the README is rendered.
 **Keywords:** personal website, Jekyll, GitHub Pages, static site, portfolio, www.andybateman.com, The Logbook theme, travel blog, kitjunkie archive, travel map, Leaflet, OpenTopoMap, Hanken Grotesk, IBM Plex Mono, Flickr photo albums, Wellington Hills, New Zealand Hills, Mohoe coffee map, Tape Deck pages, Terminal Logo Turtle
 **Status:** Active
-**Last Updated:** 2026-10-15
+**Last Updated:** 2026-10-16
 -->
 
 A personal website and portfolio project featuring Jekyll-based static site generation, interactive games, and organised project management using the PARA method.

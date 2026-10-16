@@ -34,6 +34,16 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   in the platforms, and an Apple Watch section in the help (the crown, the
   pencil, the shelf, the complication). Links and pictures checked in a browser
 
+- **`/tapedeck/privacy.html`** (2026-10-16): the privacy page the App Store
+  listing links to: Tape Deck collects nothing, and the page says what stays
+  on the listener's devices and what goes only to servers they choose. The
+  help gives the support address
+- **`/tapedeck/tape.html`** (2026-10-16): a tape sent from Tape Deck 4.28 as a
+  link, drawn as the app draws it, from the cassette's own code
+  (`tapedeck/js/cassette.js`) and the label's handwriting fonts
+  (`tapedeck/fonts/`, five woff2 files). The tape is in the link's `#` part,
+  which the browser never sends to a server
+
 ### Changed
 - **Masthead nav:** Stories, WLG Hills and NZ Hills taken out of it
   (`_layouts/default.html`). The pages are still there at their addresses,
@@ -59,6 +69,14 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   Music is named by its tags. The help's "No music yet" answer has a picture of
   the app's new first screen (`img/first-screen.png`, from the iPhone
   simulator), which shows where music goes. Passes the html-proofer checks
+- **`/tapedeck/` up to Tape Deck 4.29** (2026-10-16): Apple Music, played as
+  tapes, in the features, the help and the privacy page; Tape Deck Server, for
+  people serving their own music, linked from the front page and the help;
+  Audiobooks and Apple Music from the header's single source button; and in
+  the help the tape's place kept per tape, the LED meters, the Home Screen
+  widget and its keys, the iMessage stickers, Send this tape and mixtapes.
+  New pictures in `tapedeck/img/` for the meters, the source menu and the
+  widget. Each push passed the html-proofer checks
 - **README under 10 KB, its metadata hidden** (2026-10-15): it was 10.1 KB
   with its keywords in plain view. The keywords, status and last-updated date
   are in an HTML comment under the title now; "Project Structure" and
