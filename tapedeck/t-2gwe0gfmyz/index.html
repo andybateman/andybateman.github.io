@@ -1,0 +1,35 @@
+---
+sitemap: false
+---
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Andy Bateman, by Glenn Callow</title>
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="../img/icon.png">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .tape { max-width: 720px; margin: 0 auto; padding-top: 32px; }
+  .tape h1 { margin-bottom: 6px; }
+  .tape p { color: var(--dim); }
+  .tape tape-deck-player { margin: 22px 0 8px; }
+  pre { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); }
+</style>
+</head>
+<body>
+<!-- Unlisted (Andy, 2026-10-17: "somewhere hidden away"): linked from nowhere, out of the sitemap, and not to be indexed.
+     The song is Glenn Callow's, used with his leave, as it is for the app's demo tape. -->
+<main class="wrap tape">
+  <h1>Andy Bateman</h1>
+  <p>Glenn Callow, on a Tape Deck cassette. Press play; hold the winding keys to wind, or tap them to skip 30 seconds.</p>
+  <tape-deck-player src="andy-bateman.m4a" title="Andy Bateman" artist="Glenn Callow" cover="cover.jpg"></tape-deck-player>
+  <p>The player is one script and the audio file. On a page of your own:</p>
+  <pre><code>&lt;script src="tapedeck.js" defer&gt;&lt;/script&gt;
+&lt;tape-deck-player src="song.m4a" title="Title" artist="Artist" cover="cover.jpg"&gt;&lt;/tape-deck-player&gt;</code></pre>
+</main>
+<script src="tapedeck.js" defer></script>
+</body>
+</html>
