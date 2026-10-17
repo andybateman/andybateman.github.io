@@ -53,7 +53,7 @@ var PX = 12.0;                  // px per mm, recomputed from the canvas width
 var MARGIN = 2.0;               // mm of stage around the shell
 var SHELL_W = 100.4, SHELL_H = 63.8;
 var HUB_SPACING = 42.5;
-var HUB_CY = SHELL_H / 2;
+var HUB_CY = 29.0;
 var HUB_BORE = 5.8, BORE_WALL = 5.0;
 var TOOTH_TIP = 3.85, TOOTH_W = 1.35;
 var HUB_STEP = 8.1;
@@ -78,12 +78,12 @@ var DET_END = [TAB_INSET + TAB_W, 4.4];
 var DET_MID = [SHELL_W / 2 - 7.4 - 1.9, 3.8];
 var TYPE_LINE = { I: 'TYPE I \u00b7 NORMAL', II: 'TYPE II \u00b7 HIGH (CrO\u2082)', IV: 'TYPE IV \u00b7 METAL' };
 var SCREW_R = 1.6, BOTTOM_SCREW_Y = 54.5;
-var LAB_X0 = 1.0, LAB_Y0 = 8.70, LAB_X1 = 99.4, LAB_Y1 = 46.10;
-var STRIPE_Y = 21.0;
-var WIN_X0 = 16.0, WIN_Y0 = 25.25, WIN_X1 = 84.4, WIN_Y1 = 38.55;
+var LAB_X0 = 1.0, LAB_Y0 = 5.80, LAB_X1 = 99.4, LAB_Y1 = 43.20;
+var STRIPE_Y = 18.1;
+var WIN_X0 = 16.0, WIN_Y0 = 22.35, WIN_X1 = 84.4, WIN_Y1 = 35.65;
 var APRON_Y0 = 47.0, APRON_TOP_X0 = 24.0, APRON_TOP_X1 = 76.4;
 var APRON_BOT_X0 = 14.0, APRON_BOT_X1 = 86.4, APRON_SHOULDER_Y = 52.5;
-var CAP_X0 = 14.0, CAP_Y0 = 19.0, CAP_X1 = 86.4, CAP_Y1 = 44.8, CAP_R = 6.0;
+var CAP_X0 = 14.0, CAP_Y0 = 16.1, CAP_X1 = 86.4, CAP_Y1 = 41.9, CAP_R = 6.0;
 var PIN_SQ = 1.7;
 var EAR_H = 14.81, EAR_OUT = 0.82;
 var EAR_CY = SHELL_H - 14.49;
@@ -95,12 +95,20 @@ A: { path: new Path2D('M 205.800003 279.399994 L 205.800003 202.899994 C 205.300
 B: { path: new Path2D('M 290.5 279.399994 C 312.600006 278.899994 331.100006 271.399994 346 256.899994 C 360.899994 242.399994 368.600006 224.399994 369.100006 202.899994 C 368.600006 181.099991 360.799988 163 346 148.700012 C 331.100006 134.399994 312.600006 126.899994 290.5 126.399994 C 273.600006 126.700012 258.600006 131.200012 245.5 139.899994 L 245.5 184.099991 C 249.299988 175.599991 255.200012 168.799988 263.100006 163.599991 C 271 158.399994 280.100006 155.700012 290.5 155.399994 C 304.100006 155.700012 315.600006 160.299988 324.899994 169.299988 C 334.200012 178.299988 339 189.5 339.200012 202.899994 C 338.899994 216.299988 334.100006 227.399994 324.899994 236.299988 C 315.600006 245.199982 304.200012 249.699982 290.5 250 C 276.600006 249.699982 265.100006 245.199982 255.899994 236.299988 C 246.799988 227.399994 241.899994 216.299988 241.399994 202.899994 L 241.399994 126.399994 L 211.5 126.399994 L 211.5 202.899994 C 212 224.5 219.699997 242.5 234.600006 256.899994 C 249.5 271.399994 268.100006 278.899994 290.5 279.399994 Z'), cx: 290.3, cy: 202.9 }
 };
 var AB_GLYPH_W = 157.6;
-var RULE_1 = 19.0;
+var RULE_1 = 16.1;
 var LAB_CHAMFER = 3.2, WIN_RADIUS = 5.0;
 var RIBBON_W = 3;
 var SHELL_ALPHA = 0.42, APRON_ALPHA = 0.55, CAP_ALPHA = 0.30;
 var LEADER_COLOR = '#2a6db8';
 var PACK_BASE = '#322722', PACK_R = 50, PACK_G = 39, PACK_B = 34;
+var PACKS = { ferric: ['#322722', 50, 39, 34], chrome: ['#25252a', 37, 37, 42], metal: ['#18181b', 26, 26, 30] };
+var HUB_RING = null, FLANGE = null, FRAME = null, RIBS = false, TEXTURE = null, PAD_FILL = '#9a9da5';
+var TEXTURES = {
+knurl: { kind: 'dots', pitch: 0.9, ink: 'rgba(255,255,255,0.16)' },
+ribs: { kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' },
+grid: { kind: 'grid', pitch: 1.2, ink: 'rgba(255,255,255,0.12)' },
+diag: { kind: 'diag', pitch: 1.2, ink: 'rgba(255,255,255,0.14)' }
+};
 var HAND_SYSTEM = '"Segoe Script", "Bradley Hand", "Brush Script MT", "Snell Roundhand", "Comic Sans MS", cursive';
 var HAND_FONT = HAND_SYSTEM, HAND_SCALE = 1;
 var WORD_SCALE = 1;
@@ -113,6 +121,7 @@ neat:   ['Caveat', 'caveat', 1.2],
 scrawl: ['Rock Salt', 'rocksalt', 0.72]
 };
 var UI_FONT = '-apple-system, "Segoe UI", sans-serif';
+var FE_TICKS = 'M34.20 11.7h0.38v2.2h-0.38z M35.10 11.7h0.38v1.6h-0.38z M36.00 11.7h0.38v1.6h-0.38z M36.90 11.7h0.38v1.6h-0.38z M37.80 11.7h0.38v1.6h-0.38z M38.70 11.7h0.38v2.2h-0.38z M39.60 11.7h0.38v1.6h-0.38z M40.50 11.7h0.38v1.6h-0.38z M41.40 11.7h0.38v1.6h-0.38z M42.30 11.7h0.38v1.6h-0.38z M43.20 11.7h0.38v2.2h-0.38z M44.10 11.7h0.38v1.6h-0.38z M45.00 11.7h0.38v1.6h-0.38z M45.90 11.7h0.38v1.6h-0.38z M46.80 11.7h0.38v1.6h-0.38z M47.70 11.7h0.38v2.2h-0.38z M48.60 11.7h0.38v1.6h-0.38z M49.50 11.7h0.38v1.6h-0.38z M50.40 11.7h0.38v1.6h-0.38z M51.30 11.7h0.38v1.6h-0.38z M52.20 11.7h0.38v2.2h-0.38z M53.10 11.7h0.38v1.6h-0.38z M54.00 11.7h0.38v1.6h-0.38z M54.90 11.7h0.38v1.6h-0.38z M55.80 11.7h0.38v1.6h-0.38z M56.70 11.7h0.38v2.2h-0.38z M57.60 11.7h0.38v1.6h-0.38z M58.50 11.7h0.38v1.6h-0.38z M59.40 11.7h0.38v1.6h-0.38z M60.30 11.7h0.38v1.6h-0.38z M61.20 11.7h0.38v2.2h-0.38z M62.10 11.7h0.38v1.6h-0.38z';
 var STYLES = {
 Brand:   { clear:true,  face:'#fbfbfc', ink:'#1a1a1a', dim:'#6b7080', stripe:'#FBCA12',
 shell:'#c8cad0', shellEdge:'#9a9da5', apron:'#b9bcc3', capsule:'#2f3238',
@@ -128,13 +137,49 @@ alpha:0.32, leader:'#cfd9e3' },
 Olive:   { clear:false, face:'#efe9d2', ink:'#2a2a1e', dim:'#6a6a4e', stripe:'#9aa844',
 shell:'#23262a', shellEdge:'#14161a', apron:'#2e3237', capsule:'#191c20', leader:'#e6e3d6' },
 Crimson: { clear:false, face:'#f2e9e2', ink:'#2a1416', dim:'#7a5a54', stripe:'#d2352c',
-shell:'#1f1f22', shellEdge:'#121214', apron:'#2a2a2e', capsule:'#141416', leader:'#e8e8e8' }
+shell:'#1f1f22', shellEdge:'#121214', apron:'#2a2a2e', capsule:'#141416', leader:'#e8e8e8' },
+'Red Reels':  { clear:true, face:'#fbfbfc', ink:'#1a1a1a', dim:'#6b7080', stripe:'#d8312b',
+shell:'#cfc4de', shellEdge:'#8f86a3', apron:'#c2b8d3', capsule:'#3a3442', alpha:0.34, leader:'#ece8f2',
+labelShape:'none', hub:'rgba(232,74,52,0.86)', hubEdge:'#b8321f', roller:['#e2553f', '#ef6a52', '#c8412d'],
+ribs:true, label:'Corner Store', win:'wide' },
+'Clear':      { clear:true, face:'#f1ead6', ink:'#22408f', dim:'#5a6478', stripe:'#9fb3c8',
+shell:'#e4e8ec', shellEdge:'#a9b0b8', apron:'#d6dbe0', capsule:'#2f3238', alpha:0.22, leader:'#eef2f5',
+ring:'#e8483a', label:'Ruled Paper', win:'wide' },
+'Smoked':     { clear:true, face:'#dfe3e8', ink:'#1b2533', dim:'#5d6878', stripe:'#2a6db8',
+shell:'#3f444c', shellEdge:'#24272c', apron:'#4a5058', capsule:'#1d2024', alpha:0.58, leader:'#d9dee4',
+pack:'chrome', ring:'rgba(255,255,255,0.55)', label:'Silver Gloss', win:'wide' },
+'Metal':      { clear:false, face:'#141416', ink:'#c9a54a', dim:'#8f7a45', stripe:'#c9a54a',
+shell:'#18181b', shellEdge:'#0b0b0c', apron:'#222226', capsule:'#0f0f11', leader:'#e6e2d6',
+pack:'metal', frame:'#b9a46a', shiny:true, label:'Black Gold', win:'round' },
+'Grey Band':  { clear:false, face:'#20232a', ink:'#f2efe6', dim:'#a9adb5', stripe:'#d9622b',
+shell:'#4f535a', shellEdge:'#33363b', apron:'#5c6067', capsule:'#26292d', leader:'#ece8df',
+label:'Band Ferric', win:'twin' },
+'Reel':       { clear:true, face:'#eef1f4', ink:'#12243a', dim:'#5d6b7d', stripe:'#2a6db8',
+shell:'#eef1f4', shellEdge:'#b4bac2', apron:'#dde1e6', capsule:'#2b2f36', alpha:0.16, leader:'#e8edf2',
+reels:['#cfd6de', 0.5], labelShape:'top', label:'Pinstripe Hi-Fi', win:'wide' },
+'Home Ferric': { clear:true, face:'#ffffff', ink:'#1f45b8', dim:'#5a6478', stripe:'#1f45b8', shell:'#c7cbd2', shellEdge:'#80868f', apron:'#bfc3ca', capsule:'#aeb3ba', alpha:0.3, leader:'#e8ebef', hub:'#f6f6f4', hubEdge:'#b9bcc2', ring:'rgba(255,255,255,0.6)', pack:'ferric', labelShape:'full', texture:{ kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' }, label:'Stick-on Letters', win:'none',
+print: [
+{ k: 'rect', x: 5.2, y: 7.5, w: 17.6, h: 5.6, fill: '#2347c6' },
+{ k: 'text', t: 'TDK', brand: true, generic: 'TYPE I', x: 14.6, y: 10.4, w: 13, size: 4.4, font: 'sans', weight: 800, ink: '#ffffff', align: 'center' },
+{ k: 'text', t: 'FE', brand: true, generic: 'Fe', x: 24.6, y: 10.7, w: 9, size: 6.4, font: 'sans', weight: 900, ink: '#d9c57e' },
+{ k: 'text', t: 'FERRIC', x: 34.4, y: 9.4, w: 26, size: 1.9, font: 'sans', weight: 600, ink: '#d9c57e', track: 1.5 },
+{ k: 'path', d: FE_TICKS, fill: '#d9c57e' },
+{ k: 'text', t: '90', x: 63.6, y: 11.5, w: 10, size: 6.0, font: 'cond', weight: 800, ink: '#d9c57e' },
+{ k: 'text', t: 'IEC I/TYPE I', x: 74.8, y: 9.9, w: 18, size: 1.7, font: 'sans', weight: 700, ink: '#d9c57e' },
+{ k: 'text', t: 'NORMAL POSITION', x: 74.8, y: 12, w: 19, size: 1.7, font: 'sans', weight: 700, ink: '#d9c57e' },
+{ k: 'text', t: '@side', x: 6.6, y: 37.7, w: 4, size: 2.6, font: 'sans', weight: 600, ink: '#d9c57e' }
+] },
+'Dutch C60': { clear:false, face:'#e5dac2', ink:'#2a2a2a', dim:'#6b655a', stripe:'#d8303a',
+shell:'#dcd8ca', shellEdge:'#b3afa0', apron:'#d3cfc0', capsule:'#a8a496', leader:'#e4e0d8',
+hub:'#f4f3ee', hubEdge:'#b8b4a6', pack:'ferric', labelShape:'full', labelBottom:45.4,
+label:'Red Horseshoe', win:'holes' }
 };
 var ALBUM_DEFAULT = { face: STYLES.Album.face, ink: STYLES.Album.ink, dim: STYLES.Album.dim, stripe: STYLES.Album.stripe };
 var styleName = 'Brand';
 var clearOverride = true;       // independent of the style: force the shell solid even when it can be clear
 var labelOn = true;             // full face label over the shell
 var labelShape = 'full';        // 'full' face, or a retail 'strip' along the top that leaves the window open
+var labelStyle = 'shell';
 var tapeKind = 'II';            // formulation, 'I', 'II' or 'IV': its line on the label, its holes in the shell
 var tapeNR = 'B';               // noise reduction, 'off', 'B' or 'C': the double-D mark on the label
 var explode = 0, explodeTarget = 0, explodeAt = 0, EXPLODE_T = 1.6;
@@ -162,8 +207,8 @@ var METAL = '#c8ced6', METAL_DARK = '#848b95';
 var SPINDLE_R = 3.4, SPINDLE_TOOTH = 5.0, SPINDLE_TEETH = 6, SEAT_R = 6.4;
 var phaseL = 0, phaseR = 0, lastAngL = null, lastAngR = null, reanchor = false;
 var COVER_MM = 9.0;             // label cover square
-var IDX_Y = 42.2, IDX_X0 = 18.0, IDX_X1 = 82.4;   // printed index strip
-var SIDES_X = 86.0, SIDES_Y = 33.8, SIDES_PITCH = 3.0;   // the Sides block: its tick boxes' left edge, the first row's top, row to row
+var IDX_Y = 39.3, IDX_X0 = 18.0, IDX_X1 = 82.4;   // printed index strip
+var SIDES_X = 86.0, SIDES_Y = 30.9, SIDES_PITCH = 3.0;   // the Sides block: its tick boxes' left edge, the first row's top, row to row
 function shellIsClear() { return clearOverride && STYLES[styleName].clear; }
 function applyStyle(name) {
 var st = STYLES[name] || STYLES.Brand;
@@ -176,6 +221,19 @@ LAB_RULE = hexToRgba(st.ink, 0.20);
 SHELL_FILL = st.shell; SHELL_EDGE = st.shellEdge; APRON_FILL = st.apron; CAP_FILL = st.capsule;
 SHELL_ALPHA = (typeof st.alpha === 'number') ? st.alpha : 0.42;
 SCREW_SHINY = !!st.shiny;
+var hubLook = [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join();
+HUB_WHITE = st.hub || '#ffffff'; HUB_EDGE = st.hubEdge || '#c4c7cc'; HUB_RING = st.ring || null;
+var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
+ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
+FLANGE = st.reels || null;
+var pk = PACKS[st.pack] || PACKS.ferric;
+PACK_BASE = pk[0]; PACK_R = pk[1]; PACK_G = pk[2]; PACK_B = pk[3];
+PAD_FILL = st.pad || '#9a9da5';
+FRAME = st.frame || null;
+RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
+LAB_Y1 = st.labelBottom || 43.2;
+APRON_Y0 = st.apronTop || 47.0; APRON_SHOULDER_Y = st.apronTop ? Math.min(62.0, st.apronTop + 5.5) : 52.5;
+if (hubLook !== [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join()) hubStale = true;
 if (SCREW_SHINY) { SCREW_HI = '#dcdfe4'; SCREW_LO = '#8d939b'; }
 else { SCREW_HI = '#b6bac0'; SCREW_LO = '#999da3'; }
 }
@@ -208,6 +266,572 @@ function hexToRgba(hex, a) {
 var h = hex.replace('#', '');
 return 'rgba(' + parseInt(h.substr(0,2),16) + ',' + parseInt(h.substr(2,2),16) + ',' +
 parseInt(h.substr(4,2),16) + ',' + a + ')';
+}
+var LABELS = {
+'Ruled Paper': { win: 'rect', pal: { face: '#f2ebd8', ink: '#22408f', dim: '#5d6878', a1: '#a9bed3', a2: '#d77a7a' }, grain: 0.5,
+parts: [
+{ k: 'lines', x0: 3.5, x1: 96.9, ys: [10.5, 14.1, 17.7], ink: '$a1', w: 0.22 },
+{ k: 'vline', x: 9.4, y0: 6.5, y1: 21.7, ink: '$a2', w: 0.22 },
+{ k: 'side', x: 3.6, y: 7.1, size: 4.2, style: 'outline', ink: '$dim' },
+{ k: 'text', t: '@title', x: 10.8, y: 13.7, w: 85, size: 3.4, font: 'hand', ink: '$ink', base: 'alphabetic' },
+{ k: 'text', t: '@artist', x: 10.8, y: 17.3, w: 85, size: 2.7, font: 'hand', ink: '$ink', base: 'alphabetic', alpha: 0.85 },
+{ k: 'text', t: '@type', x: 3.5, y: 40.9, w: 50, size: 1.45, font: 'sans', weight: 600, ink: '$dim' },
+{ k: 'fields', x: 60, y: 39.7, items: ['N.R. ON', 'OFF'], size: 1.45, ink: '$dim' },
+{ k: 'text', t: '@tape', x: 96.9, y: 40.9, w: 14, size: 2.4, font: 'sans', weight: 600, ink: '$dim', align: 'right' }
+] },
+'Marker and Tape': { win: 'rect', pal: { face: '#f6f3ec', ink: '#1d1d22', dim: '#5c5c66', a1: '#c4302b' },
+parts: [
+{ k: 'tape', x: 5, y: 7.3, w: 72, h: 9.4, angle: -1.6, fill: 'rgba(231,213,158,0.92)' },
+{ k: 'text', t: '@title', x: 9, y: 12.1, w: 64, size: 3.6, font: 'marker', ink: '$ink', angle: -1.6 },
+{ k: 'side', x: 84.8, y: 6.9, size: 7.2, style: 'circle', font: 'marker', ink: '$a1' },
+{ k: 'dymo', t: '@artist', x: 46, y: 37, w: 47, h: 4.4, angle: 1.2, fill: '#151517' },
+{ k: 'text', t: '@tape', x: 3.6, y: 39.7, w: 20, size: 2.8, font: 'marker', ink: '$dim', angle: -2 }
+] },
+'Band Ferric': { win: 'twin', pals: [
+{ face: '#20232a', ink: '#1b1d22', dim: '#a9adb5', a1: '#d9622b', a2: '#f2efe6' },
+{ face: '#20232a', ink: '#1b1d22', dim: '#a9adb5', a1: '#2f7fd6', a2: '#f2efe6' },
+{ face: '#20232a', ink: '#1b1d22', dim: '#a9adb5', a1: '#cf2f2f', a2: '#f2efe6' },
+{ face: '#1d2a22', ink: '#1b1d22', dim: '#a9b5ad', a1: '#3aa05a', a2: '#f2efe6' }],
+parts: [
+{ k: 'rect', x: 2.6, y: 7.1, w: 94.2, h: 9.8, fill: '$a2', r: 0.6 },
+{ k: 'side', x: 3.6, y: 8.3, size: 4.4, fill: '$face', ink: '$a2' },
+{ k: 'text', t: '@title', x: 9.6, y: 11, w: 85, size: 3.0, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.6, y: 14.8, w: 85, size: 2.3, font: 'hand', ink: '#4a4d55' },
+{ k: 'text', t: '@type', x: 3.6, y: 19.7, w: 70, size: 1.45, font: 'sans', weight: 600, ink: '$dim', track: 0.12 },
+{ k: 'nr', x: 96.6, y: 19.7, h: 1.5, ink: '$dim' },
+{ k: 'text', t: '@tape', x: 50.2, y: 29.1, w: 21, size: 4.6, font: 'italic', weight: 800, ink: '$a2', align: 'center' },
+{ k: 'band', y: 37.3, h: 4.4, fill: '$a1' },
+{ k: 'text', t: 'LOW NOISE · HIGH OUTPUT', x: 50.2, y: 39.5, w: 80, size: 1.6, font: 'sans', weight: 700, ink: '$face', align: 'center', track: 0.18 }
+] },
+'Rainbow Step': { win: 'rect', pal: { face: '#16171b', ink: '#1b1d22', dim: '#c9cbd1', a2: '#ffffff' },
+parts: [
+{ k: 'diags', y0: 5.8, y1: 21.7, x: 59, w: 3.0, gap: 0.9, slant: 6, fills: ['#e8432e', '#f08a24', '#f4c430', '#46a35a', '#3e7fd1'] },
+{ k: 'rect', x: 2.6, y: 7.1, w: 54, h: 9.4, fill: '$a2', r: 0.5 },
+{ k: 'side', x: 3.6, y: 8.1, size: 4.2, fill: '$face', ink: '$a2' },
+{ k: 'text', t: '@title', x: 9.4, y: 10.9, w: 46, size: 2.9, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.4, y: 14.6, w: 46, size: 2.2, font: 'hand', ink: '#55575e' },
+{ k: 'text', t: '@type', x: 3.6, y: 19.6, w: 52, size: 1.45, font: 'sans', weight: 600, ink: '$dim', track: 0.12 },
+{ k: 'text', t: '@tape', x: 3.6, y: 39.7, w: 20, size: 3.6, font: 'italic', weight: 800, ink: '$a2' },
+{ k: 'diags', y0: 38.5, y1: 40.9, x: 24, w: 1.4, gap: 0.5, slant: 1.2, fills: ['#e8432e', '#f08a24', '#f4c430', '#46a35a', '#3e7fd1'] },
+{ k: 'text', t: '@bias', x: 96.6, y: 39.7, w: 30, size: 1.7, font: 'sans', weight: 700, ink: '$dim', align: 'right', track: 0.16 }
+] },
+'Black Gold': { win: 'round', pal: { face: '#141416', ink: '#1d1a14', dim: '#5d5440', a1: '#c9a54a', a2: '#efe9d8' },
+ground: { angle: 90, stops: [[0, '#26262a'], [1, '#0e0e10']] }, sheen: 1,
+parts: [
+{ k: 'band', y: 19.5, h: 0.35, fill: '$a1' },
+{ k: 'band', y: 37.9, h: 0.35, fill: '$a1' },
+{ k: 'rect', x: 3.0, y: 7.3, w: 66, h: 9.0, fill: '$a2', r: 0.4 },
+{ k: 'side', x: 3.8, y: 8.2, size: 4.1, fill: '$a1', ink: '$face' },
+{ k: 'text', t: '@title', x: 9.4, y: 10.9, w: 58, size: 2.9, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.4, y: 14.5, w: 58, size: 2.2, font: 'hand', ink: '$dim' },
+{ k: 'text', t: '@tape', x: 96.6, y: 12.5, w: 24, size: 5.6, font: 'cond', weight: 700, ink: '$a1', align: 'right' },
+{ k: 'text', t: '@bias', x: 96.6, y: 17.3, w: 24, size: 1.45, font: 'sans', weight: 600, ink: '$a1', align: 'right', track: 0.2 },
+{ k: 'circle', cx: 28.95, cy: 29, r: 6.7, stroke: '$a1', w: 0.35 },
+{ k: 'circle', cx: 71.45, cy: 29, r: 6.7, stroke: '$a1', w: 0.35 },
+{ k: 'text', t: '@type', x: 50.2, y: 40.6, w: 60, size: 1.45, font: 'sans', weight: 600, ink: '$a1', align: 'center', track: 0.2 },
+{ k: 'nr', x: 96.6, y: 40.6, h: 1.5, ink: '$a1' }
+] },
+'Record Label': { win: 'rect', album: true,
+parts: [
+{ k: 'cover', face: true, veil: 0.12 },
+{ k: 'rect', x: 1.0, y: 5.8, w: 98.4, h: 11.6, fill: 'rgba(0,0,0,0.58)' },
+{ k: 'side', x: 3.6, y: 7.5, size: 4.2, fill: '$stripe', ink: '#ffffff' },
+{ k: 'text', t: '@title', x: 9.6, y: 10.1, w: 86, size: 3.2, font: 'sans', weight: 700, ink: '#ffffff' },
+{ k: 'text', t: '@artist', x: 9.6, y: 14.4, w: 86, size: 2.3, font: 'sans', weight: 500, ink: 'rgba(255,255,255,0.88)' },
+{ k: 'rect', x: 1.0, y: 37, w: 98.4, h: 6.2, fill: 'rgba(0,0,0,0.58)' },
+{ k: 'text', t: '@info0', x: 3.6, y: 40.1, w: 60, size: 1.7, font: 'sans', weight: 500, ink: 'rgba(255,255,255,0.88)' },
+{ k: 'text', t: '@tape', x: 96.6, y: 40.1, w: 14, size: 2.0, font: 'sans', weight: 700, ink: '#ffffff', align: 'right' }
+] },
+'Pinstripe Hi-Fi': { win: 'rect', pal: { face: '#eef0f2', ink: '#14202e', dim: '#5d6b7d', a1: '#2a6db8', a2: '#d2352c' },
+parts: [
+{ k: 'pins', y0: 16.9, y1: 21.5, n: 6, w: 0.32, fills: ['$a1', '$a2'] },
+{ k: 'side', x: 3.6, y: 7.7, size: 4.2, fill: '$a1', ink: '#ffffff' },
+{ k: 'text', t: '@title', x: 9.6, y: 10, w: 74, size: 3.0, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.6, y: 13.9, w: 74, size: 2.3, font: 'hand', ink: '$dim' },
+{ k: 'cover', x: 86.6, y: 6.5, size: 9.0 },
+{ k: 'text', t: '@tape', x: 3.4, y: 27.5, w: 12, size: 4.0, font: 'cond', weight: 700, ink: '$ink' },
+{ k: 'text', t: '@bias', x: 3.4, y: 31.5, w: 12, size: 1.35, font: 'sans', weight: 600, ink: '$dim' },
+{ k: 'fields', x: 86.2, y: 25.3, items: ['EQ 70µs', 'N.R.'], size: 1.4, ink: '$ink', column: true },
+{ k: 'pins', y0: 37.1, y1: 38.5, n: 2, w: 0.32, fills: ['$a1', '$a2'] },
+{ k: 'text', t: '@type', x: 50.2, y: 41.1, w: 70, size: 1.45, font: 'sans', weight: 600, ink: '$dim', align: 'center', track: 0.14 }
+] },
+'Corner Store': { win: 'rect', pals: [
+{ face: '#f6d32b', ink: '#1d1d22', dim: '#55555c', a1: '#f6d32b', a2: '#d6246e' },
+{ face: '#3fc1c9', ink: '#1d1d22', dim: '#3a4a4c', a1: '#3fc1c9', a2: '#f2662a' },
+{ face: '#e8432e', ink: '#1d1d22', dim: '#4a2a26', a1: '#e8432e', a2: '#f6d32b' },
+{ face: '#7ac143', ink: '#1d1d22', dim: '#36502a', a1: '#7ac143', a2: '#1f5fbf' }],
+parts: [
+{ k: 'text', t: '@tape', x: 3.2, y: 12.1, w: 25, size: 6.4, font: 'round', weight: 800, ink: '$a2' },
+{ k: 'rect', x: 30, y: 7.5, w: 66.6, h: 8.6, fill: '#ffffff', r: 0.5 },
+{ k: 'text', t: '@title', x: 32, y: 10.5, w: 62, size: 2.8, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 32, y: 14.2, w: 62, size: 2.1, font: 'hand', ink: '#55555c' },
+{ k: 'text', t: '@sides', x: 3.2, y: 27.7, w: 12, size: 1.7, font: 'sans', weight: 700, ink: '$ink' },
+{ k: 'side', x: 87.4, y: 24.9, size: 7.0, style: 'disc', fill: '#ffffff', ink: '$a2' },
+{ k: 'band', y: 36.5, h: 6.7, fill: '$a2' },
+{ k: 'text', t: 'HIFI · LOW NOISE', x: 50.2, y: 39.9, w: 80, size: 2.4, font: 'round', weight: 800, ink: '#ffffff', align: 'center', track: 0.1 }
+] },
+'Tokyo Grid': { win: 'rect', pal: { face: '#ffd3e6', ink: '#2b2a52', dim: '#6b6a92', a1: '#ff5fa2', a2: '#3fc1c9' },
+ground: { angle: 20, stops: [[0, '#ffd3e6'], [1, '#c9e6ff']] },
+parts: [
+{ k: 'grid', x0: 59, y0: 5.8, x1: 99.4, y1: 21.7, step: 2.4, ink: 'rgba(255,255,255,0.8)', w: 0.25 },
+{ k: 'chev', x: 64, y: 8.5, w: 6.4, h: 9.6, n: 4, gap: 1.6, fills: ['$a1', '$a2'] },
+{ k: 'rect', x: 2.6, y: 7.1, w: 55, h: 9.4, fill: '#ffffff', r: 2 },
+{ k: 'side', x: 3.8, y: 8.5, size: 4.0, style: 'disc', fill: '$a1', ink: '#ffffff' },
+{ k: 'text', t: '@title', x: 9.6, y: 10.7, w: 46, size: 2.9, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.6, y: 14.5, w: 46, size: 2.2, font: 'hand', ink: '$dim' },
+{ k: 'text', t: 'HIGH POSITION · STEREO · HI-FI', x: 3.6, y: 19.7, w: 54, size: 1.3, font: 'sans', weight: 700, ink: '$ink', track: 0.2 },
+{ k: 'chev', x: 4, y: 37.3, w: 2.4, h: 3.8, n: 8, gap: 0.6, fills: ['$a1', '$a2'] },
+{ k: 'text', t: '@tape', x: 96.6, y: 39.5, w: 20, size: 3.6, font: 'cond', weight: 800, ink: '$ink', align: 'right' }
+] },
+'Silver Gloss': { win: 'wide', pal: { face: '#d6dbe0', ink: '#1b2533', dim: '#45505e', a1: '#2a6db8' },
+ground: { angle: 90, stops: [[0, '#eef0f2'], [0.45, '#aeb5bd'], [0.55, '#c3c9cf'], [1, '#e8ebee']] }, sheen: 1,
+parts: [
+{ k: 'band', y: 17, h: 0.6, fill: '$a1' },
+{ k: 'side', x: 3.6, y: 7.3, size: 4.2, fill: '$ink', ink: '#e8ebee' },
+{ k: 'text', t: '@title', x: 9.6, y: 9.7, w: 66, size: 2.9, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 9.6, y: 13.7, w: 66, size: 2.2, font: 'hand', ink: '$dim' },
+{ k: 'text', t: '@tape', x: 96.6, y: 11.3, w: 20, size: 4.2, font: 'italic', weight: 800, ink: '$ink', align: 'right' },
+{ k: 'text', t: '@bias', x: 96.6, y: 15.5, w: 22, size: 1.35, font: 'sans', weight: 600, ink: '$dim', align: 'right', track: 0.16 },
+{ k: 'text', t: '@type', x: 50.2, y: 41.7, w: 60, size: 1.3, font: 'sans', weight: 600, ink: '$ink', align: 'center', track: 0.16 }
+] },
+'Typewriter': { win: 'rect', pal: { face: '#f5f2e9', ink: '#1e1e1e', dim: '#3b3b3b' }, grain: 0.4,
+parts: [
+{ k: 'rect', x: 5, y: 7.5, w: 74, h: 10.8, fill: '#ffffff', stroke: 'rgba(0,0,0,0.14)', angle: -0.7 },
+{ k: 'text', t: '@title', x: 7, y: 11.1, w: 70, size: 2.5, font: 'mono', weight: 600, ink: '$ink', upper: true, angle: -0.7 },
+{ k: 'text', t: '@artist', x: 7, y: 15.3, w: 70, size: 2.1, font: 'mono', ink: '$dim', angle: -0.7 },
+{ k: 'text', t: '@sideword', x: 84, y: 10.1, w: 14, size: 2.1, font: 'mono', weight: 600, ink: '$ink' },
+{ k: 'text', t: '@tape', x: 84, y: 14.7, w: 14, size: 2.1, font: 'mono', ink: '$ink' },
+{ k: 'text', t: '@info0', x: 3.6, y: 40.3, w: 62, size: 1.7, font: 'mono', ink: '$dim' },
+{ k: 'text', t: '@type', x: 96.6, y: 40.3, w: 30, size: 1.4, font: 'mono', ink: '$dim', align: 'right' }
+] },
+'Sunburst': { win: 'rect', pal: { face: '#f28c28', ink: '#4a2412', dim: '#7a4a2a', a1: '#f9d34a', a2: '#e8432e', a3: '#fff3d6' },
+parts: [
+{ k: 'circle', cx: 89, cy: 13.5, r: 7.4, fill: '$a1' },
+{ k: 'circle', cx: 89, cy: 13.5, r: 5.2, fill: '$a2' },
+{ k: 'circle', cx: 89, cy: 13.5, r: 3.0, fill: '$a3' },
+{ k: 'band', y: 36.7, h: 1.4, fill: '$a1' },
+{ k: 'band', y: 38.5, h: 1.4, fill: '$a2' },
+{ k: 'band', y: 40.3, h: 1.4, fill: '#7a3b1e' },
+{ k: 'rect', x: 3.0, y: 7.3, w: 74, h: 9.0, fill: '$a3', r: 4.5 },
+{ k: 'side', x: 4.2, y: 9.2, size: 5.2, style: 'disc', fill: '$a2', ink: '#ffffff' },
+{ k: 'text', t: '@title', x: 10.8, y: 10.7, w: 64, size: 2.9, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 10.8, y: 14.4, w: 64, size: 2.2, font: 'hand', ink: '$dim' },
+{ k: 'text', t: '@tape', x: 3.4, y: 27.5, w: 12, size: 3.2, font: 'round', weight: 800, ink: '$a3' },
+{ k: 'text', t: '@bias', x: 85.6, y: 27.5, w: 13, size: 1.5, font: 'round', weight: 700, ink: '$a3' }
+] },
+'Stick-on Letters': { win: 'none', pal: { face: '#ffffff', ink: '#1f45b8', dim: '#5a6478' }, ground: 'rgba(0,0,0,0)',
+parts: [
+{ k: 'rect', x: 12.6, y: 35.3, w: 81.2, h: 7.8, fill: '#eef0f2' },
+{ k: 'rect', x: 12.6, y: 40.8, w: 81.2, h: 2.3, fill: '#2347c6' },
+{ k: 'text', t: '@title', x: 15.6, y: 37.95, w: 46, size: 3.4, font: 'sans', weight: 600, ink: '#1f45b8', upper: true, track: 0.9, tile: '#ffffff', tileEdge: '#c9ccd2' },
+{ k: 'rect', x: 64.2, y: 35.7, w: 12.4, h: 2.4, fill: '#2347c6' },
+{ k: 'text', t: 'MASTER', x: 70.4, y: 36.95, w: 11, size: 1.7, font: 'sans', weight: 600, ink: '#ffffff', align: 'center' },
+{ k: 'rect', x: 78.0, y: 37.7, w: 12.4, h: 2.4, fill: '#2347c6' },
+{ k: 'text', t: 'COPY', x: 84.2, y: 38.95, w: 11, size: 1.7, font: 'sans', weight: 600, ink: '#ffffff', align: 'center' },
+{ k: 'text', t: '@artist', x: 15.6, y: 42, w: 76, size: 1.5, font: 'sans', weight: 700, ink: '#ffffff', upper: true }
+] },
+'Red Horseshoe': { own: true, win: 'holes', pal: { face: '#e5dac2', ink: '#2a2a2a', dim: '#6b655a', a1: '#d8303a' }, grain: 0.5,
+parts: [
+{ k: 'rect', x: 21.7, y: 19.7, w: 57.9, h: 16.5, r: 8.25, fill: '#dcd8ca', stroke: '#b9b5a6' },
+{ k: 'path', d: 'M40.30 28.5h0.22v1.3h-0.22z M41.30 28.5h0.22v0.8h-0.22z M42.30 28.5h0.22v0.8h-0.22z M43.30 28.5h0.22v0.8h-0.22z M44.30 28.5h0.22v0.8h-0.22z M45.30 28.5h0.22v1.3h-0.22z M46.30 28.5h0.22v0.8h-0.22z M47.30 28.5h0.22v0.8h-0.22z M48.30 28.5h0.22v0.8h-0.22z M49.30 28.5h0.22v0.8h-0.22z M50.30 28.5h0.22v1.3h-0.22z M51.30 28.5h0.22v0.8h-0.22z M52.30 28.5h0.22v0.8h-0.22z M53.30 28.5h0.22v0.8h-0.22z M54.30 28.5h0.22v0.8h-0.22z M55.30 28.5h0.22v1.3h-0.22z M56.30 28.5h0.22v0.8h-0.22z M57.30 28.5h0.22v0.8h-0.22z M58.30 28.5h0.22v0.8h-0.22z M59.30 28.5h0.22v0.8h-0.22z M60.30 28.5h0.22v1.3h-0.22z', fill: '#c9c4b3' },
+{ k: 'text', t: '100', x: 40.3, y: 32.3, w: 4, size: 1.8, font: 'sans', weight: 500, ink: '#bdb7a6', align: 'center' },
+{ k: 'text', t: '50', x: 50.3, y: 32.3, w: 4, size: 1.8, font: 'sans', weight: 500, ink: '#bdb7a6', align: 'center' },
+{ k: 'text', t: '0', x: 60.3, y: 32.3, w: 4, size: 1.8, font: 'sans', weight: 500, ink: '#bdb7a6', align: 'center' },
+{ k: 'rect', x: 1.0, y: 26.1, w: 15.8, h: 1.7, fill: '$a1' },
+{ k: 'rect', x: 84.0, y: 26.3, w: 15.4, h: 1.7, fill: '$a1' },
+{ k: 'path', d: 'M16.6 26.95 C12.0 27.0 10.4 29.4 10.4 33.0 L10.4 36.5 C10.4 40.3 12.8 41.8 17.2 41.8 L83.4 41.8 C87.8 41.8 90.4 40.3 90.4 36.5 L90.4 33.2 C90.4 29.6 88.6 27.2 84.2 27.15', stroke: '$a1', w: 1.7 },
+{ k: 'text', t: 'INDEX', x: 12.3, y: 8.9, w: 6, size: 1.5, font: 'sans', weight: 500, ink: '$dim' },
+{ k: 'text', t: '@side', x: 12.6, y: 13.2, w: 6, size: 5.6, font: 'sans', weight: 400, ink: '$a1' },
+{ k: 'lines', x0: 22.4, x1: 78.8, ys: [8.0, 11.6, 15.2], ink: '#fbf8ee', w: 0.25 },
+{ k: 'vline', x: 22.4, y0: 8.0, y1: 15.2, ink: '#fbf8ee', w: 0.25 },
+{ k: 'vline', x: 78.8, y0: 8.0, y1: 15.2, ink: '#fbf8ee', w: 0.25 },
+{ k: 'text', t: '@title', x: 23.8, y: 9.85, w: 53.5, size: 2.6, font: 'hand', ink: '$ink' },
+{ k: 'text', t: '@artist', x: 23.8, y: 13.45, w: 53.5, size: 2.2, font: 'hand', ink: '#4a4a4a' },
+{ k: 'text', t: 'MADE IN HOLLAND', x: 90.9, y: 8.5, w: 11, size: 1.25, font: 'sans', weight: 500, ink: '#5f5a52', angle: 90, track: 0.12 },
+{ k: 'text', t: 'PHILIPS', brand: true, generic: 'CASSETTE', x: 26.3, y: 38.1, w: 17.5, size: 4.3, font: 'heavy', ink: '#1d1d1f' },
+{ k: 'text', t: 'C\u00b760', x: 46.8, y: 38.0, w: 8.3, size: 4.3, font: 'sans', weight: 600, ink: '#1d1d1f', fill: 'none', stroke: '#1d1d1f', sw: 0.2 },
+{ k: 'path', d: 'M56.4 39.9 L58.0 36.6 L74.4 36.6 L72.8 39.9 Z', stroke: '#1d1d1f', w: 0.25 },
+{ k: 'text', t: 'Compact', x: 59.0, y: 37.6, w: 10, size: 1.7, font: 'italic', weight: 700, ink: '#1d1d1f' },
+{ k: 'text', t: 'Cassette', x: 62.0, y: 39.1, w: 10, size: 1.7, font: 'italic', weight: 700, ink: '#1d1d1f' }
+] }
+};
+function labelFamily() {
+var st = STYLES[styleName] || {};
+var name = labelStyle === 'shell' ? st.label : labelStyle;
+return (name && LABELS[name]) || null;
+}
+function drawAnyLabel() {
+var st = STYLES[styleName] || {}, fam = labelFamily();
+var shape = labelStyle === 'shell' && st.labelShape ? st.labelShape : 'full';
+if (shape === 'none') return;
+if (!fam) { if (labelShape === 'strip') drawStripLabel(); else drawLabel(); return; }
+var y1 = LAB_Y1;
+if (labelStyle !== 'shell') LAB_Y1 = 43.2;
+try { drawFamily(fam, shape); } finally { LAB_Y1 = y1; }
+}
+var FACES = {
+sans: UI_FONT, cond: UI_FONT, italic: UI_FONT,
+serif: 'Georgia, "Times New Roman", serif',
+mono: '"American Typewriter", "Courier New", Courier, monospace',
+round: '"Arial Rounded MT Bold", "SF Pro Rounded", ui-rounded, ' + UI_FONT,
+heavy: '"Avenir Next", "Arial Black", ' + UI_FONT,
+iserif: 'Georgia, "Times New Roman", serif'
+};
+var BOT_Y0 = 36.5;   // a 'bottom' label's top edge
+function famOutline(shape) {
+var lw = LAB_X1 - LAB_X0;
+if (shape === 'top') { subChamferRect(X(LAB_X0), Y(LAB_Y0), mm(lw), mm(STRIP_Y1 - LAB_Y0), mm(LAB_CHAMFER * 0.6)); return; }
+if (shape === 'bottom') { subChamferRect(X(LAB_X0), Y(BOT_Y0), mm(lw), mm(LAB_Y1 - BOT_Y0), mm(LAB_CHAMFER * 0.6)); return; }
+subChamferRect(X(LAB_X0), Y(LAB_Y0), mm(lw), mm(LAB_Y1 - LAB_Y0), mm(LAB_CHAMFER));
+}
+function mmMatrix() { return new DOMMatrix([PX, 0, 0, PX, ox, oy]); }
+function mmPath(d) { var p = new Path2D(); p.addPath(new Path2D(d), mmMatrix()); return p; }
+function p2Round(p, x, y, w, h, r) {
+r = Math.min(r, w / 2, h / 2);
+p.moveTo(x + r, y); p.arcTo(x + w, y, x + w, y + h, r); p.arcTo(x + w, y + h, x, y + h, r);
+p.arcTo(x, y + h, x, y, r); p.arcTo(x, y, x + w, y, r); p.closePath();
+}
+function famWindows(win) {
+var p = new Path2D(), cxS = SHELL_W / 2 - HUB_SPACING / 2, cxT = SHELL_W / 2 + HUB_SPACING / 2, cy = HUB_CY;
+function rr(x, y, w, h, r) { p2Round(p, X(x), Y(y), mm(w), mm(h), mm(r || 0)); }
+function circ(cx, cyy, r) { p.moveTo(X(cx + r), Y(cyy)); p.arc(X(cx), Y(cyy), mm(r), 0, TAU); }
+if (win && typeof win === 'object') {
+(Array.isArray(win) ? win : [win]).forEach(function (sh) {
+if (sh.rect) rr(sh.rect[0], sh.rect[1], sh.rect[2], sh.rect[3], sh.rect[4]);
+else if (sh.circle) circ(sh.circle[0], sh.circle[1], sh.circle[2]);
+else if (sh.path) p.addPath(new Path2D(sh.path), mmMatrix());
+});
+} else if (win === 'holes') {
+circ(cxS, cy, 6.2); circ(cxT, cy, 6.2); rr(39.7, cy - 7.6, 21.1, 6.8, 0.6);
+} else if (win === 'none') {
+} else if (win === 'wide') rr(15.2, 18.7, 70, 21.4, 6);
+else if (win === 'twin') { rr(cxS - 9.3, 22.1, 18.6, 13.8, 4); rr(cxT - 9.3, 22.1, 18.6, 13.8, 4); }
+else if (win === 'round') { circ(cxS, cy, 6); circ(cxT, cy, 6); rr(44.4, 27.3, 11.6, 3.4, 1.2); }
+else if (win === 'hourglass') {
+var r = 11.2, hn = 3.7, dx = Math.sqrt(r * r - hn * hn);
+p.moveTo(X(cxS + dx), Y(cy - hn));
+p.lineTo(X(cxT - dx), Y(cy - hn));
+p.arc(X(cxT), Y(cy), mm(r), Math.atan2(-hn, -dx), Math.atan2(hn, -dx));
+p.lineTo(X(cxS + dx), Y(cy + hn));
+p.arc(X(cxS), Y(cy), mm(r), Math.atan2(hn, dx), Math.atan2(-hn, dx) + TAU);
+p.closePath();
+} else rr(WIN_X0, WIN_Y0, WIN_X1 - WIN_X0, WIN_Y1 - WIN_Y0, WIN_RADIUS);
+return p;
+}
+function famPick(n) {
+var key = labelText + '\u0000' + artistText, h = 2166136261;
+for (var i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619);
+return (h >>> 0) % n;
+}
+function famWords(t) {
+if (t.charAt(0) !== '@') return t;
+var mins = parseInt(String(tapeName).replace(/\D/g, ''), 10);
+switch (t) {
+case '@title': return labelText;
+case '@artist': return artistText && artistText !== labelText ? artistText : '';
+case '@tape': return tapeName;
+case '@type': return TYPE_LINE[tapeKind] || '';
+case '@kind': return 'TYPE ' + tapeKind;
+case '@bias': return { I: 'NORMAL BIAS', II: 'HIGH BIAS', IV: 'METAL BIAS' }[tapeKind] || '';
+case '@side': return sideLetter || '';
+case '@sideword': return sideLetter ? 'SIDE ' + sideLetter : '';
+case '@sides': return mins ? '2 × ' + Math.round(mins / 2) + ' MIN' : '';
+case '@info0': return labelInfo.lines[0] || '';
+case '@info1': return labelInfo.lines[1] || '';
+}
+return '';
+}
+function famHand(key) {
+var f = HAND_FONTS[key];
+if (!f) return null;
+var src = (HANDS || {})[f[1]];
+if (!handLoaded[f[1]] && src && window.FontFace && document.fonts) {
+handLoaded[f[1]] = true;
+new FontFace(f[0], 'url(' + src + ')').load().then(function (face) { document.fonts.add(face); if (cv) render(t, headFrac); },
+function () { /* stays in the system's script */ });
+}
+return ['"' + f[0] + '", ' + HAND_SYSTEM, f[2]];
+}
+var SHOW_BRANDS = '@@BRANDS@@' === 'true';
+function famText(p, col) {
+var words = famWords(p.brand && !SHOW_BRANDS ? (p.generic || '') : p.t);
+if (!words) return;
+if (p.upper) words = words.toUpperCase();
+var x = X(p.x), y = Y(p.y), max = mm(p.w || 80);
+ctx.save();
+if (p.alpha) ctx.globalAlpha = p.alpha;
+if (p.angle) { ctx.translate(x, y); ctx.rotate(p.angle * Math.PI / 180); ctx.translate(-x, -y); }
+ctx.fillStyle = col(p.ink);
+ctx.textAlign = p.align || 'left';
+ctx.textBaseline = p.base || 'middle';
+if (p.font === 'hand' || p.font === 'marker') {
+var keep = [HAND_FONT, HAND_SCALE], m = p.font === 'marker' && famHand('marker');
+if (m) { HAND_FONT = m[0]; HAND_SCALE = m[1]; }
+ctx.font = fitHandFont(words, max, p.size * (p.font === 'hand' ? WORD_SCALE : 1));
+HAND_FONT = keep[0]; HAND_SCALE = keep[1];
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25); ctx.lineJoin = 'round'; ctx.strokeText(words, x, y); }
+if (p.fill !== 'none') ctx.fillText(words, x, y);
+} else {
+var face = FACES[p.font] || UI_FONT, squeeze = p.font === 'cond' ? 0.8 : 1;
+var font = (p.font === 'italic' || p.font === 'iserif' ? 'italic ' : '') + (p.weight || (p.font === 'heavy' ? 900 : 400)) + ' ' + Math.round(mm(p.size)) + 'px ' + face;
+ctx.font = font;
+var track = p.track ? mm(p.size * p.track) : 0, gaps = Math.max(0, words.length - 1), bare = ctx.measureText(words).width;
+if (track && gaps && (bare + track * gaps) * squeeze > max) {
+track = Math.max(mm(p.size * (p.tile ? 0.36 : 0.08)), Math.min(track, (max / squeeze - bare) / gaps));
+}
+var w = (bare + track * gaps) * squeeze;
+var k = w > max ? max / w : 1;
+var sx = squeeze * k, ax = ctx.textAlign === 'center' ? 0.5 : ctx.textAlign === 'right' ? 1 : 0;
+var sy = k < 0.7 ? k / 0.7 : 1;
+ctx.translate(x - w * k * ax, y); ctx.scale(sx, sy);
+ctx.textAlign = 'left';
+var draw1 = function (txt, tx) {
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25) / sx; ctx.lineJoin = 'round'; ctx.strokeText(txt, tx, 0); }
+if (p.fill !== 'none') ctx.fillText(txt, tx, 0);
+};
+var tile = function (txt, tx) {
+var tw = ctx.measureText(txt).width, pad = mm(p.size * 0.16), th = mm(p.size * 1.1);
+ctx.save(); ctx.fillStyle = col(p.tile); ctx.fillRect(tx - pad, -th / 2, tw + pad * 2, th);
+if (p.tileEdge) { ctx.strokeStyle = col(p.tileEdge); ctx.lineWidth = 1 / sx; ctx.strokeRect(tx - pad, -th / 2, tw + pad * 2, th); }
+ctx.restore();
+};
+if (!track) { if (p.tile) tile(words, 0); draw1(words, 0); }
+else {
+var cx = 0;
+for (var i = 0; i < words.length; i++) {
+if (p.tile && words[i] !== ' ') tile(words[i], cx);
+draw1(words[i], cx); cx += ctx.measureText(words[i]).width + track;
+}
+}
+}
+ctx.restore();
+}
+function famSide(p, col) {
+if (!sideLetter) return;
+var letter = p.numeral ? String(sideLetter.charCodeAt(0) - 64) : sideLetter;
+var x = X(p.x), y = Y(p.y), s = mm(p.size), c = col(p.ink), f = col(p.fill || p.ink);
+ctx.save();
+if (p.style === 'outline') { ctx.strokeStyle = c; ctx.lineWidth = 1; ctx.strokeRect(x, y, s, s); }
+else if (p.style === 'disc') { ctx.fillStyle = f; ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s / 2, 0, TAU); ctx.fill(); }
+else if (p.style === 'circle') { ctx.strokeStyle = c; ctx.lineWidth = Math.max(1, mm(0.35)); ctx.beginPath(); ctx.arc(x + s / 2, y + s / 2, s / 2.2, 0, TAU); ctx.stroke(); }
+else { ctx.fillStyle = f; ctx.fillRect(x, y, s, s); }
+ctx.fillStyle = c; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+if (p.font === 'marker') {
+var m = famHand('marker');
+ctx.font = Math.round(s * 0.62 * (m ? m[1] : 1)) + 'px ' + (m ? m[0] : HAND_SYSTEM);
+} else ctx.font = '700 ' + Math.round(s * (p.style === 'circle' ? 0.5 : 0.66)) + 'px ' + UI_FONT;
+ctx.fillText(letter, x + s / 2, y + s / 2 + s * 0.03);
+ctx.restore();
+}
+function famCover(p) {
+if (!coverImg || !coverImg.complete || !coverImg.naturalWidth) return false;
+ctx.save();
+if (p.face) {
+var x0 = X(LAB_X0), y0 = Y(LAB_Y0), w = mm(LAB_X1 - LAB_X0), h = mm(LAB_Y1 - LAB_Y0);
+var iw = coverImg.naturalWidth, ih = coverImg.naturalHeight, k = Math.max(w / iw, h / ih);
+ctx.drawImage(coverImg, x0 + (w - iw * k) / 2, y0 + (h - ih * k) / 2, iw * k, ih * k);
+if (p.veil) { ctx.fillStyle = 'rgba(0,0,0,' + p.veil + ')'; ctx.fillRect(x0, y0, w, h); }
+} else {
+var cx0 = X(p.x), cy0 = Y(p.y), cs = mm(p.size);
+ctx.beginPath(); subRoundRect(cx0, cy0, cs, cs, mm(0.5)); ctx.clip();
+ctx.drawImage(coverImg, cx0, cy0, cs, cs);
+}
+ctx.restore();
+return true;
+}
+var grainPat = null, grainFor = 0;
+function grainPattern() {
+if (grainPat && grainFor === dpr) return grainPat;
+var c = document.createElement('canvas'), n = Math.round(48 * dpr);
+c.width = c.height = n;
+var g = c.getContext('2d'), seed = 7;
+for (var i = 0; i < n * n / 6; i++) {
+seed = (seed * 16807) % 2147483647;
+var px = seed % n; seed = (seed * 16807) % 2147483647;
+var py = seed % n; seed = (seed * 16807) % 2147483647;
+g.fillStyle = (seed & 1) ? 'rgba(90,70,40,0.10)' : 'rgba(255,255,255,0.14)';
+g.fillRect(px, py, 1, 1);
+}
+grainPat = ctx.createPattern(c, 'repeat'); grainFor = dpr;
+return grainPat;
+}
+function famColour(pal) {
+return function col(c) {
+if (!c) return pal.ink || '#1a1a1a';
+if (typeof c === 'object' && c.grad) {
+var g = ctx.createLinearGradient(X(c.grad[0]), Y(c.grad[1]), X(c.grad[2]), Y(c.grad[3]));
+c.stops.forEach(function (s) { g.addColorStop(s[0], col(s[1])); });
+return g;
+}
+return c.charAt(0) === '$' ? (pal[c.slice(1)] || pal.ink || '#1a1a1a') : c;
+};
+}
+function drawParts(parts, col, above, x0, w) {
+parts.forEach(function (p) {
+if (!!p.above !== !!above) return;
+var i, k;
+switch (p.k) {
+case 'band':   // the label's width, or x0 to x1
+ctx.fillStyle = col(p.fill);
+if (p.x0 != null) ctx.fillRect(X(p.x0), Y(p.y), mm(p.x1 - p.x0), mm(p.h)); else ctx.fillRect(x0, Y(p.y), w, mm(p.h));
+break;
+case 'rect':
+ctx.save();
+if (p.angle) { var rx = X(p.x + p.w / 2), ry = Y(p.y + p.h / 2); ctx.translate(rx, ry); ctx.rotate(p.angle * Math.PI / 180); ctx.translate(-rx, -ry); }
+ctx.beginPath(); subRoundRect(X(p.x), Y(p.y), mm(p.w), mm(p.h), mm(p.r || 0));
+if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = 1; ctx.stroke(); }
+ctx.restore(); break;
+case 'lines':
+ctx.strokeStyle = col(p.ink); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.22));
+ctx.beginPath();
+p.ys.forEach(function (ly) { ctx.moveTo(X(p.x0), Y(ly)); ctx.lineTo(X(p.x1), Y(ly)); });
+ctx.stroke(); break;
+case 'vline':
+ctx.strokeStyle = col(p.ink); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.22));
+ctx.beginPath(); ctx.moveTo(X(p.x), Y(p.y0)); ctx.lineTo(X(p.x), Y(p.y1)); ctx.stroke(); break;
+case 'pins':
+for (i = 0; i < p.n; i++) {
+ctx.fillStyle = col(p.fills[i % p.fills.length]);
+ctx.fillRect(x0, Y(p.y0 + (p.y1 - p.y0) * (p.n > 1 ? i / (p.n - 1) : 0)), w, Math.max(1, mm(p.w)));
+}
+break;
+case 'diags':
+for (i = 0; i < p.fills.length; i++) {
+var bx = p.x + i * (p.w + p.gap);
+ctx.fillStyle = col(p.fills[i]);
+ctx.beginPath();
+ctx.moveTo(X(bx + p.slant), Y(p.y0)); ctx.lineTo(X(bx + p.slant + p.w), Y(p.y0));
+ctx.lineTo(X(bx + p.w), Y(p.y1)); ctx.lineTo(X(bx), Y(p.y1));
+ctx.closePath(); ctx.fill();
+}
+break;
+case 'chev':
+for (i = 0; i < p.n; i++) {
+var vx = p.x + i * (p.w + p.gap) * 0.6;
+ctx.strokeStyle = col(p.fills[i % p.fills.length]); ctx.lineWidth = mm(Math.min(1.2, p.w * 0.22)); ctx.lineJoin = 'miter';
+ctx.beginPath(); ctx.moveTo(X(vx), Y(p.y)); ctx.lineTo(X(vx + p.w / 2), Y(p.y + p.h / 2)); ctx.lineTo(X(vx), Y(p.y + p.h)); ctx.stroke();
+}
+break;
+case 'grid':
+ctx.strokeStyle = col(p.ink); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.25));
+ctx.beginPath();
+for (k = p.x0; k <= p.x1; k += p.step) { ctx.moveTo(X(k), Y(p.y0)); ctx.lineTo(X(k), Y(p.y1)); }
+for (k = p.y0; k <= p.y1; k += p.step) { ctx.moveTo(X(p.x0), Y(k)); ctx.lineTo(X(p.x1), Y(k)); }
+ctx.stroke(); break;
+case 'circle':
+ctx.beginPath(); ctx.arc(X(p.cx), Y(p.cy), mm(p.r), 0, TAU);
+if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.8, mm(p.w || 0.3)); ctx.stroke(); }
+break;
+case 'text': famText(p, col); break;
+case 'side': famSide(p, col); break;
+case 'cover': famCover(p); break;
+case 'nr': ctx.fillStyle = col(p.ink); noiseMark(X(p.x), Y(p.y), mm(p.h)); break;
+case 'fields':
+ctx.save();
+ctx.font = '600 ' + Math.round(mm(p.size)) + 'px ' + UI_FONT; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+ctx.strokeStyle = col(p.ink); ctx.fillStyle = col(p.ink); ctx.lineWidth = 1;
+var fx = X(p.x), fy = Y(p.y), box = mm(p.size * 1.1);
+p.items.forEach(function (item) {
+ctx.strokeRect(fx, fy - box / 2, box, box);
+ctx.fillText(item, fx + box + mm(0.8), fy);
+if (p.column) fy += mm(p.size * 2.2);
+else fx += box + mm(0.8) + ctx.measureText(item).width + mm(2.4);
+});
+ctx.restore(); break;
+case 'path':   // any outline, written in millimetres as an SVG path's d; rule: 'evenodd' for holes
+var pp = mmPath(p.d);
+if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(pp, p.rule || 'nonzero'); }
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.3)); ctx.lineJoin = 'round'; ctx.stroke(pp); }
+break;
+case 'tape': famStrip(p, col, false); break;
+case 'dymo': famStrip(p, col, true); break;
+}
+});
+}
+function drawShellPrint() {
+var st = STYLES[styleName] || {};
+if (!st.print || !st.print.length) return;
+ctx.save();
+ctx.beginPath(); subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.clip();
+var col = famColour({ face: st.face, ink: st.ink, dim: st.dim, stripe: st.stripe, a1: st.stripe });
+drawParts(st.print, col, false, X(0), mm(SHELL_W));
+ctx.restore();
+}
+function drawFamily(fam, shape) {
+var pal = fam.pal || (fam.pals ? fam.pals[famPick(fam.pals.length)] : null);
+if (fam.album) { pal = {}; albumColours(pal); pal.a1 = pal.stripe; }
+pal = pal || {};
+var col = famColour(pal);
+var win = fam.win || (STYLES[styleName] || {}).win || 'rect';
+var x0 = X(LAB_X0), y0 = Y(LAB_Y0), w = mm(LAB_X1 - LAB_X0), h = mm(LAB_Y1 - LAB_Y0);
+var holes = shape === 'full' || !shape ? famWindows(win) : null;
+ctx.save();
+ctx.beginPath(); famOutline(shape); ctx.clip();
+ctx.save();
+if (holes) {
+var cut = new Path2D(); cut.rect(-cssW, -cssH, 3 * cssW, 3 * cssH); cut.addPath(holes);
+ctx.clip(cut, 'evenodd');
+}
+if (fam.ground && fam.ground.stops) {
+var a = (fam.ground.angle || 90) * Math.PI / 180, cx = x0 + w / 2, cy = y0 + h / 2, rr = Math.max(w, h) / 2;
+var g = ctx.createLinearGradient(cx - Math.cos(a) * rr, cy - Math.sin(a) * rr, cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
+fam.ground.stops.forEach(function (s) { g.addColorStop(s[0], col(s[1])); });
+ctx.fillStyle = g;
+} else ctx.fillStyle = col(fam.ground && fam.ground.brushed ? fam.ground.brushed : (fam.ground || '$face'));
+ctx.fillRect(x0, y0, w, h);
+if (fam.ground && fam.ground.brushed) brushed(x0, y0, w, h);
+if (fam.grain) { ctx.globalAlpha = fam.grain; ctx.fillStyle = grainPattern(); ctx.fillRect(x0, y0, w, h); ctx.globalAlpha = 1; }
+drawParts(fam.parts, col, false, x0, w);
+if (fam.sheen) {
+var sg = ctx.createLinearGradient(x0, y0, x0 + w, y0 + h);
+sg.addColorStop(0, 'rgba(255,255,255,0)'); sg.addColorStop(0.42, 'rgba(255,255,255,0.10)');
+sg.addColorStop(0.5, 'rgba(255,255,255,0.22)'); sg.addColorStop(0.58, 'rgba(255,255,255,0.08)'); sg.addColorStop(1, 'rgba(255,255,255,0)');
+ctx.fillStyle = sg; ctx.fillRect(x0, y0, w, h);
+}
+ctx.restore();
+if (holes && fam.glass) { ctx.fillStyle = col(fam.glass); ctx.fill(holes); }
+if (holes && fam.bezel) { ctx.strokeStyle = col(fam.bezel.stroke || fam.bezel); ctx.lineWidth = mm(fam.bezel.w || 0.6); ctx.stroke(holes); }
+drawParts(fam.parts, col, true, x0, w);
+ctx.restore();
+}
+function brushed(x0, y0, w, h) {
+ctx.save(); ctx.lineWidth = 1;
+for (var k = 0, y = y0; y < y0 + h; y += 1.5, k++) {
+var v = ((k * 37) % 11) / 11;
+ctx.strokeStyle = v > 0.5 ? 'rgba(255,255,255,' + (0.05 + v * 0.08) + ')' : 'rgba(0,0,0,' + (0.03 + v * 0.06) + ')';
+ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + w, y); ctx.stroke();
+}
+ctx.restore();
+}
+function famStrip(p, col, dymo) {
+var words = dymo ? famWords(p.t) : '';
+if (dymo && !words) return;
+var cx = X(p.x + p.w / 2), cy = Y(p.y + p.h / 2), w = mm(p.w), h = mm(p.h);
+ctx.save();
+ctx.translate(cx, cy); ctx.rotate((p.angle || 0) * Math.PI / 180);
+ctx.fillStyle = col(p.fill);
+ctx.beginPath();
+if (dymo) subRoundRect(-w / 2, -h / 2, w, h, mm(0.5));
+else {
+var n = 6, i;
+ctx.moveTo(-w / 2, -h / 2); ctx.lineTo(w / 2, -h / 2);
+for (i = 1; i <= n; i++) ctx.lineTo(w / 2 + (i % 2 ? mm(0.6) : 0), -h / 2 + h * i / n);
+ctx.lineTo(-w / 2, h / 2);
+for (i = n - 1; i >= 0; i--) ctx.lineTo(-w / 2 - (i % 2 ? mm(0.6) : 0), -h / 2 + h * i / n);
+ctx.closePath();
+}
+ctx.fill();
+if (dymo) {
+ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fillRect(-w / 2, -h / 2, w, h * 0.35);
+ctx.font = '700 ' + Math.round(h * 0.56) + 'px ' + UI_FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+var txt = words.toUpperCase(), tw = ctx.measureText(txt).width + mm(0.5) * txt.length, k = Math.min(1, (w - mm(2)) / tw);
+ctx.scale(k, 1);
+ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillText(txt, 0, h * 0.06);
+ctx.fillStyle = 'rgba(255,255,255,0.94)'; ctx.fillText(txt, 0, 0);
+}
+ctx.restore();
 }
 var cv = null, ctx = null, cssW = 0, cssH = 0, dpr = 1;
 var ox = 0, oy = 0;
@@ -263,6 +887,36 @@ function drawReel(cxmm, cymm, R, theta, bands) {
 drawPack(cxmm, cymm, R, bands);
 drawHub(cxmm, cymm, theta);
 }
+var FLANGE_R = 20.9;
+function packR(r) { return FLANGE ? HUB + (r - HUB) * (FLANGE_R - 0.9 - HUB) / (RFULL - HUB) : r; }
+function drawRibs() {
+ctx.save();
+ctx.beginPath();
+subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
+subRoundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1 - CAP_X0), mm(CAP_Y1 - CAP_Y0), mm(CAP_R));
+ctx.clip('evenodd');
+var tx = TEXTURE || { kind: 'hlines', pitch: 2.6, ink: 'rgba(255,255,255,0.22)' }, pitch = tx.pitch || 2.6, k;
+ctx.strokeStyle = tx.ink || 'rgba(255,255,255,0.22)'; ctx.fillStyle = ctx.strokeStyle; ctx.lineWidth = 1;
+ctx.beginPath();
+if (tx.kind === 'dots') {
+for (var dy = 3; dy < SHELL_H - 3; dy += pitch) for (k = 3; k < SHELL_W - 3; k += pitch) { ctx.moveTo(X(k) + mm(0.25), Y(dy)); ctx.arc(X(k), Y(dy), mm(0.25), 0, TAU); }
+ctx.fill();
+} else {
+if (tx.kind === 'hlines' || tx.kind === 'grid') for (k = 3; k < SHELL_H - 3; k += pitch) { ctx.moveTo(X(2), Y(k)); ctx.lineTo(X(SHELL_W - 2), Y(k)); }
+if (tx.kind === 'grid') for (k = 3; k < SHELL_W - 3; k += pitch) { ctx.moveTo(X(k), Y(2)); ctx.lineTo(X(k), Y(SHELL_H - 2)); }
+if (tx.kind === 'diag') for (k = -SHELL_H; k < SHELL_W; k += pitch) { ctx.moveTo(X(k), Y(SHELL_H)); ctx.lineTo(X(k + SHELL_H), Y(0)); }
+ctx.stroke();
+}
+ctx.restore();
+}
+function drawFrame() {
+var g = ctx.createLinearGradient(X(0), Y(0), X(SHELL_W), Y(SHELL_H));
+g.addColorStop(0, '#f2ead0'); g.addColorStop(0.35, FRAME); g.addColorStop(0.6, '#6f6246'); g.addColorStop(1, FRAME);
+ctx.strokeStyle = g; ctx.lineWidth = mm(1.5);
+roundRect(X(0.75), Y(0.75), mm(SHELL_W - 1.5), mm(SHELL_H - 1.5), mm(SHELL_R - 0.6)); ctx.stroke();
+ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1;
+roundRect(X(1.55), Y(1.55), mm(SHELL_W - 3.1), mm(SHELL_H - 3.1), mm(SHELL_R - 1.2)); ctx.stroke();
+}
 function drawPack(cxmm, cymm, R, bands, open) {
 var cx = X(cxmm), cy = Y(cymm);
 var hubPx = mm(HUB), rPx = mm(R);
@@ -310,12 +964,31 @@ var i, a;
 ctx.save();
 ctx.translate(cx, cy);
 ctx.rotate(theta);
+if (FLANGE) {
+var fr = mm(FLANGE_R), fw;
+ctx.fillStyle = hexToRgba(FLANGE[0], FLANGE[1]);
+ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU);
+for (fw = 0; fw < 3; fw++) {
+var fa = fw * TAU / 3;
+ctx.moveTo(Math.cos(fa - 0.62) * mm(HUB + 1.6), Math.sin(fa - 0.62) * mm(HUB + 1.6));
+ctx.arc(0, 0, fr - mm(1.8), fa - 0.62, fa + 0.62);
+ctx.arc(0, 0, mm(HUB + 1.6), fa + 0.62, fa - 0.62, true);
+ctx.closePath();
+}
+ctx.fill('evenodd');
+ctx.strokeStyle = hexToRgba(FLANGE[0], Math.min(1, FLANGE[1] + 0.3)); ctx.lineWidth = 1;
+ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU); ctx.stroke();
+}
 ctx.fillStyle = HUB_WHITE;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.stroke();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_STEP), 0, TAU); ctx.stroke();
+if (HUB_RING) {
+ctx.strokeStyle = HUB_RING; ctx.lineWidth = mm(1.3);
+ctx.beginPath(); ctx.arc(0, 0, (hubPx + mm(HUB_STEP)) / 2, 0, TAU); ctx.stroke();
+}
 ctx.fillStyle = HUB_RECESS;
 a = CLIP_ANGLE + Math.PI;
 ctx.beginPath();
@@ -485,7 +1158,7 @@ drawPad();
 if (!front) { drawGuideCorner(1); drawGuideCorner(-1); }
 }
 function drawPad() {
-ctx.fillStyle = '#9a9da5';
+ctx.fillStyle = PAD_FILL;
 roundRect(X(SHELL_W/2 - 6), Y(ROLLER_Y - 2.1), mm(12), mm(3.2), mm(0.4)); ctx.fill();
 }
 function drawGuideCorner(side, part) {
@@ -828,7 +1501,7 @@ if (ctx.measureText(txt).width <= maxW || size <= floor) return f;
 size -= 1;
 }
 }
-var STRIP_Y1 = 18.4;
+var STRIP_Y1 = 15.5;
 function drawStripLabel() {
 var lw = LAB_X1 - LAB_X0, lh = STRIP_Y1 - LAB_Y0;
 var y0 = Y(LAB_Y0);
@@ -877,6 +1550,65 @@ var max = cRight - cW - marksW - mm(2.5) - textX;
 ctx.font = fitHandFont(line, max, 3.2);
 ctx.fillText(line, textX, Y(by + box / 2));
 ctx.restore();
+}
+function drawIndexStrip() {
+var ix0 = X(IDX_X0), ix1 = X(IDX_X1), iy = Y(IDX_Y), iw = ix1 - ix0;
+var ix = function (f) { return ix0 + iw * Math.max(0, Math.min(1, f)); };
+var k;
+ctx.strokeStyle = hexToRgba(LAB_INK, 0.45); ctx.lineWidth = 1;
+ctx.beginPath(); ctx.moveTo(ix0, iy); ctx.lineTo(ix1, iy); ctx.stroke();
+ctx.strokeStyle = LEADER_INK; ctx.lineWidth = 2;
+for (k = 0; k < (index.leads || []).length; k++) {
+ctx.beginPath(); ctx.moveTo(ix(index.leads[k][0]), iy); ctx.lineTo(ix(index.leads[k][1]), iy); ctx.stroke();
+}
+ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1;
+for (k = 0; k < (index.marks || []).length; k++) {
+var mx = ix(index.marks[k]);
+ctx.beginPath(); ctx.moveTo(mx, iy - mm(0.9)); ctx.lineTo(mx, iy + mm(0.9)); ctx.stroke();
+}
+ctx.font = '600 ' + Math.round(mm(1.7)) + 'px ' + UI_FONT;
+ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+var sideAt = [0].concat(index.splits || []);
+for (k = 0; k < sideAt.length; k++) {
+var sx = ix(sideAt[k]);
+ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1.5;
+ctx.beginPath(); ctx.moveTo(sx, iy - mm(1.6)); ctx.lineTo(sx, iy + mm(1.6)); ctx.stroke();
+ctx.fillStyle = LAB_INK;
+if (sideAt.length > 1) ctx.fillText(String.fromCharCode(65 + k), sx, iy - mm(2.1));   // no "A" on a one-sided tape
+}
+ctx.textAlign = 'left';   // the gutter text below expects left alignment
+var hx = ix(headFrac !== null ? headFrac : (side > 0 ? t / side : 0));
+ctx.fillStyle = LAB_STRIPE;
+ctx.beginPath();
+ctx.moveTo(hx, iy - mm(0.4));
+ctx.lineTo(hx - mm(0.9), iy - mm(2.0));
+ctx.lineTo(hx + mm(0.9), iy - mm(2.0));
+ctx.closePath(); ctx.fill();
+ctx.strokeStyle = LAB_INK; ctx.lineWidth = 0.8; ctx.stroke();
+}
+function drawSpecBlock(fBody, fSmall) {
+ctx.fillStyle = LAB_INK;
+ctx.font = '600 ' + fBody;
+ctx.fillText(tapeName, X(3.0), Y(26.3));
+function fitText(txt, x, y, maxMm) {
+var w = ctx.measureText(txt).width, max = mm(maxMm);
+if (w > max) { ctx.save(); ctx.translate(x, y); ctx.scale(max / w, 1); ctx.fillText(txt, 0, 0); ctx.restore(); }
+else ctx.fillText(txt, x, y);
+}
+ctx.fillStyle = LAB_DIM;
+ctx.font = fSmall;
+if (labelInfo.lines[0]) fitText(labelInfo.lines[0], X(3.0), Y(29.7), 12.0);
+if (labelInfo.lines[1]) fitText(labelInfo.lines[1], X(3.0), Y(32.7), 12.0);
+ctx.fillStyle = LAB_INK;
+ctx.font = fSmall;
+if (labelInfo.rows.length) fitText(labelInfo.heading || 'Sides', X(SIDES_X), Y(28.3), 12.0);
+ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1;
+labelInfo.rows.slice(0, 2).forEach(function (row, k) {
+var y = SIDES_Y + k * SIDES_PITCH;
+ctx.strokeRect(X(SIDES_X), Y(y), mm(2.0), mm(2.0));
+if (row.on) ctx.fillRect(X(SIDES_X + 0.45), Y(y + 0.45), mm(1.1), mm(1.1));
+fitText(row.text, X(SIDES_X + 3.0), Y(y + 1.8), 10.0);
+});
 }
 function drawLabel() {
 var lw = LAB_X1 - LAB_X0, lh = LAB_Y1 - LAB_Y0;
@@ -954,63 +1686,8 @@ ctx.textBaseline = 'alphabetic';
 ctx.font = fitHandFont(artistText, titleMax, 2.8 * Math.sqrt(WORD_SCALE));
 ctx.fillText(artistText, titleX, Y(RULE_1));
 }
-if (index) {
-var ix0 = X(IDX_X0), ix1 = X(IDX_X1), iy = Y(IDX_Y), iw = ix1 - ix0;
-var ix = function (f) { return ix0 + iw * Math.max(0, Math.min(1, f)); };
-var k;
-ctx.strokeStyle = hexToRgba(LAB_INK, 0.45); ctx.lineWidth = 1;
-ctx.beginPath(); ctx.moveTo(ix0, iy); ctx.lineTo(ix1, iy); ctx.stroke();
-ctx.strokeStyle = LEADER_INK; ctx.lineWidth = 2;
-for (k = 0; k < (index.leads || []).length; k++) {
-ctx.beginPath(); ctx.moveTo(ix(index.leads[k][0]), iy); ctx.lineTo(ix(index.leads[k][1]), iy); ctx.stroke();
-}
-ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1;
-for (k = 0; k < (index.marks || []).length; k++) {
-var mx = ix(index.marks[k]);
-ctx.beginPath(); ctx.moveTo(mx, iy - mm(0.9)); ctx.lineTo(mx, iy + mm(0.9)); ctx.stroke();
-}
-ctx.font = '600 ' + Math.round(mm(1.7)) + 'px ' + UI_FONT;
-ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-var sideAt = [0].concat(index.splits || []);
-for (k = 0; k < sideAt.length; k++) {
-var sx = ix(sideAt[k]);
-ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1.5;
-ctx.beginPath(); ctx.moveTo(sx, iy - mm(1.6)); ctx.lineTo(sx, iy + mm(1.6)); ctx.stroke();
-ctx.fillStyle = LAB_INK;
-if (sideAt.length > 1) ctx.fillText(String.fromCharCode(65 + k), sx, iy - mm(2.1));   // no "A" on a one-sided tape
-}
-ctx.textAlign = 'left';   // the gutter text below expects left alignment
-var hx = ix(headFrac !== null ? headFrac : (side > 0 ? t / side : 0));
-ctx.fillStyle = LAB_STRIPE;
-ctx.beginPath();
-ctx.moveTo(hx, iy - mm(0.4));
-ctx.lineTo(hx - mm(0.9), iy - mm(2.0));
-ctx.lineTo(hx + mm(0.9), iy - mm(2.0));
-ctx.closePath(); ctx.fill();
-ctx.strokeStyle = LAB_INK; ctx.lineWidth = 0.8; ctx.stroke();
-}
-ctx.fillStyle = LAB_INK;
-ctx.font = '600 ' + fBody;
-ctx.fillText(tapeName, X(3.0), Y(29.2));
-function fitText(txt, x, y, maxMm) {
-var w = ctx.measureText(txt).width, max = mm(maxMm);
-if (w > max) { ctx.save(); ctx.translate(x, y); ctx.scale(max / w, 1); ctx.fillText(txt, 0, 0); ctx.restore(); }
-else ctx.fillText(txt, x, y);
-}
-ctx.fillStyle = LAB_DIM;
-ctx.font = fSmall;
-if (labelInfo.lines[0]) fitText(labelInfo.lines[0], X(3.0), Y(32.6), 12.0);
-if (labelInfo.lines[1]) fitText(labelInfo.lines[1], X(3.0), Y(35.6), 12.0);
-ctx.fillStyle = LAB_INK;
-ctx.font = fSmall;
-if (labelInfo.rows.length) fitText(labelInfo.heading || 'Sides', X(SIDES_X), Y(31.2), 12.0);
-ctx.strokeStyle = LAB_INK; ctx.lineWidth = 1;
-labelInfo.rows.slice(0, 2).forEach(function (row, k) {
-var y = SIDES_Y + k * SIDES_PITCH;
-ctx.strokeRect(X(SIDES_X), Y(y), mm(2.0), mm(2.0));
-if (row.on) ctx.fillRect(X(SIDES_X + 0.45), Y(y + 0.45), mm(1.1), mm(1.1));
-fitText(row.text, X(SIDES_X + 3.0), Y(y + 1.8), 10.0);
-});
+if (index) drawIndexStrip();
+drawSpecBlock(fBody, fSmall);
 ctx.restore();
 }
 function spindle(cx, cy) {
@@ -1227,7 +1904,7 @@ rollersApart = !!split;
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 ctx.clearRect(0, 0, cssW, cssH);
 if (!loaded) { drawWell(); return; }
-var Rt = rTake(t), Rs = rSupply(t);
+var Rt = packR(rTake(t)), Rs = packR(rSupply(t));
 stepSlack();
 stepExplode();
 var e = explode, apart = e > 0.002, z = { tape: 0 };
@@ -1418,6 +2095,8 @@ ctx.stroke();
 ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
 ctx.stroke();
+if (RIBS || TEXTURE) drawRibs();
+if (FRAME) drawFrame();
 }
 if (!apart) drawScrew(SHELL_W / 2, BOTTOM_SCREW_Y);
 if (!cutaway) {
@@ -1430,7 +2109,8 @@ if (wearLevel > 0 && !cutaway) drawWear();
 ctx.restore();
 if (apart) exAxes(loose, z.front, z.label);
 layer(z.label);
-if (labelOn && !cutaway) { if (labelShape === 'strip') drawStripLabel(); else drawLabel(); }
+if (!cutaway) drawShellPrint();   // a catalogue tape's printing on the shell itself
+if (labelOn && !cutaway) drawAnyLabel();
 ctx.restore();
 if (apart) {
 exAxes(loose, z.label, z.screws - EX_SHANK * view.s);
@@ -1509,7 +2189,7 @@ turnPose[i] = 'translate(' + (at[0] - X(cxmm)).toFixed(3) + 'px,' + (at[1] - Y(c
 }
 }
 function drawHubLayer(i, cxmm, theta, z) {
-drawTurnLayer(i, cxmm, HUB_CY, HUB, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
+drawTurnLayer(i, cxmm, HUB_CY, FLANGE ? FLANGE_R : HUB, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
 }
 function drawRollerLayers(z) {
 var theta = rollerAngle(t);
@@ -1617,6 +2297,16 @@ function setClearShell(on) { clearOverride = !!on; }
 function setLabelOn(on) { labelOn = !!on; }
 function setCutaway(on) { cutaway = !!on; }
 function setLabelShape(s) { labelShape = s === 'strip' ? 'strip' : 'full'; }
+function setLabelStyle(name) { labelStyle = name && LABELS[name] ? name : 'shell'; }
+function showBrands(on) { SHOW_BRANDS = !!on; hubStale = true; }
+function addTape(tape) {
+if (!tape || !tape.name || !tape.shell) return false;
+var shell = Object.assign({ face: '#fbfbfc', ink: '#1a1a1a', dim: '#6b7080', stripe: '#FBCA12',
+shell: '#26282c', shellEdge: '#16171a', apron: '#303338', capsule: '#1a1c1f', leader: '#ece8df' }, tape.shell);
+if (tape.label) { LABELS[tape.name] = tape.label; shell.label = tape.name; }
+STYLES[tape.name] = shell;
+return true;
+}
 function setTapeType(kind, nr) {
 tapeKind = kind === 'I' || kind === 'IV' ? kind : 'II';
 tapeNR = nr === 'B' || nr === 'C' ? nr : 'off';
@@ -2057,6 +2747,7 @@ slackSettled: function () { return !loaded || ((slackInstant || Math.abs(slack -
 styleInfo: function (n) { return STYLES[n] ? Object.assign({}, STYLES[n]) : null; },
 reelAngle: function () { return lastAngR || 0; },
 turnsOn: turnsOn, rTake: rTake, rSupply: rSupply, createHiss: createHiss, createClunk: createClunk, createWind: createWind, createEject: createEject, createSnap: createSnap, createChew: createChew, createCue: createCue,
+setLabelStyle: setLabelStyle, labelStyles: Object.keys(LABELS).filter(function (k) { return !LABELS[k].own; }), addTape: addTape, showBrands: showBrands,
 styles: Object.keys(STYLES)
 };
 })();

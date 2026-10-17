@@ -118,6 +118,7 @@
   C.mount(cv);
   if (tape.pal) C.setArtPalette({ a: tape.pal[0], b: tape.pal[1], vivid: !!tape.pal[2] });
   if (tape.s && C.styles.indexOf(tape.s) >= 0) C.setStyle(tape.s);
+  if (tape.ls) C.setLabelStyle(tape.ls);   // the label's style as the sender's deck had it (v4.38), Match the shell if unknown
   if (typeof tape.cl === 'boolean') C.setClearShell(tape.cl);
   C.setTapeType(tape.ty || 'II', tape.nr || 'B');
   C.setSide(side);
