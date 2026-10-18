@@ -110,7 +110,7 @@ grid: { kind: 'grid', pitch: 1.2, ink: 'rgba(255,255,255,0.12)' },
 diag: { kind: 'diag', pitch: 1.2, ink: 'rgba(255,255,255,0.14)' }
 };
 var HAND_SYSTEM = '"Segoe Script", "Bradley Hand", "Brush Script MT", "Snell Roundhand", "Comic Sans MS", cursive';
-var HAND_FONT = HAND_SYSTEM, HAND_SCALE = 1;
+var HAND_FONT = HAND_SYSTEM, HAND_SCALE = 1, HAND_CAPS = false;   // HAND_CAPS: the hand writes in capitals (handWords())
 var WORD_SCALE = 1;
 var HAND_FONTS = {
 system: null,
@@ -118,7 +118,9 @@ biro:   ['Reenie Beanie', 'reeniebeanie', 1.3],
 felt:   ['Gochi Hand', 'gochihand', 0.98],
 marker: ['Permanent Marker', 'permanentmarker', 0.95],
 neat:   ['Caveat', 'caveat', 1.2],
-scrawl: ['Rock Salt', 'rocksalt', 0.72]
+scrawl: ['Rock Salt', 'rocksalt', 0.72],
+capitals: ['Architects Daughter', 'architectsdaughter', 0.9, 'caps'],
+typed:  ['Special Elite', 'specialelite', 0.85, 'typed']
 };
 var UI_FONT = '-apple-system, "Segoe UI", sans-serif';
 var FE_TICKS = 'M34.20 11.7h0.38v2.2h-0.38z M35.10 11.7h0.38v1.6h-0.38z M36.00 11.7h0.38v1.6h-0.38z M36.90 11.7h0.38v1.6h-0.38z M37.80 11.7h0.38v1.6h-0.38z M38.70 11.7h0.38v2.2h-0.38z M39.60 11.7h0.38v1.6h-0.38z M40.50 11.7h0.38v1.6h-0.38z M41.40 11.7h0.38v1.6h-0.38z M42.30 11.7h0.38v1.6h-0.38z M43.20 11.7h0.38v2.2h-0.38z M44.10 11.7h0.38v1.6h-0.38z M45.00 11.7h0.38v1.6h-0.38z M45.90 11.7h0.38v1.6h-0.38z M46.80 11.7h0.38v1.6h-0.38z M47.70 11.7h0.38v2.2h-0.38z M48.60 11.7h0.38v1.6h-0.38z M49.50 11.7h0.38v1.6h-0.38z M50.40 11.7h0.38v1.6h-0.38z M51.30 11.7h0.38v1.6h-0.38z M52.20 11.7h0.38v2.2h-0.38z M53.10 11.7h0.38v1.6h-0.38z M54.00 11.7h0.38v1.6h-0.38z M54.90 11.7h0.38v1.6h-0.38z M55.80 11.7h0.38v1.6h-0.38z M56.70 11.7h0.38v2.2h-0.38z M57.60 11.7h0.38v1.6h-0.38z M58.50 11.7h0.38v1.6h-0.38z M59.40 11.7h0.38v1.6h-0.38z M60.30 11.7h0.38v1.6h-0.38z M61.20 11.7h0.38v2.2h-0.38z M62.10 11.7h0.38v1.6h-0.38z';
@@ -157,7 +159,7 @@ label:'Band Ferric', win:'twin' },
 'Reel':       { clear:true, face:'#eef1f4', ink:'#12243a', dim:'#5d6b7d', stripe:'#2a6db8',
 shell:'#eef1f4', shellEdge:'#b4bac2', apron:'#dde1e6', capsule:'#2b2f36', alpha:0.16, leader:'#e8edf2',
 reels:['#cfd6de', 0.5], labelShape:'top', label:'Pinstripe Hi-Fi', win:'wide' },
-'Home Ferric': { clear:true, face:'#ffffff', ink:'#1f45b8', dim:'#5a6478', stripe:'#1f45b8', shell:'#c7cbd2', shellEdge:'#80868f', apron:'#bfc3ca', capsule:'#aeb3ba', alpha:0.3, leader:'#e8ebef', hub:'#f6f6f4', hubEdge:'#b9bcc2', ring:'rgba(255,255,255,0.6)', pack:'ferric', labelShape:'full', texture:{ kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' }, label:'Stick-on Letters', win:'none',
+'Home Ferric': { len:90, clear:true, face:'#ffffff', ink:'#1f45b8', dim:'#5a6478', stripe:'#1f45b8', shell:'#c7cbd2', shellEdge:'#80868f', apron:'#bfc3ca', capsule:'#aeb3ba', alpha:0.3, leader:'#e8ebef', hub:'#f6f6f4', hubEdge:'#b9bcc2', ring:'rgba(255,255,255,0.6)', pack:'ferric', labelShape:'full', texture:{ kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' }, label:'Stick-on Letters', win:'none',
 print: [
 { k: 'rect', x: 5.2, y: 7.5, w: 17.6, h: 5.6, fill: '#2347c6' },
 { k: 'text', t: 'TDK', brand: true, generic: 'TYPE I', x: 14.6, y: 10.4, w: 13, size: 4.4, font: 'sans', weight: 800, ink: '#ffffff', align: 'center' },
@@ -523,8 +525,27 @@ var key = labelText + '\u0000' + artistText, h = 2166136261;
 for (var i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619);
 return (h >>> 0) % n;
 }
+var madeLen = 0;
+function styleLen() {
+var st = STYLES[styleName] || {};
+return st.len || parseInt((/(\d+)$/.exec(styleName) || [])[1], 10) || 0;
+}
+function deckLen() {
+return parseInt(String(tapeName).replace(/\D/g, ''), 10) || 0;
+}
+function lenWords(w) {
+var to = deckLen();
+if (!madeLen || !to || to === madeLen || !/\d/.test(w)) return w;
+var made = new RegExp('(^|\\D)' + madeLen + '(?![\\d\\u00b5]|\\s*\\u00b5)', 'g');
+var out = w.replace(made, function (m, pre) { return pre + to; });
+if (out !== w || !/min|2\s*[x×]/i.test(w)) return out;
+var by = Math.round((to - madeLen) / 2);
+return w.replace(/(2\s*[x×]\s*)(\d+)|(^|\D)(\d+)(?=\s*min)/gi, function (m, two, n2, pre, n) {
+return two ? two + Math.max(1, +n2 + by) : pre + Math.max(1, +n + by);
+});
+}
 function famWords(t) {
-if (t.charAt(0) !== '@') return t;
+if (t.charAt(0) !== '@') return lenWords(t);
 var mins = parseInt(String(tapeName).replace(/\D/g, ''), 10);
 switch (t) {
 case '@title': return labelText;
@@ -565,6 +586,7 @@ ctx.fillStyle = col(p.ink);
 ctx.textAlign = p.align || 'left';
 ctx.textBaseline = p.base || 'middle';
 if (p.font === 'hand' || p.font === 'marker') {
+if (p.font === 'hand') words = handWords(words);
 var keep = [HAND_FONT, HAND_SCALE], m = p.font === 'marker' && famHand('marker');
 if (m) { HAND_FONT = m[0]; HAND_SCALE = m[1]; }
 ctx.font = fitHandFont(words, max, p.size * (p.font === 'hand' ? WORD_SCALE : 1));
@@ -753,6 +775,7 @@ case 'dymo': famStrip(p, col, true); break;
 function drawShellPrint() {
 var st = STYLES[styleName] || {};
 if (!st.print || !st.print.length) return;
+madeLen = styleLen();
 ctx.save();
 ctx.beginPath(); subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.clip();
 var col = famColour({ face: st.face, ink: st.ink, dim: st.dim, stripe: st.stripe, a1: st.stripe });
@@ -760,6 +783,7 @@ drawParts(st.print, col, false, X(0), mm(SHELL_W));
 ctx.restore();
 }
 function drawFamily(fam, shape) {
+madeLen = fam.own ? styleLen() : 0;
 var pal = fam.pal || (fam.pals ? fam.pals[famPick(fam.pals.length)] : null);
 if (fam.album) { pal = {}; albumColours(pal); pal.a1 = pal.stripe; }
 pal = pal || {};
@@ -1492,6 +1516,7 @@ ctx.beginPath(); ctx.moveTo(X(s.x0), Y(s.y0)); ctx.lineTo(X(s.x1), Y(s.y1)); ctx
 });
 ctx.restore();
 }
+function handWords(txt) { return HAND_CAPS ? String(txt).toUpperCase() : txt; }
 function fitHandFont(txt, maxW, startMm) {
 var size = mm(startMm * HAND_SCALE), floor = Math.max(6, mm(1.6)), f;
 for (;;) {
@@ -1545,7 +1570,7 @@ ctx.fillText(typeText, mx - nw - (nw ? mm(1.2) : 0), ym);
 var marksW = ctx.measureText(typeText).width + nw + (nw ? mm(1.2) : 0) + mm(1.8);
 ctx.fillStyle = LAB_INK;
 ctx.textAlign = 'left';
-var line = labelText + (artistText && artistText !== labelText ? ' · ' + artistText : '');
+var line = handWords(labelText + (artistText && artistText !== labelText ? ' · ' + artistText : ''));
 var max = cRight - cW - marksW - mm(2.5) - textX;
 ctx.font = fitHandFont(line, max, 3.2);
 ctx.fillText(line, textX, Y(by + box / 2));
@@ -1678,13 +1703,13 @@ titleRight = cx0 - mm(1.5);
 var titleMax = titleRight - titleX;
 ctx.fillStyle = LAB_INK;
 ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-ctx.font = fitHandFont(labelText, titleMax, 3.4 * WORD_SCALE);
-ctx.fillText(labelText, titleX, Y(A_Y0 + A_SIZE / 2));
+ctx.font = fitHandFont(handWords(labelText), titleMax, 3.4 * WORD_SCALE);
+ctx.fillText(handWords(labelText), titleX, Y(A_Y0 + A_SIZE / 2));
 if (artistText) {
 ctx.fillStyle = LAB_DIM;
 ctx.textBaseline = 'alphabetic';
-ctx.font = fitHandFont(artistText, titleMax, 2.8 * Math.sqrt(WORD_SCALE));
-ctx.fillText(artistText, titleX, Y(RULE_1));
+ctx.font = fitHandFont(handWords(artistText), titleMax, 2.8 * Math.sqrt(WORD_SCALE));
+ctx.fillText(handWords(artistText), titleX, Y(RULE_1));
 }
 if (index) drawIndexStrip();
 drawSpecBlock(fBody, fSmall);
@@ -2299,12 +2324,53 @@ function setCutaway(on) { cutaway = !!on; }
 function setLabelShape(s) { labelShape = s === 'strip' ? 'strip' : 'full'; }
 function setLabelStyle(name) { labelStyle = name && LABELS[name] ? name : 'shell'; }
 function showBrands(on) { SHOW_BRANDS = !!on; hubStale = true; }
-function addTape(tape) {
-if (!tape || !tape.name || !tape.shell) return false;
+var TAPE_INFO = {}, SHELLS = Object.keys(STYLES);
+function addTape(tape, source) {
+if (!tape || typeof tape.name !== 'string' || !tape.name || !tape.shell || typeof tape.shell !== 'object') return false;
+if ((tape.needs || 1) > (typeof TAPE_ENGINE === 'number' ? TAPE_ENGINE : 1)) return false;
+if (SHELLS.indexOf(tape.name) >= 0) return false;
 var shell = Object.assign({ face: '#fbfbfc', ink: '#1a1a1a', dim: '#6b7080', stripe: '#FBCA12',
 shell: '#26282c', shellEdge: '#16171a', apron: '#303338', capsule: '#1a1c1f', leader: '#ece8df' }, tape.shell);
-if (tape.label) { LABELS[tape.name] = tape.label; shell.label = tape.name; }
+if (tape.label && Array.isArray(tape.label.parts)) {
+LABELS[tape.name] = Object.assign({}, tape.label, { own: true });
+shell.label = tape.name;
+}
+if (tape.len > 0) shell.len = +tape.len;   // the length it was made at, where its name doesn't end in it (lenWords())
 STYLES[tape.name] = shell;
+TAPE_INFO[tape.name] = { id: typeof tape.id === 'string' ? tape.id : '', brand: typeof tape.brand === 'string' ? tape.brand : '', fav: !!tape.fav,
+type: tape.type === 'II' || tape.type === 'IV' ? tape.type : 'I', source: source || (tape.fav ? 'favourite' : 'catalogue') };
+return true;
+}
+function addTapes(file) {
+if (!file || !Array.isArray(file.tapes)) return 0;
+var n = 0;
+file.tapes.slice(0, 2000).forEach(function (tp) { if (addTape(tp, 'catalogue')) n++; });
+return n;
+}
+function tapeList() {
+return Object.keys(TAPE_INFO).map(function (n) {
+var i = TAPE_INFO[n];
+return { id: i.id, name: n, title: SHOW_BRANDS && i.brand ? i.brand : n, fav: i.fav, type: i.type, source: i.source };
+});
+}
+function thumb(name, canvas, width) {
+if (!STYLES[name] || !canvas) return false;
+var w = Math.round(width || canvas.clientWidth || 160), d = window.devicePixelRatio || 1;
+var h = Math.round(w * (SHELL_H + 2 * MARGIN) / (SHELL_W + 2 * MARGIN));
+canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
+var keep = [ctx, cssW, cssH, dpr, PX, ox, oy, styleName, explode, cutaway, labelStyle, loaded, t, headFrac, thetaT, thetaS,
+lastAngL, lastAngR, reanchor, phaseL, phaseR, snapSpun];
+ctx = canvas.getContext('2d'); cssW = w; cssH = h; dpr = d;
+PX = w / (SHELL_W + 2 * MARGIN); ox = mm(MARGIN); oy = mm(MARGIN);
+explode = 0; cutaway = false; labelStyle = 'shell'; loaded = true;
+t = 0; headFrac = null; thetaT = turnsOn(0) * TAU; thetaS = turnsOff(0) * TAU;
+try { applyStyle(name); draw(); } finally {
+ctx = keep[0]; cssW = keep[1]; cssH = keep[2]; dpr = keep[3]; PX = keep[4]; ox = keep[5]; oy = keep[6];
+explode = keep[8]; cutaway = keep[9]; labelStyle = keep[10]; loaded = keep[11]; t = keep[12]; headFrac = keep[13];
+thetaT = keep[14]; thetaS = keep[15]; lastAngL = keep[16]; lastAngR = keep[17]; reanchor = keep[18];
+phaseL = keep[19]; phaseR = keep[20]; snapSpun = keep[21];
+applyStyle(keep[7]);
+}
 return true;
 }
 function setTapeType(kind, nr) {
@@ -2329,7 +2395,19 @@ var k = Math.floor((p.y - (SIDES_Y - 0.5)) / SIDES_PITCH);
 return k >= 0 && k < rows.length && typeof rows[k].j === 'number' ? rows[k].j : null;
 }
 function labelPoint(clientX, clientY) {
-if (!cv || !labelOn || cutaway || labelShape !== 'full' || explode > 0) return null;
+if (!labelOn || cutaway || labelShape !== 'full') return null;
+return shellPoint(clientX, clientY);
+}
+function onLabel(clientX, clientY) {
+var p = shellPoint(clientX, clientY);
+return !!p && p.x >= 1 && p.x <= 99.4 && p.y >= 5.8 && p.y <= 43.2;
+}
+function showsIndex() {
+var st = STYLES[styleName] || {};
+return labelOn && !cutaway && labelShape === 'full' && !labelFamily() && !(labelStyle === 'shell' && st.labelShape === 'none');
+}
+function shellPoint(clientX, clientY) {
+if (!cv || explode > 0) return null;
 var r = cv.getBoundingClientRect();
 if (!r.width) return null;
 var k = cssW / r.width;   // the canvas may be scaled by CSS (jiggle, full screen)
@@ -2351,6 +2429,7 @@ function setSpill(mm) { spillMM = Math.max(0, +mm || 0); spillAt = performance.n
 var handLoaded = {};
 function setHandFont(key) {
 var f = HAND_FONTS[key];
+HAND_CAPS = !!f && f[3] === 'caps';
 if (!f) { HAND_FONT = HAND_SYSTEM; HAND_SCALE = 1; return; }
 HAND_FONT = '"' + f[0] + '", ' + HAND_SYSTEM; HAND_SCALE = f[2];
 var src = (HANDS || {})[f[1]];
@@ -2736,11 +2815,12 @@ src.start();
 function setVolume(v) { vol = v; }
 return { warm: warm, play: play, setVolume: setVolume };
 }
+if (typeof TAPES !== 'undefined') TAPES.forEach(function (tp) { addTape(tp, 'favourite'); });
 return {
 mount: mount, render: render, glide: glide, canGlide: canGlide, setSide: setSide, setLeaders: setLeaders,
 setLabel: setLabel, setStyle: setStyle, setBackground: setBackground,
 setWordScale: function (k) { WORD_SCALE = k > 0 ? k : 1; },
-setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setArtPalette: setArtPalette,
+setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), randomHands: Object.keys(HAND_FONTS).filter(function (k) { return !HAND_FONTS[k] || HAND_FONTS[k][3] !== 'typed'; }), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, onLabel: onLabel, showsIndex: showsIndex, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setArtPalette: setArtPalette,
 setDirection: setDirection, setWear: setWear, setLabelInfo: setLabelInfo, setLoaded: setLoaded, setRunning: setRunning, setSlackInstant: setSlackInstant, audioContext: audioContext, restAudio: restAudio,
 setClearShell: setClearShell, setLabelOn: setLabelOn, setCutaway: setCutaway, snap: snap, splice: splice,
 slackSettled: function () { return !loaded || ((slackInstant || Math.abs(slack - (running ? 0 : 1)) < 0.01) && explode === explodeTarget && snapAge() > SNAP_T && performance.now() - spillAt > 250); },
@@ -2748,7 +2828,9 @@ styleInfo: function (n) { return STYLES[n] ? Object.assign({}, STYLES[n]) : null
 reelAngle: function () { return lastAngR || 0; },
 turnsOn: turnsOn, rTake: rTake, rSupply: rSupply, createHiss: createHiss, createClunk: createClunk, createWind: createWind, createEject: createEject, createSnap: createSnap, createChew: createChew, createCue: createCue,
 setLabelStyle: setLabelStyle, labelStyles: Object.keys(LABELS).filter(function (k) { return !LABELS[k].own; }), addTape: addTape, showBrands: showBrands,
-styles: Object.keys(STYLES)
+styles: SHELLS.slice(),
+hasStyle: function (n) { return !!STYLES[n]; },
+tapes: tapeList, addTapes: addTapes, thumb: thumb
 };
 })();
 }

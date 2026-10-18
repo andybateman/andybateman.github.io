@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Put a tape on your page</title>
+<meta name="description" content="Tape Deck's player for any web page: one small script, an audio file, and the cassette turns as it plays.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="img/icon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .embed { max-width: 760px; margin: 0 auto; }
+  .embed h2 { margin-top: 0; }
+  pre { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; overflow-x: auto; font: 14px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); margin: 14px 0; }
+  code { font: 0.92em ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text); }
+  table.attrs { border-collapse: collapse; width: 100%; margin-top: 14px; }
+  table.attrs th, table.attrs td { text-align: left; padding: 9px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+  table.attrs th { color: var(--dim); font-weight: 600; font-size: 14px; }
+  table.attrs td:first-child { white-space: nowrap; }
+  .demo { margin: 22px 0 6px; }
+  .embed p, .embed li { color: var(--dim); }
+  .embed section { padding-top: 40px; margin-top: 36px; }
+  .embed .first { border-top: 0; margin-top: 0; padding-top: 0; }
+  .scrolly { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<nav aria-label="Tape Deck">
+  <div class="wrap">
+    <a class="name" href="./"><img src="img/icon.png" alt="">Tape Deck</a>
+    <a href="./">Features</a>
+    <a href="help.html">Help</a>
+    <a href="embed.html" aria-current="page">Embed</a>
+  </div>
+</nav>
+
+<main class="wrap embed">
+
+<header class="hero" style="text-align:left;padding-bottom:0">
+  <h1>Put a tape on your page</h1>
+  <p class="lede" style="margin-left:0">One small script and an audio file. The cassette is drawn to scale, its label carries your title and artist, and the reels turn at the tape&rsquo;s real rate as it plays. Good for a mix, a demo or a podcast.</p>
+</header>
+
+<section class="first" aria-labelledby="try">
+  <h2 id="try">Try it</h2>
+  <p>Press play. Hold the winding keys to wind, or tap them to skip 30 seconds. Click the bar to go there. A second player starts only when the first has stopped.</p>
+  <div class="demo">
+    <tape-deck-player id="demo1" src="embed/demo.mp3" title="Twelve notes" artist="Tape Deck" cover="embed/cover.jpg"></tape-deck-player>
+  </div>
+  <div class="demo">
+    <tape-deck-player id="demo2" src="embed/demo.mp3"></tape-deck-player>
+  </div>
+  <p class="caption" style="text-align:left">The second has no title, artist or cover, so the label uses the file&rsquo;s name.</p>
+</section>
+
+<section aria-labelledby="paste">
+  <h2 id="paste">Two lines to paste</h2>
+  <pre><code>&lt;script src="https://www.andybateman.com/tapedeck/embed/tapedeck.js" defer&gt;&lt;/script&gt;
+&lt;tape-deck-player src="mix.mp3" title="Friday mix" artist="DJ Name" cover="cover.jpg"&gt;&lt;/tape-deck-player&gt;</code></pre>
+  <p>Or copy <code>tapedeck.js</code> to your own site and point the script tag at it. It is one file with nothing to install: no other script, no font and no stylesheet is fetched, and nothing is sent anywhere. The only requests are your audio file and your cover.</p>
+</section>
+
+<section aria-labelledby="attrs">
+  <h2 id="attrs">Attributes</h2>
+  <div class="scrolly">
+  <table class="attrs">
+    <thead><tr><th scope="col">Attribute</th><th scope="col">What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>src</code></td><td>The audio file: MP3, M4A, WAV or anything the browser plays. Required.</td></tr>
+      <tr><td><code>title</code></td><td>Written on the label. Left out, the file&rsquo;s name is used.</td></tr>
+      <tr><td><code>artist</code></td><td>Written under the title. Optional.</td></tr>
+      <tr><td><code>cover</code></td><td>A square picture for the label&rsquo;s corner. Optional, and needs no special headers.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section aria-labelledby="using">
+  <h2 id="using">How it behaves</h2>
+  <ul>
+    <li><strong>Size.</strong> It fills the width of whatever holds it, up to 720 px, and the cassette scales with it. Put it in a column and it fits the column.</li>
+    <li><strong>Keys.</strong> Play and Stop, Rewind and Fast forward. Tap a winding key to skip 30 seconds; hold it (or hold Enter on it) to wind at 40 times the tape&rsquo;s speed. The sound is silent while winding, and carries on when you let go if it was playing.</li>
+    <li><strong>Keyboard.</strong> With the player focused, Space plays and stops, and the left and right arrows move 10 seconds. The bar is a slider: arrows move 5 seconds, Page Up and Page Down 30, Home and End go to the ends.</li>
+    <li><strong>Screen readers.</strong> Every button has a name, the cassette is described by its label, and the bar&rsquo;s value is announced when the tape stops or moves, not as it ticks.</li>
+    <li><strong>Several on one page.</strong> Starting one stops the others.</li>
+    <li><strong>Light on the page.</strong> The cassette is redrawn about thirty times a second only while the tape runs, the player is on screen and the tab is visible. With Reduce Motion switched on, the reels step once a second.</li>
+    <li><strong>Isolated.</strong> It lives in a shadow root, so your page&rsquo;s styles can&rsquo;t reach it and it can&rsquo;t reach them.</li>
+    <li><strong>No meters.</strong> VU meters would need Web Audio&rsquo;s analyser, which silences an MP3 served from another site without CORS headers. They are left out, so any audio URL plays.</li>
+  </ul>
+  <p>Tape Deck&rsquo;s link under the player is part of it. It opens in a new tab.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Tape Deck · <a href="./">Features</a> · <a href="help.html">Help</a> · <a href="privacy.html">Privacy</a></div>
+</footer>
+
+<script src="embed/tapedeck.js" defer></script>
+</body>
+</html>
