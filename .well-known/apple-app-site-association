@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["EP4A7CQTR5.com.andybateman.tapedeck"],
+        "components": [
+          { "/": "/tapedeck/level/*", "comment": "Simple or Advanced (Tape Deck, issue #539)" }
+        ]
+      }
+    ]
+  }
+}

@@ -33,3 +33,5 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-redirect-from
+# The Tape Deck app's links (/tapedeck/level/): Jekyll leaves dot-folders out unless told
+include: [".well-known"]
