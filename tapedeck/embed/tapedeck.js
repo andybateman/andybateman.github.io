@@ -64,6 +64,7 @@ var SLACK_SIDE = 3.6, SLACK_MOUTH = 0.5, SLACK_SETTLE = 0.9, SLACK_TAKEUP = 0.12
 var HUB_WALL = '#d9dce0', HUB_RECESS = 'rgba(20,16,12,0.45)', HUB_NOTCH = 'rgba(20,16,12,0.16)';
 var BG_COLOR = '#111111';       // seen through the hub bores
 var HUB_WHITE = '#ffffff', HUB_EDGE = '#c4c7cc';
+var HUB_COLS = [null, null], HUB_WINDOWS = 0;
 var PATH_Y = 61.3;
 var CAPSTAN_SPACING = 48.0, PIN_SPACING = 28.0;
 var GUIDE_X = 9.7, GUIDE_R = 1.2, CAPSTAN_R = 2.25;
@@ -229,8 +230,13 @@ LAB_RULE = hexToRgba(st.ink, 0.20);
 SHELL_FILL = st.shell; SHELL_EDGE = st.shellEdge; APRON_FILL = st.apron; CAP_FILL = st.capsule;
 SHELL_ALPHA = (typeof st.alpha === 'number') ? st.alpha : 0.42;
 SCREW_SHINY = !!st.shiny;
-var hubLook = [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join();
+var hubLook = [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
+HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS].join();
 HUB_WHITE = st.hub || '#ffffff'; HUB_EDGE = st.hubEdge || '#c4c7cc'; HUB_RING = st.ring || null;
+HUB_COLS = Array.isArray(st.hubs) && st.hubs.length === 2 ? [st.hubs[0] || null, st.hubs[1] || null] : [null, null];
+HUB_WALL = st.hubWall || '#d9dce0';
+HUB_STEP = typeof st.hubStep === 'number' ? Math.max(6.5, Math.min(HUB - 0.6, st.hubStep)) : 8.1;
+HUB_WINDOWS = typeof st.hubWindows === 'number' ? Math.max(0, Math.min(24, Math.round(st.hubWindows))) : 0;
 var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
 ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
 FLANGE = st.reels || null;
@@ -243,7 +249,8 @@ FRAME = st.frame || null;
 RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
 LAB_Y1 = st.labelBottom || 43.2;
 APRON_Y0 = st.apronTop || 47.0; APRON_SHOULDER_Y = st.apronTop ? Math.min(62.0, st.apronTop + 5.5) : 52.5;
-if (hubLook !== [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join()) hubStale = true;
+if (hubLook !== [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
+HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS].join()) hubStale = true;
 if (SCREW_SHINY) { SCREW_HI = '#dcdfe4'; SCREW_LO = '#8d939b'; }
 else { SCREW_HI = '#b6bac0'; SCREW_LO = '#999da3'; }
 }
@@ -991,7 +998,7 @@ if (open) { ctx.beginPath(); ctx.arc(cx, cy, hubPx, 0, TAU); ctx.stroke(); }
 }
 function drawHub(cxmm, cymm, theta) {
 var cx = X(cxmm), cy = Y(cymm);
-var hubPx = mm(HUB);
+var hubPx = mm(HUB), hubCol = hubColour(cxmm);
 var i, a;
 ctx.save();
 ctx.translate(cx, cy);
@@ -1011,7 +1018,7 @@ ctx.fill('evenodd');
 ctx.strokeStyle = hexToRgba(FLANGE[0], Math.min(1, FLANGE[1] + 0.3)); ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU); ctx.stroke();
 }
-ctx.fillStyle = HUB_WHITE;
+ctx.fillStyle = hubCol;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.stroke();
@@ -1021,6 +1028,18 @@ if (HUB_RING) {
 ctx.strokeStyle = HUB_RING; ctx.lineWidth = mm(1.3);
 ctx.beginPath(); ctx.arc(0, 0, (hubPx + mm(HUB_STEP)) / 2, 0, TAU); ctx.stroke();
 }
+if (HUB_WINDOWS) {
+var wr = (mm(HUB_STEP) + hubPx) / 2, wh = Math.max(1, hubPx - mm(HUB_STEP) - mm(0.9)), ww = Math.max(1, Math.min(wh * 0.9, wr * TAU / HUB_WINDOWS * 0.45));
+ctx.fillStyle = HUB_RECESS;
+for (i = 0; i < HUB_WINDOWS; i++) {
+a = CLIP_ANGLE + Math.PI + i * TAU / HUB_WINDOWS;
+var da = Math.abs(((a - CLIP_ANGLE) % TAU + TAU) % TAU);
+if (Math.min(da, TAU - da) < CLIP_HALF + 0.12) continue;
+ctx.save(); ctx.rotate(a);
+roundRect(wr - wh / 2, -ww / 2, wh, ww, Math.min(ww, wh) * 0.3); ctx.fill();
+ctx.restore();
+}
+} else {
 ctx.fillStyle = HUB_RECESS;
 a = CLIP_ANGLE + Math.PI;
 ctx.beginPath();
@@ -1034,14 +1053,15 @@ ctx.rotate(CLIP_ANGLE + [-2.1, -1.05, 1.05, 2.1][i]);
 ctx.fillRect(mm(NOTCH_R0), -mm(NOTCH_W) / 2, mm(NOTCH_R1 - NOTCH_R0), mm(NOTCH_W));
 ctx.restore();
 }
+}
 ctx.fillStyle = HUB_WALL;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_BORE), 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_BORE), 0, TAU); ctx.stroke();
 ctx.fillStyle = BG_COLOR;
 ctx.beginPath(); ctx.arc(0, 0, mm(BORE_WALL), 0, TAU); ctx.fill();
-drawDriveDogs();
-bores.push([cx, cy, theta]);
+drawDriveDogs(hubCol);
+bores.push([cx, cy, theta, hubCol]);
 var c0 = mm(CLIP_R0), c1 = hubPx;
 ctx.fillStyle = CLIP_COLOR;
 ctx.beginPath();
@@ -1055,8 +1075,9 @@ ctx.arc(0, 0, hubPx - mm(0.6), CLIP_ANGLE + CLIP_HALF * 0.4, CLIP_ANGLE - CLIP_H
 ctx.closePath(); ctx.fill();
 ctx.restore();
 }
-function drawDriveDogs() {
-ctx.fillStyle = HUB_WHITE; ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
+function hubColour(cxmm) { return (cxmm < SHELL_W / 2 ? HUB_COLS[0] : HUB_COLS[1]) || HUB_WHITE; }
+function drawDriveDogs(colour) {
+ctx.fillStyle = colour || HUB_WHITE; ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
 for (var i = 0; i < 6; i++) {
 ctx.save();
 ctx.rotate(i * TAU / 6);
@@ -1078,7 +1099,7 @@ ctx.globalCompositeOperation = 'destination-out';
 ctx.beginPath(); ctx.arc(0, 0, mm(BORE_WALL), 0, TAU); ctx.fill();
 ctx.globalCompositeOperation = 'source-over';
 }
-drawDriveDogs();
+drawDriveDogs(b[3]);
 ctx.restore();
 }
 bores = [];
