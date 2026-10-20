@@ -148,6 +148,11 @@ window.ABCassette = (function () {
   // The pack by its oxide: ferric a matte brown, chrome a cooler dark, metal near black
   var PACKS = { ferric: ['#322722', 50, 39, 34], chrome: ['#25252a', 37, 37, 42], metal: ['#18181b', 26, 26, 30] };
   var HUB_RING = null, FLANGE = null, FRAME = null, RIBS = false, TEXTURE = null, PAD_FILL = '#9a9da5';
+  // A clear shell on the deck (the catalogue's, 2026-10-20): frost, how much the plastic itself scatters light,
+  // a white veil over the body so a pale clear shell reads pale on the dark deck and not as smoke (0 to about
+  // 0.3; the stage shows through a clear shell, and the deck's is dark); inside, whether what's behind the
+  // front shows through it, the deck's floor and the slip sheet the reels lie on, as it does on the real thing
+  var SHELL_FROST = 0, SHELL_INSIDE = false;
   // The mouldings a catalogue tape names (texture: 'knurl'), or its own {kind, pitch, ink}
   var TEXTURES = {
     knurl: { kind: 'dots', pitch: 0.9, ink: 'rgba(255,255,255,0.16)' },
@@ -210,7 +215,8 @@ window.ABCassette = (function () {
     // 'full', 'top', 'bottom' or 'none'; hub and hubEdge: the hubs' colour; ring: a coloured ring on
     // them; roller: the guide rollers [rim, body, core]; pack: 'ferric', 'chrome' or 'metal'; pad: the
     // pressure pad's felt; frame: a metal rim round the shell; reels: flanged reels [colour, alpha];
-    // ribs: lines moulded across a clear shell.
+    // ribs: lines moulded across a clear shell; inside and frost (SHELL_INSIDE, SHELL_FROST): what a clear
+    // shell shows through it and how it veils, which the classics leave off and a catalogue tape has by default.
     'Red Reels':  { clear:true, face:'#fbfbfc', ink:'#1a1a1a', dim:'#6b7080', stripe:'#d8312b',
                shell:'#cfc4de', shellEdge:'#8f86a3', apron:'#c2b8d3', capsule:'#3a3442', alpha:0.34, leader:'#ece8f2',
                labelShape:'none', hub:'rgba(232,74,52,0.86)', hubEdge:'#b8321f', roller:['#e2553f', '#ef6a52', '#c8412d'],
@@ -307,6 +313,15 @@ window.ABCassette = (function () {
   var SIDES_X = 86.0, SIDES_Y = 30.9, SIDES_PITCH = 3.0;   // the Sides block: its tick boxes' left edge, the first row's top, row to row
 
   function shellIsClear() { return clearOverride && STYLES[styleName].clear; }
+  // A pack of the tape's own colour ('#5a3a2a': Emtec's brown, LG's grey), as PACKS has them: the colour and its channels
+  function packOf(hex) {
+    if (typeof hex !== 'string' || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
+    return [hex, parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)];
+  }
+  // How much a clear shell's plastic scatters, for one that says nothing: by the shell's own lightness, so a pale
+  // clear shell veils the deck and a smoked one leaves it. Photographed on white, a clear shell reads pale; on
+  // the deck the stage shows through and, without this, a pale shell at 0.2 over the dark deck came out grey
+  function autoFrost(hex) { return /^#[0-9a-f]{6}$/i.test(hex) ? Math.max(0, Math.min(0.26, 0.4 * (luminance(hex) - 0.3))) : 0; }
 
   function applyStyle(name) {
     var st = STYLES[name] || STYLES.Brand;
@@ -326,8 +341,10 @@ window.ABCassette = (function () {
     var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
     ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
     FLANGE = st.reels || null;
-    var pk = PACKS[st.pack] || PACKS.ferric;
+    var pk = PACKS[st.pack] || packOf(st.pack) || PACKS.ferric;
     PACK_BASE = pk[0]; PACK_R = pk[1]; PACK_G = pk[2]; PACK_B = pk[3];
+    SHELL_FROST = st.clear && typeof st.frost === 'number' ? Math.max(0, Math.min(0.5, st.frost)) : 0;
+    SHELL_INSIDE = !!(st.clear && st.inside);
     PAD_FILL = st.pad || '#9a9da5';
     FRAME = st.frame || null;
     RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
@@ -401,6 +418,11 @@ window.ABCassette = (function () {
   // Presets: win 'holes'; ground {brushed: colour}; faces 'heavy' and 'iserif'; a shell's texture by name
   // ('knurl', 'ribs', 'grid', 'diag'), its labelBottom and apronTop; a family with own: true goes only
   // with its own shell (it's laid out for that shell's label) and isn't offered in Label style.
+  // A clear shell (2026-10-20): inside (the deck's floor and the slip sheet seen through it; a catalogue tape's
+  // unless it says inside: false) and frost (0 to 0.3, a white veil for what the plastic scatters, so a pale
+  // clear shell reads pale on the dark deck; by the shell's lightness unless the spec gives it); pack can be
+  // a colour of the tape's own ('#5a3a2a') beside 'ferric', 'chrome' and 'metal'. The hub's bore is the deck
+  // behind, dark; a photo's is the paper under it, so tape_compare.py --stage judges a clear shell on pale.
   //
   // The label drawn before these styles is still today's (drawLabel), for
   // the first six shells under Match the shell; labelFamily() says which.
@@ -2313,11 +2335,9 @@ window.ABCassette = (function () {
     ctx.fillStyle = METAL;
     ctx.beginPath(); ctx.arc(X(cx - r * 0.18), Y(cy - r * 0.22), mm(r * 0.62), 0, TAU); ctx.fill();
   }
-  function drawWell() {
-    var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
-    var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
-    var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
-
+  // The well's floor, the deck's: under the empty transport, and through the back of a clear shell that
+  // shows its inside (a catalogue tape's, 2026-10-20), as a clear cassette on a deck shows the deck
+  function drawWellFloor() {
     // Moulded ledge around the well, then the floor dropped inside it
     ctx.fillStyle = WELL_LEDGE;
     roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
@@ -2347,6 +2367,12 @@ window.ABCassette = (function () {
       });
     ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(X(12.0), Y(9.5)); ctx.lineTo(X(SHELL_W - 12.0), Y(9.5)); ctx.stroke();
+  }
+  function drawWell() {
+    var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
+    var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
+    var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
+    drawWellFloor();
 
     spindle(cxS, HUB_CY);
     spindle(cxT, HUB_CY);
@@ -2452,10 +2478,11 @@ window.ABCassette = (function () {
   // A slip sheet: the clear liner either side of the reels that the packs
   // slide on, cut to the inside of the shell, with a hole over each hub and
   // its lower corners off for the roller housings. Inside parts like this
-  // are only drawn apart, and come in with the tilt (view.s), so nothing
-  // appears or goes at the moment the cassette closes.
-  function drawSlipSheet(cxS, cxT) {
-    var a = view.s;
+  // are drawn apart, and come in with the tilt (view.s), so nothing
+  // appears or goes at the moment the cassette closes; and assembled through
+  // a clear shell that shows its inside (SHELL_INSIDE), as clear as it is.
+  function drawSlipSheet(cxS, cxT, alpha) {
+    var a = alpha != null ? alpha : view.s;
     ctx.beginPath();
     ctx.moveTo(X(7.5), Y(4.6));
     ctx.lineTo(X(SHELL_W - 7.5), Y(4.6));
@@ -2477,8 +2504,8 @@ window.ABCassette = (function () {
   // The shield behind the pressure pad, and the spring the pad rides on: a
   // folded plate of mu-metal that keeps hum off the head, seen from above as
   // a frame, and a strip of bronze across the mouth with the felt in its middle.
-  function drawShield() {
-    var a = view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
+  function drawShield(alpha) {
+    var a = alpha != null ? alpha : view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
     ctx.save();
     ctx.globalAlpha *= a;
     ctx.fillStyle = METAL; ctx.strokeStyle = METAL_DARK; ctx.lineWidth = 1;
@@ -2585,19 +2612,27 @@ window.ABCassette = (function () {
     var sb = leaderOn ? supplyBands(t) : null;
     var tb = leaderOn ? takeBands(t)   : null;
 
-    // Back wall of the shell, behind the reels.
+    // Back wall of the shell, behind the reels. A clear shell that shows its inside has the deck's floor
+    // behind it, seen through the plastic, and its frost over it: the body veiled white by what the plastic
+    // scatters, so a pale clear shell reads pale on the dark deck; the reels and the front go over that
     if (apart) plateEdge(z.back, 1);
     layer(z.back);
+    var inside = SHELL_INSIDE && shellIsClear() && !apart;
+    if (inside) drawWellFloor();
     ctx.fillStyle = shellIsClear() ? hexToRgba(SHELL_FILL, SHELL_ALPHA) : SHELL_FILL;
     ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
     drawEars();
-    roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill(); ctx.stroke();
+    roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
+    if (SHELL_FROST > 0 && shellIsClear()) { ctx.fillStyle = 'rgba(255,255,255,' + SHELL_FROST.toFixed(3) + ')'; ctx.fill(); }
+    ctx.stroke();
 
     drawApron();
     drawFittings(false, apart);
     if (apart) { drawGuideCorner(1, 'housing'); drawGuideCorner(-1, 'housing'); }
     drawCapsule();
     drawScale();
+    // Inside, under the reels: the slip sheet they lie on and the shield behind the pad, as clear as the shell is
+    if (inside) { drawSlipSheet(cxS, cxT, 1 - SHELL_ALPHA); drawShield(1 - SHELL_ALPHA); }
     if (apart) screwSeats(loose);
     ctx.restore();
     if (apart) {
@@ -3103,6 +3138,12 @@ window.ABCassette = (function () {
     if (SHELLS.indexOf(tape.name) >= 0) return false;
     var shell = Object.assign({ face: '#fbfbfc', ink: '#1a1a1a', dim: '#6b7080', stripe: '#FBCA12',
       shell: '#26282c', shellEdge: '#16171a', apron: '#303338', capsule: '#1a1c1f', leader: '#ece8df' }, tape.shell);
+    // A clear shell shows the deck and the slip sheet through it, and frosts by its own lightness, unless the
+    // spec says (inside: false, frost: 0.1): the shells and classics keep their looks, which say neither
+    if (shell.clear) {
+      if (typeof shell.frost !== 'number') shell.frost = autoFrost(shell.shell);
+      if (typeof shell.inside !== 'boolean') shell.inside = true;
+    }
     if (tape.label && Array.isArray(tape.label.parts)) {
       LABELS[tape.name] = Object.assign({}, tape.label, { own: true });
       shell.label = tape.name;
@@ -3364,6 +3405,11 @@ window.ABCassette = (function () {
   var sharedAC = null;
   function audioContext() {
     if (sharedAC) return sharedAC;
+    // Music, not ambient sound (#543): WebKit takes Web Audio alone as
+    // ambient, which the iPhone's silent switch mutes, and in the app that
+    // took the engine's music with it. Safari 16.4 and later; set before the
+    // context is made.
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
     var AC = window.AudioContext || window.webkitAudioContext;
     if (AC) sharedAC = new AC();
     return sharedAC;

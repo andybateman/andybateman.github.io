@@ -103,6 +103,7 @@ var LEADER_COLOR = '#2a6db8';
 var PACK_BASE = '#322722', PACK_R = 50, PACK_G = 39, PACK_B = 34;
 var PACKS = { ferric: ['#322722', 50, 39, 34], chrome: ['#25252a', 37, 37, 42], metal: ['#18181b', 26, 26, 30] };
 var HUB_RING = null, FLANGE = null, FRAME = null, RIBS = false, TEXTURE = null, PAD_FILL = '#9a9da5';
+var SHELL_FROST = 0, SHELL_INSIDE = false;
 var TEXTURES = {
 knurl: { kind: 'dots', pitch: 0.9, ink: 'rgba(255,255,255,0.16)' },
 ribs: { kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' },
@@ -212,6 +213,11 @@ var COVER_MM = 9.0;             // label cover square
 var IDX_Y = 39.3, IDX_X0 = 18.0, IDX_X1 = 82.4;   // printed index strip
 var SIDES_X = 86.0, SIDES_Y = 30.9, SIDES_PITCH = 3.0;   // the Sides block: its tick boxes' left edge, the first row's top, row to row
 function shellIsClear() { return clearOverride && STYLES[styleName].clear; }
+function packOf(hex) {
+if (typeof hex !== 'string' || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
+return [hex, parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)];
+}
+function autoFrost(hex) { return /^#[0-9a-f]{6}$/i.test(hex) ? Math.max(0, Math.min(0.26, 0.4 * (luminance(hex) - 0.3))) : 0; }
 function applyStyle(name) {
 var st = STYLES[name] || STYLES.Brand;
 styleName = STYLES[name] ? name : 'Brand';
@@ -228,8 +234,10 @@ HUB_WHITE = st.hub || '#ffffff'; HUB_EDGE = st.hubEdge || '#c4c7cc'; HUB_RING = 
 var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
 ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
 FLANGE = st.reels || null;
-var pk = PACKS[st.pack] || PACKS.ferric;
+var pk = PACKS[st.pack] || packOf(st.pack) || PACKS.ferric;
 PACK_BASE = pk[0]; PACK_R = pk[1]; PACK_G = pk[2]; PACK_B = pk[3];
+SHELL_FROST = st.clear && typeof st.frost === 'number' ? Math.max(0, Math.min(0.5, st.frost)) : 0;
+SHELL_INSIDE = !!(st.clear && st.inside);
 PAD_FILL = st.pad || '#9a9da5';
 FRAME = st.frame || null;
 RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
@@ -1745,10 +1753,7 @@ ctx.beginPath(); ctx.arc(X(cx), Y(cy), mm(r), 0, TAU); ctx.fill();
 ctx.fillStyle = METAL;
 ctx.beginPath(); ctx.arc(X(cx - r * 0.18), Y(cy - r * 0.22), mm(r * 0.62), 0, TAU); ctx.fill();
 }
-function drawWell() {
-var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
-var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
-var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
+function drawWellFloor() {
 ctx.fillStyle = WELL_LEDGE;
 roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
 ctx.fillStyle = WELL_FLOOR;
@@ -1770,6 +1775,12 @@ roundRect(X(p[0] - 1.3), Y(p[1] - 1.3), mm(2.6), mm(2.6), mm(0.6)); ctx.fill();
 });
 ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.moveTo(X(12.0), Y(9.5)); ctx.lineTo(X(SHELL_W - 12.0), Y(9.5)); ctx.stroke();
+}
+function drawWell() {
+var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
+var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
+var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
+drawWellFloor();
 spindle(cxS, HUB_CY);
 spindle(cxT, HUB_CY);
 post(cxCapL, ROLLER_Y, CAPSTAN_R * 0.5, METAL_DARK);
@@ -1838,8 +1849,8 @@ ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 ctx.beginPath(); shellPath(); ctx.fill(); ctx.stroke();
 ctx.restore();
 }
-function drawSlipSheet(cxS, cxT) {
-var a = view.s;
+function drawSlipSheet(cxS, cxT, alpha) {
+var a = alpha != null ? alpha : view.s;
 ctx.beginPath();
 ctx.moveTo(X(7.5), Y(4.6));
 ctx.lineTo(X(SHELL_W - 7.5), Y(4.6));
@@ -1858,8 +1869,8 @@ ctx.strokeStyle = 'rgba(255,255,255,' + (0.38 * a).toFixed(3) + ')'; ctx.lineWid
 ctx.stroke();
 }
 var SHEET_HOLE = 6.9;   // mm: clear of the hub's bore and its drive dogs
-function drawShield() {
-var a = view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
+function drawShield(alpha) {
+var a = alpha != null ? alpha : view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
 ctx.save();
 ctx.globalAlpha *= a;
 ctx.fillStyle = METAL; ctx.strokeStyle = METAL_DARK; ctx.lineWidth = 1;
@@ -1949,15 +1960,20 @@ var sb = leaderOn ? supplyBands(t) : null;
 var tb = leaderOn ? takeBands(t)   : null;
 if (apart) plateEdge(z.back, 1);
 layer(z.back);
+var inside = SHELL_INSIDE && shellIsClear() && !apart;
+if (inside) drawWellFloor();
 ctx.fillStyle = shellIsClear() ? hexToRgba(SHELL_FILL, SHELL_ALPHA) : SHELL_FILL;
 ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 drawEars();
-roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill(); ctx.stroke();
+roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
+if (SHELL_FROST > 0 && shellIsClear()) { ctx.fillStyle = 'rgba(255,255,255,' + SHELL_FROST.toFixed(3) + ')'; ctx.fill(); }
+ctx.stroke();
 drawApron();
 drawFittings(false, apart);
 if (apart) { drawGuideCorner(1, 'housing'); drawGuideCorner(-1, 'housing'); }
 drawCapsule();
 drawScale();
+if (inside) { drawSlipSheet(cxS, cxT, 1 - SHELL_ALPHA); drawShield(1 - SHELL_ALPHA); }
 if (apart) screwSeats(loose);
 ctx.restore();
 if (apart) {
@@ -2331,6 +2347,10 @@ if ((tape.needs || 1) > (typeof TAPE_ENGINE === 'number' ? TAPE_ENGINE : 1)) ret
 if (SHELLS.indexOf(tape.name) >= 0) return false;
 var shell = Object.assign({ face: '#fbfbfc', ink: '#1a1a1a', dim: '#6b7080', stripe: '#FBCA12',
 shell: '#26282c', shellEdge: '#16171a', apron: '#303338', capsule: '#1a1c1f', leader: '#ece8df' }, tape.shell);
+if (shell.clear) {
+if (typeof shell.frost !== 'number') shell.frost = autoFrost(shell.shell);
+if (typeof shell.inside !== 'boolean') shell.inside = true;
+}
 if (tape.label && Array.isArray(tape.label.parts)) {
 LABELS[tape.name] = Object.assign({}, tape.label, { own: true });
 shell.label = tape.name;
@@ -2524,6 +2544,7 @@ return sqCv;
 var sharedAC = null;
 function audioContext() {
 if (sharedAC) return sharedAC;
+try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
 var AC = window.AudioContext || window.webkitAudioContext;
 if (AC) sharedAC = new AC();
 return sharedAC;
