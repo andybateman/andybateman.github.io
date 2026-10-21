@@ -135,7 +135,7 @@
       $("#floatingInput").autocomplete("option", "appendTo", ".eventInsForm");
     });
 
-    $("form").submit(function (e) {
+    $("form").submit(function () {
       if (!$object) return false; // spacle.json not loaded yet
       var $distance = null;
       var $guess = $("#floatingInput").val().replace(/[^a-z\s]/gi, '').trim();
@@ -150,15 +150,12 @@
         );
       } else if ($guess.toLowerCase() == "tatooine") {
         $("#confirmation").html("Tatooine is in a galaxy far, far away.");
-        $distance = null;
       } else if ($distance == null) {
         $("#confirmation").html($guess + " is not a proper guess.");
-        $distance = null;
       } else {
         $("#confirmation").html(
           "Wrong: " + $guess + " is " + $distance + "au away, try again."
         );
-        $distance = null;
       }
       $("#floatingInput").val('');
       return false;

@@ -290,7 +290,7 @@ leaflet: true
         }
 
         // Add markers to map
-        Object.entries(locations).forEach(([city, locs]) => {
+        Object.values(locations).forEach(locs => {
             locs.forEach(loc => {
                 const style = markerStyle(loc);
                 const marker = L.circleMarker([loc.lat, loc.lng], {
