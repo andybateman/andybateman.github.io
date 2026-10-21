@@ -89,6 +89,14 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   dashes, and the post counts dated. Keywords: "hiking" and "SEO" out,
   "Tape Deck pages" and "Terminal Logo Turtle" in. 7.3 KB
 
+### Fixed
+- **Lint pass** (2026-10-21; html-proofer, html-validate, stylelint, ESLint
+  over inline scripts). The site still passes html-proofer with every README
+  check. Unused variables taken out of the travel map, Mohoe, New Zealand
+  Hills and Spacle scripts, with no change in behaviour. What's left is in
+  `/termlogo/` and `/tapedeck/`, which are copied from their own repositories
+  and fixed there
+
 ### Planned
 - Apply the type system to the home body and interactive games (Will's hero,
   macaroon, Spacle)

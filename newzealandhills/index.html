@@ -29,7 +29,7 @@ d3.csv('walks.csv')
 
   function makeChart(hills) {
 
-  var chart = new Chart('chart', {
+  new Chart('chart', {
     type: 'line',
     data: {
       labels: hills.map(function(d) {return d.km}),

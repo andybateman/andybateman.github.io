@@ -51,7 +51,7 @@ sitemap:
 	L.polyline(path, { color: '#c0392b', weight: 2, opacity: 0.5, dashArray: '6 6' }).addTo(map);
 
 	// One marker per story
-	stops.forEach(function (s, i) {
+	stops.forEach(function (s) {
 		var marker = L.circleMarker([s.lat, s.lng], {
 			radius: 7, fillColor: '#c0392b', color: '#fff',
 			weight: 2, opacity: 1, fillOpacity: 0.9
