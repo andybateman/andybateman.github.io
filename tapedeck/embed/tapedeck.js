@@ -105,6 +105,7 @@ var PACK_BASE = '#322722', PACK_R = 50, PACK_G = 39, PACK_B = 34;
 var PACKS = { ferric: ['#322722', 50, 39, 34], chrome: ['#25252a', 37, 37, 42], metal: ['#18181b', 26, 26, 30] };
 var HUB_RING = null, FLANGE = null, FRAME = null, RIBS = false, TEXTURE = null, PAD_FILL = '#9a9da5';
 var SHELL_FROST = 0, SHELL_INSIDE = false;
+var PANE = null, PLATE = null, FLANGE_R = 20.9, FLANGE_MIN = 15.25, FLANGE_MAX = 20.9;
 var TEXTURES = {
 knurl: { kind: 'dots', pitch: 0.9, ink: 'rgba(255,255,255,0.16)' },
 ribs: { kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' },
@@ -239,7 +240,16 @@ HUB_STEP = typeof st.hubStep === 'number' ? Math.max(6.5, Math.min(HUB - 0.6, st
 HUB_WINDOWS = typeof st.hubWindows === 'number' ? Math.max(0, Math.min(24, Math.round(st.hubWindows))) : 0;
 var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
 ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
-FLANGE = st.reels || null;
+FLANGE = Array.isArray(st.reels) ? st.reels : null;
+FLANGE_R = FLANGE && typeof FLANGE[2] === 'number' ? Math.max(FLANGE_MIN, Math.min(FLANGE_MAX, FLANGE[2])) : FLANGE_MAX;
+var pn = st.pane, pl = st.plate;
+PANE = pn ? { colour: /^#[0-9a-f]{6}$/i.test(pn.colour) ? pn.colour : '#dfe4ea',
+alpha: typeof pn.alpha === 'number' ? Math.max(0, Math.min(0.9, pn.alpha)) : 0.3, win: pn.win || null } : null;
+PLATE = pl ? { colour: /^#[0-9a-f]{6}$/i.test(pl.colour) ? pl.colour : '#9a9da3',
+alpha: typeof pl.alpha === 'number' ? Math.max(0, Math.min(1, pl.alpha)) : 0.55,
+x: typeof pl.x === 'number' ? pl.x : 38.2, y: typeof pl.y === 'number' ? pl.y : HUB_CY + 0.6,
+w: typeof pl.w === 'number' ? Math.max(6, Math.min(90, pl.w)) : 24, h: typeof pl.h === 'number' ? Math.max(3, Math.min(30, pl.h)) : 6.2,
+ink: pl.ink || 'rgba(38,40,44,0.8)', marks: Array.isArray(pl.marks) ? pl.marks.slice(0, 12) : null, ticks: pl.ticks !== false } : null;
 var pk = PACKS[st.pack] || packOf(st.pack) || PACKS.ferric;
 PACK_BASE = pk[0]; PACK_R = pk[1]; PACK_G = pk[2]; PACK_B = pk[3];
 SHELL_FROST = st.clear && typeof st.frost === 'number' ? Math.max(0, Math.min(0.5, st.frost)) : 0;
@@ -718,7 +728,7 @@ case 'rect':
 ctx.save();
 if (p.angle) { var rx = X(p.x + p.w / 2), ry = Y(p.y + p.h / 2); ctx.translate(rx, ry); ctx.rotate(p.angle * Math.PI / 180); ctx.translate(-rx, -ry); }
 ctx.beginPath(); subRoundRect(X(p.x), Y(p.y), mm(p.w), mm(p.h), mm(p.r || 0));
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = 1; ctx.stroke(); }
 ctx.restore(); break;
 case 'lines':
@@ -760,7 +770,7 @@ for (k = p.y0; k <= p.y1; k += p.step) { ctx.moveTo(X(p.x0), Y(k)); ctx.lineTo(X
 ctx.stroke(); break;
 case 'circle':
 ctx.beginPath(); ctx.arc(X(p.cx), Y(p.cy), mm(p.r), 0, TAU);
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.8, mm(p.w || 0.3)); ctx.stroke(); }
 break;
 case 'text': famText(p, col); break;
@@ -781,7 +791,7 @@ else fx += box + mm(0.8) + ctx.measureText(item).width + mm(2.4);
 ctx.restore(); break;
 case 'path':   // any outline, written in millimetres as an SVG path's d; rule: 'evenodd' for holes
 var pp = mmPath(p.d);
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(pp, p.rule || 'nonzero'); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(pp, p.rule || 'nonzero'); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.3)); ctx.lineJoin = 'round'; ctx.stroke(pp); }
 break;
 case 'tape': famStrip(p, col, false); break;
@@ -928,7 +938,6 @@ function drawReel(cxmm, cymm, R, theta, bands) {
 drawPack(cxmm, cymm, R, bands);
 drawHub(cxmm, cymm, theta);
 }
-var FLANGE_R = 20.9;
 function packR(r) { return FLANGE ? HUB + (r - HUB) * (FLANGE_R - 0.9 - HUB) / (RFULL - HUB) : r; }
 function drawRibs() {
 ctx.save();
@@ -947,6 +956,56 @@ if (tx.kind === 'hlines' || tx.kind === 'grid') for (k = 3; k < SHELL_H - 3; k +
 if (tx.kind === 'grid') for (k = 3; k < SHELL_W - 3; k += pitch) { ctx.moveTo(X(k), Y(2)); ctx.lineTo(X(k), Y(SHELL_H - 2)); }
 if (tx.kind === 'diag') for (k = -SHELL_H; k < SHELL_W; k += pitch) { ctx.moveTo(X(k), Y(SHELL_H)); ctx.lineTo(X(k + SHELL_H), Y(0)); }
 ctx.stroke();
+}
+ctx.restore();
+}
+function paneGeometry() {
+var st = STYLES[styleName] || {}, own = st.label && LABELS[st.label];
+var win = PANE.win || (own && own.win) || st.win || 'wide';
+var shapes = (Array.isArray(win) ? win : [win]).map(function (w) { return famWindows(w); });
+var union = new Path2D(), bores = new Path2D();
+shapes.forEach(function (s) { union.addPath(s); });
+bores.rect(-4 * cssW, -4 * cssH, 9 * cssW, 9 * cssH);
+[SHELL_W / 2 - HUB_SPACING / 2, SHELL_W / 2 + HUB_SPACING / 2].forEach(function (x) {
+bores.moveTo(X(x) + mm(HUB_BORE), Y(HUB_CY)); bores.arc(X(x), Y(HUB_CY), mm(HUB_BORE), 0, TAU);
+});
+return { shapes: shapes, union: union, bores: bores, cuts: shapes.map(function (s) {
+var c = new Path2D(); c.rect(-4 * cssW, -4 * cssH, 9 * cssW, 9 * cssH); c.addPath(s); return c; }) };
+}
+function clipOutPane(pane) { pane.cuts.forEach(function (c) { ctx.clip(c, 'evenodd'); }); }
+function drawPane(pane) {
+var p = pane.union;
+ctx.save();
+ctx.beginPath(); shellPath(); ctx.clip();
+ctx.clip(pane.bores, 'evenodd');
+ctx.fillStyle = hexToRgba(PANE.colour, PANE.alpha); ctx.fill(p);
+var g = ctx.createLinearGradient(X(0), Y(CAP_Y0 - 6), X(0), Y(CAP_Y1 + 4));
+g.addColorStop(0, 'rgba(255,255,255,0.16)'); g.addColorStop(0.45, 'rgba(255,255,255,0.03)'); g.addColorStop(1, 'rgba(255,255,255,0.08)');
+ctx.fillStyle = g; ctx.fill(p);
+if (pane.shapes.length === 1) { ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke(p); }
+ctx.restore();
+}
+function drawPlate() {
+var p = PLATE, x0 = X(p.x), y0 = Y(p.y), w = mm(p.w), h = mm(p.h), i;
+ctx.save();
+ctx.fillStyle = hexToRgba(p.colour, p.alpha); ctx.fillRect(x0, y0, w, h);
+ctx.strokeStyle = p.ink; ctx.fillStyle = p.ink; ctx.lineWidth = 1;
+if (p.ticks) {
+var n = Math.max(5, Math.round(p.w / 1.1 / 5) * 5);   // a tick about every 1.1 mm, in fives (w is 6 mm at least)
+ctx.beginPath();
+for (i = 0; i <= n; i++) {
+var tx = x0 + mm(0.8) + (w - mm(1.6)) * i / n;
+ctx.moveTo(tx, y0); ctx.lineTo(tx, y0 + h * (i % 5 ? 0.18 : 0.34));
+}
+ctx.stroke();
+}
+if (p.marks && p.marks.length) {
+ctx.font = '500 ' + mm(Math.min(2.3, p.h * 0.36)).toFixed(2) + 'px ' + UI_FONT;
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+p.marks.forEach(function (m, k) {
+var f = p.marks.length > 1 ? k / (p.marks.length - 1) : 0.5;
+ctx.fillText(String(m), x0 + mm(1.8) + (w - mm(3.6)) * f, y0 + h * 0.68);
+});
 }
 ctx.restore();
 }
@@ -1006,14 +1065,14 @@ ctx.save();
 ctx.translate(cx, cy);
 ctx.rotate(theta);
 if (FLANGE) {
-var fr = mm(FLANGE_R), fw;
+var fr = mm(FLANGE_R), fw, fh = typeof FLANGE[3] === 'number' ? Math.max(8, Math.min(55, FLANGE[3])) * Math.PI / 180 : 0.62;
 ctx.fillStyle = hexToRgba(FLANGE[0], FLANGE[1]);
 ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU);
 for (fw = 0; fw < 3; fw++) {
 var fa = fw * TAU / 3;
-ctx.moveTo(Math.cos(fa - 0.62) * mm(HUB + 1.6), Math.sin(fa - 0.62) * mm(HUB + 1.6));
-ctx.arc(0, 0, fr - mm(1.8), fa - 0.62, fa + 0.62);
-ctx.arc(0, 0, mm(HUB + 1.6), fa + 0.62, fa - 0.62, true);
+ctx.moveTo(Math.cos(fa - fh) * mm(HUB + 1.6), Math.sin(fa - fh) * mm(HUB + 1.6));
+ctx.arc(0, 0, fr - mm(1.8), fa - fh, fa + fh);
+ctx.arc(0, 0, mm(HUB + 1.6), fa + fh, fa - fh, true);
 ctx.closePath();
 }
 ctx.fill('evenodd');
@@ -1991,6 +2050,7 @@ var axes = loose.concat([[cxS, HUB_CY], [cxT, HUB_CY]]);
 var i;
 var sb = leaderOn ? supplyBands(t) : null;
 var tb = leaderOn ? takeBands(t)   : null;
+var pane = PANE ? paneGeometry() : null;   // a pane's paths, once for the back, the front and its tint
 if (apart) plateEdge(z.back, 1);
 layer(z.back);
 var inside = SHELL_INSIDE && shellIsClear() && !apart;
@@ -2005,7 +2065,12 @@ drawApron();
 drawFittings(false, apart);
 if (apart) { drawGuideCorner(1, 'housing'); drawGuideCorner(-1, 'housing'); }
 drawCapsule();
-drawScale();
+if (pane && !apart) {
+ctx.save(); ctx.clip(pane.union);
+drawWellFloor(); drawSlipSheet(cxS, cxT, 0.8);
+ctx.restore();
+}
+if (!PLATE) drawScale();
 if (inside) { drawSlipSheet(cxS, cxT, 1 - SHELL_ALPHA); drawShield(1 - SHELL_ALPHA); }
 if (apart) screwSeats(loose);
 ctx.restore();
@@ -2146,6 +2211,8 @@ if (apart && !cutaway) plateEdge(z.front, frontAlpha);
 layer(z.front);
 ctx.globalAlpha = frontAlpha;
 if (!cutaway) {
+ctx.save();
+if (pane) clipOutPane(pane);   // the pane's area is the pane's, drawn after
 ctx.beginPath();
 subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
 subRoundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
@@ -2166,10 +2233,18 @@ ctx.fill('evenodd');
 ctx.strokeStyle = CAP_FILL; ctx.lineWidth = 2;
 roundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
 ctx.stroke();
+ctx.restore();
 ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
 ctx.stroke();
-if (RIBS || TEXTURE) drawRibs();
+if (RIBS || TEXTURE) {
+ctx.save();
+if (pane) clipOutPane(pane);
+drawRibs();
+ctx.restore();
+}
+if (pane) drawPane(pane);
+if (PLATE) drawPlate();
 if (FRAME) drawFrame();
 }
 if (!apart) drawScrew(SHELL_W / 2, BOTTOM_SCREW_Y);
