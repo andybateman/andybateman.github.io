@@ -606,7 +606,9 @@ var keep = [HAND_FONT, HAND_SCALE], m = p.font === 'marker' && famHand('marker')
 if (m) { HAND_FONT = m[0]; HAND_SCALE = m[1]; }
 ctx.font = fitHandFont(words, max, p.size * (p.font === 'hand' ? WORD_SCALE : 1));
 HAND_FONT = keep[0]; HAND_SCALE = keep[1];
-if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25); ctx.lineJoin = 'round'; ctx.strokeText(words, x, y); }
+var over = ctx.measureText(words).width, kx = over > max ? max / over : 1;
+if (kx < 1) { ctx.translate(x, y); ctx.scale(kx, 1); x = 0; y = 0; }
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25) / kx; ctx.lineJoin = 'round'; ctx.strokeText(words, x, y); }
 if (p.fill !== 'none') ctx.fillText(words, x, y);
 } else {
 var face = FACES[p.font] || UI_FONT, squeeze = p.font === 'cond' ? 0.8 : 1;
@@ -1815,6 +1817,8 @@ var EX_SPAN = 0.6;                  // how much of the sequence one layer's move
 var EX_SY = 0.48, EX_SHX = -0.34;   // the tilt: y squashed, the far edge leaning right
 var EX_THICK = 4.2, EX_TAPE = 3.81, EX_SHANK = 9;   // mm: a shell half, the tape's width, a screw
 var view = null;                    // the tilt this frame; null when assembled
+var parX = 0, parY = 0, parTX = 0, parTY = 0, parAt = 0, PAR_T = 0.12, PAR_Y = 0.6;
+function parPx() { return Math.min(6, cssW * 0.012); }   // CSS px: a few, and fewer on a small cassette
 function exSpan(e, from, len) { var p = (e - from) / len; return p <= 0 ? 0 : p >= 1 ? 1 : p; }
 function exBack(p) { var c = 1.3, q = p - 1; return 1 + (c + 1) * q * q * q + c * q * q; }
 function exLift(name, e) { return EX[name][0] * exBack(exSpan(e, EX[name][1], EX_SPAN)); }
@@ -1825,18 +1829,25 @@ var up = Math.max(0, zTop) + 2 * s, down = Math.max(0, -zBottom) + EX_THICK * s;
 var room = 1 - 0.045 * s;   // a little air round the stack once it's apart
 var k = Math.min(1, room * (SHELL_H + 2 * MARGIN) / (sy * SHELL_H + up + down),
 room * (SHELL_W + 2 * MARGIN) / (SHELL_W + 2 * EAR_OUT - shx * SHELL_H));
-return { s: s, k: k, sy: sy, shx: shx, drop: k * (up - down) / 2 };
+var far = parPx() * s;
+return { s: s, k: k, sy: sy, shx: shx, drop: k * (up - down) / 2,
+zb: zBottom, zr: zTop - zBottom, px: -parX * far, py: -parY * far * PAR_Y };
+}
+function parOff(z) {
+if (!view || !(view.zr > 0) || (!view.px && !view.py)) return [0, 0];
+var f = Math.max(0, Math.min(1, (z - view.zb) / view.zr));
+return [view.px * f, view.py * f];
 }
 function setView(z) {
-var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k;
+var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k, p = parOff(z);
 ctx.setTransform(dpr * k, 0, dpr * k * view.shx, dpr * k * view.sy,
-dpr * (cx - k * cx - k * view.shx * cy),
-dpr * (cy + mm(view.drop) - k * view.sy * cy - k * mm(z)));
+dpr * (cx - k * cx - k * view.shx * cy + p[0]),
+dpr * (cy + mm(view.drop) - k * view.sy * cy - k * mm(z) + p[1]));
 }
 function exPoint(xmm, ymm, z) {
-var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k;
-return [cx + k * (X(xmm) - cx + view.shx * (Y(ymm) - cy)),
-cy + mm(view.drop) + k * view.sy * (Y(ymm) - cy) - k * mm(z)];
+var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k, p = parOff(z);
+return [cx + k * (X(xmm) - cx + view.shx * (Y(ymm) - cy)) + p[0],
+cy + mm(view.drop) + k * view.sy * (Y(ymm) - cy) - k * mm(z) + p[1]];
 }
 function chewTurn() {
 var h = mm(EX_TAPE) * view.k * view.s, r = mm(1.2) * view.k;
@@ -1960,10 +1971,11 @@ if (!ctx) return;
 rollersApart = !!split;
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 ctx.clearRect(0, 0, cssW, cssH);
-if (!loaded) { drawWell(); return; }
+if (!loaded) { stepParallax(false); drawWell(); return; }   // ejected as it eased: at rest, not left on its way
 var Rt = packR(rTake(t)), Rs = packR(rSupply(t));
 stepSlack();
 stepExplode();
+stepParallax(explode > 0.002);
 var e = explode, apart = e > 0.002, z = { tape: 0 };
 view = null;
 if (apart) {
@@ -2053,9 +2065,9 @@ var x0 = SHELL_W / 2 + sd * chewOpen / 2;
 if (apart) {
 var p = exPoint(x0, PATH_Y, 0), px = p[0] - sd * turn.w / 2;   // the strand, just inside the opening
 var xa = px + sd * (turn.r + turn.twist);   // the cut end, and under it the tape's centre line there
-var vcx = X(SHELL_W / 2), vcy = Y(SHELL_H / 2);
-var ly = ribbonYAt(runPts, vcx + (xa - vcx) / view.k - view.shx * (Y(PATH_Y) + mm(GUIDE_R) - vcy));
-var yc = vcy + mm(view.drop) + view.k * view.sy * (ly - vcy) + turn.h / 2;
+var vcx = X(SHELL_W / 2), vcy = Y(SHELL_H / 2), p0 = parOff(0);
+var ly = ribbonYAt(runPts, vcx + (xa - p0[0] - vcx) / view.k - view.shx * (Y(PATH_Y) + mm(GUIDE_R) - vcy));
+var yc = vcy + mm(view.drop) + view.k * view.sy * (ly - vcy) + p0[1] + turn.h / 2;
 var tn = Math.max(1, Math.ceil(mm(EX_TAPE) * view.k * view.s)), thin = Math.min(1, turn.w / Math.max(turn.h, 0.01)), tj, tu;
 ctx.save();
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2306,6 +2318,14 @@ turnAnim.forEach(function (a) { if (a) a.cancel(); });
 turnAnim = [null, null, null, null];
 turnCv.concat([topCv]).forEach(function (c) { c.style.display = 'none'; });
 }
+function stepParallax(apart) {
+var now = performance.now() / 1000, dt = parAt ? Math.min(0.1, now - parAt) : 0;
+parAt = now;
+if (parX === parTX && parY === parTY) return;
+var f = apart ? 1 - Math.exp(-dt / PAR_T) : 1, near = 0.02 / Math.max(1, parPx());
+parX += (parTX - parX) * f; parY += (parTY - parY) * f;
+if (Math.abs(parTX - parX) < near && Math.abs(parTY - parY) < near) { parX = parTX; parY = parTY; }
+}
 function stepExplode() {
 var now = performance.now() / 1000, dt = explodeAt ? Math.min(0.1, now - explodeAt) : 0;
 explodeAt = now;
@@ -2394,13 +2414,13 @@ var i = TAPE_INFO[n];
 return { id: i.id, name: n, title: SHOW_BRANDS && i.brand ? i.brand : n, fav: i.fav, type: i.type, source: i.source };
 });
 }
-function thumb(name, canvas, width) {
+function thumb(name, canvas, width, maxDpr) {
 if (!STYLES[name] || !canvas) return false;
-var w = Math.round(width || canvas.clientWidth || 160), d = window.devicePixelRatio || 1;
+var w = Math.round(width || canvas.clientWidth || 160), d = Math.min(window.devicePixelRatio || 1, maxDpr > 0 ? maxDpr : Infinity);
 var h = Math.round(w * (SHELL_H + 2 * MARGIN) / (SHELL_W + 2 * MARGIN));
 canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
 var keep = [ctx, cssW, cssH, dpr, PX, ox, oy, styleName, explode, cutaway, labelStyle, loaded, t, headFrac, thetaT, thetaS,
-lastAngL, lastAngR, reanchor, phaseL, phaseR, snapSpun];
+lastAngL, lastAngR, reanchor, phaseL, phaseR, snapSpun, hubStale];
 ctx = canvas.getContext('2d'); cssW = w; cssH = h; dpr = d;
 PX = w / (SHELL_W + 2 * MARGIN); ox = mm(MARGIN); oy = mm(MARGIN);
 explode = 0; cutaway = false; labelStyle = 'shell'; loaded = true;
@@ -2411,6 +2431,7 @@ explode = keep[8]; cutaway = keep[9]; labelStyle = keep[10]; loaded = keep[11]; 
 thetaT = keep[14]; thetaS = keep[15]; lastAngL = keep[16]; lastAngR = keep[17]; reanchor = keep[18];
 phaseL = keep[19]; phaseR = keep[20]; snapSpun = keep[21];
 applyStyle(keep[7]);
+hubStale = keep[22];
 }
 return true;
 }
@@ -2418,7 +2439,20 @@ function setTapeType(kind, nr) {
 tapeKind = kind === 'I' || kind === 'IV' ? kind : 'II';
 tapeNR = nr === 'B' || nr === 'C' ? nr : 'off';
 }
-function setExploded(on, instant) { explodeTarget = on ? 1 : 0; if (instant) explode = explodeTarget; }
+function setExploded(on, instant) { explodeTarget = on ? 1 : 0; if (instant) explode = explodeTarget; if (!on) setParallax(0, 0, instant); }
+function setParallax(x, y, instant) {
+var on = explodeTarget === 1 && loaded;
+if (!loaded) instant = true;   // an empty deck draws the well, which steps nothing
+x = on ? Math.max(-1, Math.min(1, +x || 0)) : 0; y = on ? Math.max(-1, Math.min(1, +y || 0)) : 0;
+var moved = Math.abs(x - parTX) >= 0.02 || Math.abs(y - parTY) >= 0.02 || ((x === 0) !== (parTX === 0)) || ((y === 0) !== (parTY === 0));
+if (moved || instant) {
+if (parX === parTX && parY === parTY) parAt = performance.now() / 1000;   // from rest: the first step is a frame's, not the time since the last draw
+parTX = x; parTY = y;
+}
+if (instant) { parX = parTX; parY = parTY; }
+return moved;
+}
+function parallaxBusy() { return loaded && (parX !== parTX || parY !== parTY); }
 function setArtPalette(pal) {
 artPal = pal || null;
 if (STYLES[styleName].album) applyStyle(styleName);
@@ -2565,10 +2599,19 @@ return sqCv;
 var sharedAC = null;
 function audioContext() {
 if (sharedAC) return sharedAC;
-try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+var inApp = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.tape);
+try { if (navigator.audioSession) navigator.audioSession.type = inApp ? 'ambient' : 'playback'; } catch (e) {}
 var AC = window.AudioContext || window.webkitAudioContext;
 if (AC) sharedAC = new AC();
+if (sharedAC) {
+var ac = sharedAC;
+soundNote('made (' + ac.state + ', its session ' + (navigator.audioSession ? navigator.audioSession.type : 'not asked') + ')');
+ac.onstatechange = function () { if (ac.state === 'interrupted' || ac.state === 'closed') soundNote(ac.state); };
+}
 return sharedAC;
+}
+function soundNote(what) {
+try { window.webkit.messageHandlers.tape.postMessage({ op: 'note', text: 'the page’s sound: ' + what }); } catch (e) { /* not in the app */ }
 }
 function restAudio() { if (sharedAC && sharedAC.state === 'running') sharedAC.suspend(); }
 function createHiss() {
@@ -2862,7 +2905,7 @@ return {
 mount: mount, render: render, glide: glide, canGlide: canGlide, setSide: setSide, setLeaders: setLeaders,
 setLabel: setLabel, setStyle: setStyle, setBackground: setBackground,
 setWordScale: function (k) { WORD_SCALE = k > 0 ? k : 1; },
-setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), randomHands: Object.keys(HAND_FONTS).filter(function (k) { return !HAND_FONTS[k] || HAND_FONTS[k][3] !== 'typed'; }), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, onLabel: onLabel, showsIndex: showsIndex, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setArtPalette: setArtPalette,
+setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), randomHands: Object.keys(HAND_FONTS).filter(function (k) { return !HAND_FONTS[k] || HAND_FONTS[k][3] !== 'typed'; }), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, onLabel: onLabel, showsIndex: showsIndex, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setParallax: setParallax, parallaxBusy: parallaxBusy, parallax: function () { var p = view ? [view.px, view.py] : [0, 0]; return { x: parX, y: parY, tx: parTX, ty: parTY, px: p[0], py: p[1] }; }, setArtPalette: setArtPalette,
 setDirection: setDirection, setWear: setWear, setLabelInfo: setLabelInfo, setLoaded: setLoaded, setRunning: setRunning, setSlackInstant: setSlackInstant, audioContext: audioContext, restAudio: restAudio,
 setClearShell: setClearShell, setLabelOn: setLabelOn, setCutaway: setCutaway, snap: snap, splice: splice,
 slackSettled: function () { return !loaded || ((slackInstant || Math.abs(slack - (running ? 0 : 1)) < 0.01) && explode === explodeTarget && snapAge() > SNAP_T && performance.now() - spillAt > 250); },

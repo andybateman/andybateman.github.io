@@ -115,6 +115,10 @@
   <h2 id="start-h">Getting started</h2>
   <p>Tape Deck plays music you already have. There are a few ways to bring it in, and you can use them together.</p>
   <dl>
+    <dt>Simple and Advanced</dt>
+    <dd>A new install starts in <b>Simple</b>: the modern keys, one side, no hiss or wear, and only the settings that matter, which are Look and Library. <b>Advanced</b> has everything: switch at the top of tape settings, or from the gear's right-click menu (on the Mac, View › Simple and Advanced). What you set in Advanced is kept while you are in Simple, and comes back as it was. Anyone who already had settings saved stays in Advanced.</dd>
+    <dt>First-run guide</dt>
+    <dd>The first time the player shows, a ring goes round the buttons people ask about, one at a time, with a card on what each does. Skip, <kbd>Esc</kbd> or Got it ends it. <b>Show me around</b>, in the help, brings it back.</dd>
     <dt>Copy albums into the app</dt>
     <dd>On an iPhone or iPad, open the Files app and copy album folders into <b>On My iPhone › Tape Deck</b> (or On My iPad), laid out as Artist › Album › tracks. On the Mac, choose File › Show Albums Folder and copy them in there. The app picks them up when you come back to it.</dd>
     <dt>Through iCloud Drive</dt>
@@ -125,6 +129,8 @@
     <dd><a href="https://github.com/andybateman/tape-deck-server">Tape Deck Server</a> is a free, open-source music server for the app: one Python file, or one Docker container, on any computer, NAS or Raspberry Pi. Point it at a folder of albums laid out as Artist › Album › tracks, put it behind HTTPS (Caddy or Tailscale Serve will do), and type that address into the app. A password keeps it yours, and a second one lets friends play without touching your favourites.</dd>
     <dt>A music folder, or a NAS</dt>
     <dd>Tape Deck can play a folder where it is, without copying it in, laid out one folder per artist with one per album inside: <b>tape settings › Library › Music folder › Choose</b>, or on the Mac File › Choose Music Folder… (<kbd>⌘O</kbd>). On an iPhone or iPad that can be a folder on a NAS: in the Files app, or in the picker itself, tap ⋯ › <b>Connect to Server</b>, type the NAS's address (such as smb://192.168.1.20), and choose its music folder. Its albums take the place of the music server's copies; when the NAS or the drive can't be reached, its albums are left out until it can.</dd>
+    <dt>Songs on this iPhone or iPad</dt>
+    <dd>Songs you synced from a Mac or PC play as tapes, once you turn on <b>tape settings › Library › Music on this iPhone</b> (or iPad). The system asks to use the media library then. Copy-protected songs, and songs only in iCloud, are left out, and the app says how many. Apple Music's own downloads play in Apple Music mode instead. Not on the Mac.</dd>
     <dt>Formats</dt>
     <dd>MP3, AAC (M4A), FLAC and WAV. Ogg and Opus files are left out, and the app says how many.</dd>
   </dl>
@@ -135,6 +141,8 @@
   <dl>
     <dt>An album or an artist</dt>
     <dd>Click the ▶ on its row, or double-click the row, to play it in order. Click a row to open it and see its tracks.</dd>
+    <dt>A row's menu</dt>
+    <dd>Press and hold an album, book, episode or track row for half a second, with a finger or an Apple Pencil, or right-click it with a mouse: Play, Show or Hide tracks, This Tape, Favourite and the download. Moving, scrolling or a second finger cancels the press.</dd>
     <dt>Two sets of keys</dt>
     <dd>Choose in tape settings › Tape › Controls, or right-click the keys. <b>Tape</b> is a portable recorder's: Play, Rewind, Fast forward, ■▲ and Pause. <b>Modern</b> is a player's: shuffle, skip back, one key to play and pause, skip forward, repeat, and ■▲.</dd>
     <dt>Play and Stop</dt>
@@ -152,7 +160,9 @@
     <dt>Mixtapes</dt>
     <dd>On Recent, <b>+ Mixtape</b> › New mixtape opens one: name it, press + on the albums and tracks you want, in the order you want them, and Done. It plays as a tape of its own, sides and all. <b>A tape of what I've played</b> makes one of the last hour's tracks. Mixtapes are kept on the device they're made on.</dd>
     <dt>Send this tape</dt>
-    <dd>The arrow at the top of This Tape sends the tape as a link, from the share sheet: whoever opens it sees the cassette, its label in its hand, and its tracks a side. The music doesn't go with it, and nothing about the tape is kept anywhere: it's all in the link.</dd>
+    <dd>The arrow at the top of This Tape sends the tape as a link, from the share sheet, or from Tape Deck in Messages, which sends it beside the stickers: whoever opens it sees the cassette, its label in its hand, and its tracks a side. The music doesn't go with it, and nothing about the tape is kept anywhere: it's all in the link.</dd>
+    <dt>Handoff</dt>
+    <dd>With a music tape in the deck, your other iPhone, iPad or Mac, signed in to the same iCloud, offers Tape Deck (in the Dock, or the app switcher). Open it there and the same track plays from the same second, further on by the time since if it was playing, and the first device stops. If the other one doesn't have that album, it says so. Not for a book (its place follows through Audiobookshelf), a game or Apple Music.</dd>
     <dt>A snapped tape</dt>
     <dd>If a track can't be had when the tape reaches it (a lost connection, say), the tape pulls taut and snaps. Press Play to splice it and try again, or pick another track.</dd>
     <dt>A chewed tape</dt>
@@ -172,7 +182,14 @@
   <h2 id="cassette-h">The cassette</h2>
   <dl>
     <dt>Show it</dt>
-    <dd>The cassette button, or <kbd>C</kbd>. The expand button, or <kbd>Shift</kbd>+<kbd>F</kbd>, makes it full screen. On an iPhone, turn the phone sideways. The button beside it steps through the shells; hold it to take the cassette apart.</dd>
+    <dd>The cassette button, or <kbd>C</kbd>. The expand button, or <kbd>Shift</kbd>+<kbd>F</kbd>, makes it full screen. On an iPhone, turn the phone sideways. The button beside it puts in a tape at random; hold it to take the cassette apart, or put it back together.</dd>
+    <dt>Choosing a tape</dt>
+    <dd>Tape settings › Look › <b>Shell</b>, or <b>All tapes…</b> in the cassette's right-click menu, opens a grid of little cassettes: the six shells, the eight classic tapes and 174 more, drawn from real cassettes of the 1970s to the 1990s. Search by name or ID (<kbd>blue 90</kbd>, <kbd>t12</kbd>); your favourites come first, and the one in the deck is framed. <b>Random, by album</b> gives each album a tape of its own, the same one every time. A quick flick sideways across the label puts in the next tape; a slow drag still winds.</dd>
+    <dt>Label styles and handwriting</dt>
+    <dd>Look › <b>Label style</b> prints the label in one of thirteen styles, or the one the shell came with, or Random. Look › <b>Handwriting</b> has eight hands: System, Biro, Felt tip, Marker, Neat, Scrawl, Capitals (block letters) and Typed, or Random, which gives each album one of them but Typed, the same every time.</dd>
+    <dt>Taking it apart</dt>
+    <dd>Look has a clear shell, the label off and a cutaway; <b>Exploded view</b> pulls the whole cassette into its layers. Apart, the layers tilt a little as you move the mouse or a pen over the cassette, or tilt the phone; on an iPhone the first tap asks permission to read its tilt. It stays still under Reduce Motion.</dd>
+    <dt>Tape settings</dt>
     <dt>What a side holds</dt>
     <dd>One track, the whole album or the whole queue (tape settings › Tape › Tape holds). Two halves splits it over sides A and B; a C46 to a C120 cuts the sides to that length; Fit to content keeps it all on one side.</dd>
     <dt>Auto-reverse</dt>
@@ -182,7 +199,7 @@
     <dt>VU meters</dt>
     <dd>Tape settings › Look › VU meters, or a right-click on the cassette. Two rows of twelve lights in the transport, beside the bar, one for each channel, green, then amber, then red as the tape gets louder. They show the tape's level, not the volume's. Apple Music's sound never reaches the deck, so they're off there.</dd>
     <dt>Tape settings</dt>
-    <dd>The gear in the header or on the cassette, or <kbd>G</kbd>. <b>Tape</b>: what a side holds, side length, auto-reverse, the keys and the leader. <b>Sound</b>: the tape's condition, its type and Dolby, the cue tone and motor wow. <b>Look</b>: the shell, the label, the handwriting, the VU meters and the tint from the cover. <b>Library</b>: the music server, the audiobook server, the downloads, and Reset, which puts the settings back to their defaults and keeps your favourites and your place.</dd>
+    <dd>The gear in the header or on the cassette, or <kbd>G</kbd>. <b>Tape</b>: what a side holds, side length, auto-reverse, the keys and the leader. <b>Sound</b>: the tape's condition, its type and Dolby, the cue tone and motor wow. <b>Look</b>: the shell, the label style, the handwriting, the VU meters and the tint from the cover. <b>Library</b>: the music server, the audiobook server, the downloads, and Reset, which puts the settings back to their defaults and keeps your favourites and your place. In Simple, only Look and Library are there.</dd>
   </dl>
   <figure class="pic narrow">
     <img src="img/meters.jpg" alt="The VU meters in the transport, lit to a loud passage: two rows of twelve lights, green, then amber, then a red one" width="380" height="130" loading="lazy">
@@ -216,7 +233,7 @@
     <dt>What's on this device</dt>
     <dd>A yellow dot means an album or track is on this device; a ring means part of the album is. The Downloaded only button in the header, a ring with a dot, shows only what's on this device. When the server can't be reached, everything else is dimmed and skipped.</dd>
     <dt>Downloads</dt>
-    <dd>The download button beside an album's ▶ fetches it without playing it, and × removes the downloaded copy (music you copied in yourself is never removed). A track has its own download button beside its heart, for that one track. Tape settings › Library › Downloads sets how much space to keep, 20 GB unless you change it; past that, the albums played longest ago are removed first. Download there, or a long press on the header's heart, fetches every favourite.</dd>
+    <dd>The download button beside an album's ▶ fetches it without playing it, and × removes the downloaded copy (music you copied in yourself is never removed). A track has its own download button beside its heart, for that one track. Tape settings › Library › Downloads sets how much space to keep, 20 GB unless you change it; past that, the albums played longest ago are removed first. Download there, or a long press on the header's heart, fetches every favourite. While anything downloads, a Live Activity on the Lock Screen and in the Dynamic Island shows what is coming (a book's title, or an album and its artist), a ring filling by the bytes in, and how many are still to go. On iPhone and iPad.</dd>
   </dl>
 </section>
 
@@ -240,9 +257,13 @@
     <dt>Connecting</dt>
     <dd>Put your Audiobookshelf server's address and an API key in tape settings › Library, and Audiobooks appears in the menu of the source button in the header: it swaps the music for your books and podcasts, and Music Library swaps them back.</dd>
     <dt>Playing a book</dt>
-    <dd>A book is a tape and its chapters are the tracks. It downloads whole before it plays, and Play takes it up where you left off, in this app or Audiobookshelf's own. Entering the books puts the one you played last in the deck, ready for Play.</dd>
+    <dd>A book is a tape and its chapters are the tracks. It plays while it downloads, so a book or episode you start hours in plays within seconds, not after the whole file. Skip past what has arrived and the tape holds taut, saying how much is still to come. Play takes it up where you left off, in this app or Audiobookshelf's own. Entering the books puts the one you played last in the deck, ready for Play.</dd>
+    <dt>Podcasts</dt>
+    <dd>Your Audiobookshelf podcast libraries are shows: a show opens to its episodes, newest first, and each episode is a tape with its own place, download and speed. Latest episodes gathers the newest across every show; Skip on one of its rows marks the episode played on the server and takes it off the list, and a show's ▶ plays its newest from where you left it.</dd>
     <dt>Speed and skips</dt>
     <dd>The menu left of Play reads 0.8× to 1.2× at the same pitch. The lock screen, the headphones and the car skip back 15 seconds and on 30.</dd>
+    <dt>Without the server</dt>
+    <dd>A book that is wholly downloaded plays from the last place this device knew when the server can't be reached, on a plane say. What you hear goes up when the server is back; a newer place from another device stands.</dd>
     <dt>Keeping your place</dt>
     <dd>So a stray tap can't lose your place, a book's tape moves only by Rewind and Fast forward, the bar in Track view, and a chapter's row.</dd>
   </dl>
@@ -258,7 +279,7 @@
     <dt>Getting it</dt>
     <dd>The watch app comes with the iPhone app. If it isn't on your watch, open the Watch app on your iPhone and install Tape Deck from the list there. The iPhone plays the music; the watch shows the tape and works the keys.</dd>
     <dt>The deck</dt>
-    <dd>The cassette in your iPhone's deck, in the same shell, with the album's label in the same hand. The reels turn and the counter rolls as the tape plays. Under the cassette are the side and the track, then the keys: back, Play, on and Stop. Play stays down while the tape runs. Tap the cassette to turn it over.</dd>
+    <dd>The cassette in your iPhone's deck, in the same shell, with the album's label in the same hand. The reels turn and the counter rolls as the tape plays. Under the cassette are the side and the track, then the keys: back, Play, on and Stop. Play stays down while the tape runs. Tap the cassette to turn it over where it is: the other side plays on from the same point, with side B forwards under its own letter.</dd>
     <dt>The Digital Crown</dt>
     <dd>Turn it to set your iPhone's volume; a bar beside the crown shows the level as it changes. With the tape chewed, it turns the pencil instead.</dd>
     <dt>A chewed tape</dt>
@@ -290,11 +311,11 @@
   <h2 id="car-h">In the car, and Siri</h2>
   <dl>
     <dt>CarPlay</dt>
-    <dd>Connect your iPhone and choose Tape Deck on the car's screen: Recent, Albums, Artists and, with an Audiobookshelf server, Books. While the car is moving a long list comes in runs, A–C, D–F, and within a letter by name, so all of it can be reached. Recent is the five albums you listened to last and the five newest.</dd>
+    <dd>Connect your iPhone and choose Tape Deck on the car's screen. The tabs are <b>Latest</b> (the newest episodes you haven't finished, the albums you listened to last and the books you're reading, five of each), <b>Albums</b> (your favourites and the five newest first, then the letters), <b>Artists</b> and, with an Audiobookshelf server, <b>Books</b> and <b>Podcasts</b>. A car that takes fewer tabs puts Albums and Artists under one, Music. While the car is moving a long list comes in runs, A–C, D–F, and within a letter by name, so all of it can be reached.</dd>
     <dt>Now Playing</dt>
-    <dd>The car's Now Playing shows the cassette, with a key to turn it over. Its picture, also on your lock screen, is set in tape settings › Look › Its shape: the cassette's window, the whole tape on the album's colours, or the whole tape wide.</dd>
+    <dd>The car's Now Playing shows the cassette, with keys for what is in the deck: the heart, shuffle and repeat for music, a book's speed, and turn over, five at most. <b>Up Next</b> lists the tape's tracks (a book's chapters) with the one playing marked, and a tap plays that one. The artist's name opens their albums. Its picture, also on your lock screen, is set in tape settings › Look › Its shape: the cassette's window, the whole tape on the album's colours, or the whole tape wide.</dd>
     <dt>Siri and Shortcuts</dt>
-    <dd>"Carry on the tape in Tape Deck" (or "Play Tape Deck") plays the tape in the deck from where it stopped, a book too. "Play what's new in Tape Deck" plays the album that came into your library last. "Stop Tape Deck" stops it. All three are in the Shortcuts app as well.</dd>
+    <dd>By name: "Play Rumours in Tape Deck" plays an album, an artist or a book. Siri knows the names in your library, the books you're reading included, so a new album may take a little while to be heard. The older three still work: "Carry on the tape in Tape Deck" (or "Play Tape Deck") plays the tape in the deck from where it stopped, a book too. "Play what's new in Tape Deck" plays the album that came into your library last. "Stop Tape Deck" stops it. All of them are in the Shortcuts app as well.</dd>
   </dl>
 </section>
 
@@ -345,6 +366,9 @@
 
   <h3 class="faq-h">Getting started</h3>
   <details><summary>The app opens on "Where your music comes from"</summary><p>That's the opening screen: it shows when there's nothing to play yet, and whenever you ask for it in <b>tape settings › Library › Where the music comes from</b>. Each source has a tile saying what it needs and how it stands: your own music (copied into iCloud Drive › Tape Deck › Music, into the app's own folder through the Files app, or File › Show Albums Folder on the Mac, or a folder played where it is), a Tape Deck Server, Plex, Jellyfin or another Subsonic server, Audiobookshelf and Apple Music. Tap one to set it up there. A folder you make yourself, with the app's folder's name, isn't read: use the app's own, which Open in Files takes you to. Meanwhile the demo tape plays; once music of your own comes it stays behind it, out of the lists, and a search for Andy Bateman or Glenn Callow finds it. With no server of your own, <a href="https://github.com/andybateman/tape-deck-server">Tape Deck Server</a> serves a folder of music to the app.</p><img class="screen" src="img/first-screen.png" alt="The opening screen, Where your music comes from: nothing set up yet, a Play the demo tape button, then tiles for Your own music and Tape Deck Server, each with a small picture, what it needs and Not set up" width="640" height="775" loading="lazy"></details>
+  <details><summary>Where do I get it?</summary><p>Tape Deck is on the <a href="https://apps.apple.com/app/tape-deck/id6822531305">App Store</a> for iPhone and iPad, free, with the Apple Watch app inside the iPhone one. The Mac&rsquo;s is in review (as at 2026-10-24). A beta, with the newest changes first, is on TestFlight for iPhone, iPad and Mac.</p></details>
+  <details><summary>Everything&rsquo;s gone plain: where did the settings go?</summary><p>You are in Simple, which puts away what a newcomer has no use for. Open tape settings and choose <b>Advanced</b> at the top. Your Advanced settings are kept while you are in Simple.</p></details>
+  <details><summary>Does the page work offline?</summary><p>The web version, saved to the Home Screen, opens with no network once you have opened it online (it needs https). It keeps the page and the covers it has seen, never the music, so tracks still need the server unless they are downloaded in an app. The browser tab&rsquo;s title says what&rsquo;s playing. Neither applies to the apps.</p></details>
   <details><summary>Which iPhone or iOS does it need?</summary><p>iOS 18 or later for the iPhone and iPad, macOS 15 for the Mac and watchOS 11 for the Apple Watch. On something older the app won&rsquo;t install, so update the system first.</p></details>
   <details><summary>The invitation email&rsquo;s sign-in loops</summary><p>Open the invitation on the iPhone itself, install TestFlight from the App Store, and choose View in TestFlight (or Start Testing) in the email. If the sign-in still loops, open the same link on a Mac, or in a private browser window. An invitation runs out after a few days, so ask for a new one if yours has.</p></details>
   <details><summary>TestFlight emailed me a build number that doesn&rsquo;t match</summary><p>The iPhone and the Mac apps are built separately, and each has its own build number. Check which app the email names: a Mac build is not an update for the iPhone.</p></details>
@@ -369,6 +393,7 @@
   <details><summary>Why do some buttons stay lit?</summary><p>The heart and the circle are switches, so they stay lit while they are on, and a second press turns them off. The source button is lit while you are away from your own music, and the speakers while a speaker is chosen. On a touch screen a button can also look lit after a tap until you touch something else: that is the screen&rsquo;s own hover left standing, not a setting, and it is mended from the build after 4.35.3.</p></details>
   <details><summary>What do the heart and the download arrow on an album do?</summary><p>The heart marks the whole album as a favourite, and the heart in the header then shows favourites only. The arrow downloads the album to this device without playing it; a ring or a yellow dot where the arrow was says how much of it is here. <a href="#guide">The picture of an album&rsquo;s row</a> has each state.</p></details>
   <details><summary>What are the yellow dots and rings?</summary><p>A dot means the album or track is on this device, and a ring means part of it is. The circle in the header shows only what is on this device, and counts the tracks still to come while downloads run.</p></details>
+  <details><summary>Does it work with VoiceOver?</summary><p>Every control has a name, a lit toggle says it is on, and a ring shows where the keyboard is. The list has one Tab stop, with the arrow keys, <kbd>Home</kbd>, <kbd>End</kbd>, <kbd>Return</kbd> and <kbd>Space</kbd>, and each row reads as its album, artist and track count. The bar says its place in words, and a line you can&rsquo;t see says what happened with no tap: the tape snapping or eaten, the downloads done, the server out of reach and back.</p></details>
   <details><summary>My favourites aren&rsquo;t on my other device</summary><p>They go through iCloud: check you&rsquo;re signed in to iCloud with the same Apple Account on both. They usually arrive within a minute.</p></details>
   <p>Something else? Email <a href="mailto:tapedeck@andybateman.com">tapedeck@andybateman.com</a>.</p>
 </section>
