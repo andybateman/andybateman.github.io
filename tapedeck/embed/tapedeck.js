@@ -65,6 +65,7 @@ var HUB_WALL = '#d9dce0', HUB_RECESS = 'rgba(20,16,12,0.45)', HUB_NOTCH = 'rgba(
 var BG_COLOR = '#111111';       // seen through the hub bores
 var HUB_WHITE = '#ffffff', HUB_EDGE = '#c4c7cc';
 var HUB_COLS = [null, null], HUB_WINDOWS = 0;
+var HUB_FLANGE = null, HUB_ARCS = null, HUB_CLIP = null, HUB_FLANGE_MAX = 14.5;
 var PATH_Y = 61.3;
 var CAPSTAN_SPACING = 48.0, PIN_SPACING = 28.0;
 var GUIDE_X = 9.7, GUIDE_R = 1.2, CAPSTAN_R = 2.25;
@@ -220,6 +221,10 @@ if (typeof hex !== 'string' || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
 return [hex, parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)];
 }
 function autoFrost(hex) { return /^#[0-9a-f]{6}$/i.test(hex) ? Math.max(0, Math.min(0.26, 0.4 * (luminance(hex) - 0.3))) : 0; }
+function hubLookNow() {
+return [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
+HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS, HUB_FLANGE && HUB_FLANGE.join(), JSON.stringify(HUB_ARCS), HUB_CLIP].join();
+}
 function applyStyle(name) {
 var st = STYLES[name] || STYLES.Brand;
 styleName = STYLES[name] ? name : 'Brand';
@@ -231,20 +236,32 @@ LAB_RULE = hexToRgba(st.ink, 0.20);
 SHELL_FILL = st.shell; SHELL_EDGE = st.shellEdge; APRON_FILL = st.apron; CAP_FILL = st.capsule;
 SHELL_ALPHA = (typeof st.alpha === 'number') ? st.alpha : 0.42;
 SCREW_SHINY = !!st.shiny;
-var hubLook = [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
-HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS].join();
+var hubLook = hubLookNow();
 HUB_WHITE = st.hub || '#ffffff'; HUB_EDGE = st.hubEdge || '#c4c7cc'; HUB_RING = st.ring || null;
 HUB_COLS = Array.isArray(st.hubs) && st.hubs.length === 2 ? [st.hubs[0] || null, st.hubs[1] || null] : [null, null];
 HUB_WALL = st.hubWall || '#d9dce0';
 HUB_STEP = typeof st.hubStep === 'number' ? Math.max(6.5, Math.min(HUB - 0.6, st.hubStep)) : 8.1;
 HUB_WINDOWS = typeof st.hubWindows === 'number' ? Math.max(0, Math.min(24, Math.round(st.hubWindows))) : 0;
+var hf = st.hubFlange;
+HUB_FLANGE = Array.isArray(hf) && typeof hf[0] === 'string' ? [hf[0], typeof hf[1] === 'number' ? Math.max(0, Math.min(1, hf[1])) : 0.5,
+typeof hf[2] === 'number' ? Math.max(HUB_STEP + 0.5, Math.min(HUB_FLANGE_MAX, hf[2])) : HUB] : null;
+HUB_ARCS = Array.isArray(st.hubArcs) ? st.hubArcs.filter(function (a) { return a && typeof a.colour === 'string'; }).slice(0, 8).map(function (a) {
+var r1 = typeof a.r1 === 'number' ? a.r1 : HUB - 0.15;
+return { colour: a.colour, at: +a.at || 0, span: typeof a.span === 'number' ? Math.max(1, Math.min(360, a.span)) : 60,
+r0: typeof a.r0 === 'number' ? Math.max(BORE_WALL, a.r0) : HUB_STEP + 0.2, r1: Math.min(HUB_FLANGE_MAX, r1), recess: !!a.recess,
+hub: a.hub === 'left' || a.hub === 'right' ? a.hub : null };
+}) : null;
+if (HUB_ARCS && !HUB_ARCS.length) HUB_ARCS = null;
+HUB_CLIP = typeof st.hubClip === 'string' ? st.hubClip : null;
 var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
 ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
 FLANGE = Array.isArray(st.reels) ? st.reels : null;
 FLANGE_R = FLANGE && typeof FLANGE[2] === 'number' ? Math.max(FLANGE_MIN, Math.min(FLANGE_MAX, FLANGE[2])) : FLANGE_MAX;
 var pn = st.pane, pl = st.plate;
 PANE = pn ? { colour: /^#[0-9a-f]{6}$/i.test(pn.colour) ? pn.colour : '#dfe4ea',
-alpha: typeof pn.alpha === 'number' ? Math.max(0, Math.min(0.9, pn.alpha)) : 0.3, win: pn.win || null } : null;
+alpha: typeof pn.alpha === 'number' ? Math.max(0, Math.min(0.9, pn.alpha)) : 0.3, win: pn.win || null,
+fill: pn.fill && typeof pn.fill === 'object' && Array.isArray(pn.fill.stops)
+&& (Array.isArray(pn.fill.grad) || Array.isArray(pn.fill.radial) || typeof pn.fill.angle === 'number') ? pn.fill : null } : null;   // a fill it can't read is the tint, never the ink
 PLATE = pl ? { colour: /^#[0-9a-f]{6}$/i.test(pl.colour) ? pl.colour : '#9a9da3',
 alpha: typeof pl.alpha === 'number' ? Math.max(0, Math.min(1, pl.alpha)) : 0.55,
 x: typeof pl.x === 'number' ? pl.x : 38.2, y: typeof pl.y === 'number' ? pl.y : HUB_CY + 0.6,
@@ -259,8 +276,7 @@ FRAME = st.frame || null;
 RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
 LAB_Y1 = st.labelBottom || 43.2;
 APRON_Y0 = st.apronTop || 47.0; APRON_SHOULDER_Y = st.apronTop ? Math.min(62.0, st.apronTop + 5.5) : 52.5;
-if (hubLook !== [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
-HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS].join()) hubStale = true;
+if (hubLook !== hubLookNow()) hubStale = true;
 if (SCREW_SHINY) { SCREW_HI = '#dcdfe4'; SCREW_LO = '#8d939b'; }
 else { SCREW_HI = '#b6bac0'; SCREW_LO = '#999da3'; }
 }
@@ -593,7 +609,7 @@ if (!f) return null;
 var src = (HANDS || {})[f[1]];
 if (!handLoaded[f[1]] && src && window.FontFace && document.fonts) {
 handLoaded[f[1]] = true;
-new FontFace(f[0], 'url(' + src + ')').load().then(function (face) { document.fonts.add(face); if (cv) render(t, headFrac); },
+new FontFace(f[0], 'url(' + src + ')').load().then(function (face) { document.fonts.add(face); fontArrived(); },
 function () { /* stays in the system's script */ });
 }
 return ['"' + f[0] + '", ' + HAND_SYSTEM, f[2]];
@@ -704,20 +720,51 @@ g.fillRect(px, py, 1, 1);
 grainPat = ctx.createPattern(c, 'repeat'); grainFor = dpr;
 return grainPat;
 }
-function famColour(pal) {
-return function col(c) {
+function famColour(pal, box) {
+box = box || [LAB_X0, LAB_Y0, LAB_X1 - LAB_X0, LAB_Y1 - LAB_Y0];
+return function col(c, own) {
 if (!c) return pal.ink || '#1a1a1a';
-if (typeof c === 'object' && c.grad) {
-var g = ctx.createLinearGradient(X(c.grad[0]), Y(c.grad[1]), X(c.grad[2]), Y(c.grad[3]));
-c.stops.forEach(function (s) { g.addColorStop(s[0], col(s[1])); });
+if (typeof c === 'object') {
+var g = null, b = c.box || own || box;
+if (Array.isArray(c.grad)) g = ctx.createLinearGradient(X(c.grad[0]), Y(c.grad[1]), X(c.grad[2]), Y(c.grad[3]));
+else if (Array.isArray(c.radial)) g = ctx.createRadialGradient(X(c.radial[0]), Y(c.radial[1]), 0, X(c.radial[0]), Y(c.radial[1]), mm(c.radial[2]));
+else if (typeof c.angle === 'number') {
+var a = c.angle * Math.PI / 180, cx = b[0] + b[2] / 2, cy = b[1] + b[3] / 2;
+var rr = (Math.abs(Math.cos(a)) * b[2] + Math.abs(Math.sin(a)) * b[3]) / 2;   // the box's extent along the angle
+g = ctx.createLinearGradient(X(cx - Math.cos(a) * rr), Y(cy - Math.sin(a) * rr), X(cx + Math.cos(a) * rr), Y(cy + Math.sin(a) * rr));
+}
+if (!g || !Array.isArray(c.stops)) return pal.ink || '#1a1a1a';
+c.stops.forEach(function (s) { g.addColorStop(Math.max(0, Math.min(1, +s[0] || 0)), col(s[1])); });
 return g;
 }
+if (typeof c !== 'string') return pal.ink || '#1a1a1a';
 return c.charAt(0) === '$' ? (pal[c.slice(1)] || pal.ink || '#1a1a1a') : c;
 };
+}
+function partBox(p, x0, w) {
+if (p.k === 'rect') return [p.x, p.y, p.w, p.h];
+if (p.k === 'circle') return [p.cx - p.r, p.cy - p.r, 2 * p.r, 2 * p.r];
+if (p.k === 'band') return p.x0 != null ? [p.x0, p.y, p.x1 - p.x0, p.h] : [(x0 - ox) / PX, p.y, w / PX, p.h];   // the label's width, as drawn
+return null;
 }
 function drawParts(parts, col, above, x0, w) {
 parts.forEach(function (p) {
 if (!!p.above !== !!above) return;
+var own = partBox(p, x0, w), pcol = function (c) { return col(c, own); };
+var d = p.emboss === true ? 0.25 : typeof p.emboss === 'number' ? Math.max(-1, Math.min(1, p.emboss)) : 0;
+if (d && p.k !== 'cover') {
+var lit = 'rgba(255,255,255,' + (typeof p.embossLight === 'number' ? p.embossLight : 0.4) + ')';
+var dark = 'rgba(0,0,0,' + (typeof p.embossDark === 'number' ? p.embossDark : 0.45) + ')';
+[[-d, lit], [d, dark]].forEach(function (e) {
+ctx.save(); ctx.translate(mm(e[0]), mm(e[0]));
+drawPart(p, function () { return e[1]; }, x0, w);
+ctx.restore();
+});
+}
+drawPart(p, pcol, x0, w);
+});
+}
+function drawPart(p, col, x0, w) {
 var i, k;
 switch (p.k) {
 case 'band':   // the label's width, or x0 to x1
@@ -797,7 +844,6 @@ break;
 case 'tape': famStrip(p, col, false); break;
 case 'dymo': famStrip(p, col, true); break;
 }
-});
 }
 function drawShellPrint() {
 var st = STYLES[styleName] || {};
@@ -978,7 +1024,8 @@ var p = pane.union;
 ctx.save();
 ctx.beginPath(); shellPath(); ctx.clip();
 ctx.clip(pane.bores, 'evenodd');
-ctx.fillStyle = hexToRgba(PANE.colour, PANE.alpha); ctx.fill(p);
+ctx.fillStyle = PANE.fill ? famColour({}, [CAP_X0, CAP_Y0, CAP_X1 - CAP_X0, CAP_Y1 - CAP_Y0])(PANE.fill) : hexToRgba(PANE.colour, PANE.alpha);
+ctx.fill(p);
 var g = ctx.createLinearGradient(X(0), Y(CAP_Y0 - 6), X(0), Y(CAP_Y1 + 4));
 g.addColorStop(0, 'rgba(255,255,255,0.16)'); g.addColorStop(0.45, 'rgba(255,255,255,0.03)'); g.addColorStop(1, 'rgba(255,255,255,0.08)');
 ctx.fillStyle = g; ctx.fill(p);
@@ -1079,10 +1126,20 @@ ctx.fill('evenodd');
 ctx.strokeStyle = hexToRgba(FLANGE[0], Math.min(1, FLANGE[1] + 0.3)); ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU); ctx.stroke();
 }
+if (HUB_FLANGE) {
+var fo = mm(HUB_FLANGE[2]), fi = mm(HUB_STEP);
+ctx.fillStyle = hexToRgba(HUB_FLANGE[0], HUB_FLANGE[1]);
+ctx.beginPath(); ctx.arc(0, 0, fo, 0, TAU); ctx.moveTo(fi, 0); ctx.arc(0, 0, fi, 0, TAU); ctx.fill('evenodd');
+ctx.strokeStyle = hexToRgba(HUB_FLANGE[0], Math.min(1, HUB_FLANGE[1] + 0.3)); ctx.lineWidth = 1;
+ctx.beginPath(); ctx.arc(0, 0, fo, 0, TAU); ctx.stroke();
+ctx.fillStyle = hubCol;
+ctx.beginPath(); ctx.arc(0, 0, fi, 0, TAU); ctx.fill();
+} else {
 ctx.fillStyle = hubCol;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.stroke();
+}
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_STEP), 0, TAU); ctx.stroke();
 if (HUB_RING) {
@@ -1090,7 +1147,8 @@ ctx.strokeStyle = HUB_RING; ctx.lineWidth = mm(1.3);
 ctx.beginPath(); ctx.arc(0, 0, (hubPx + mm(HUB_STEP)) / 2, 0, TAU); ctx.stroke();
 }
 if (HUB_WINDOWS) {
-var wr = (mm(HUB_STEP) + hubPx) / 2, wh = Math.max(1, hubPx - mm(HUB_STEP) - mm(0.9)), ww = Math.max(1, Math.min(wh * 0.9, wr * TAU / HUB_WINDOWS * 0.45));
+var rim = HUB_FLANGE ? mm(HUB_FLANGE[2]) : hubPx;
+var wr = (mm(HUB_STEP) + rim) / 2, wh = Math.max(1, rim - mm(HUB_STEP) - mm(0.9)), ww = Math.max(1, Math.min(wh * 0.9, wr * TAU / HUB_WINDOWS * 0.45));
 ctx.fillStyle = HUB_RECESS;
 for (i = 0; i < HUB_WINDOWS; i++) {
 a = CLIP_ANGLE + Math.PI + i * TAU / HUB_WINDOWS;
@@ -1124,7 +1182,8 @@ ctx.beginPath(); ctx.arc(0, 0, mm(BORE_WALL), 0, TAU); ctx.fill();
 drawDriveDogs(hubCol);
 bores.push([cx, cy, theta, hubCol]);
 var c0 = mm(CLIP_R0), c1 = hubPx;
-ctx.fillStyle = CLIP_COLOR;
+if (HUB_CLIP !== 'none') {
+ctx.fillStyle = HUB_CLIP || CLIP_COLOR;
 ctx.beginPath();
 ctx.arc(0, 0, c1, CLIP_ANGLE - CLIP_HALF, CLIP_ANGLE + CLIP_HALF);
 ctx.arc(0, 0, c0, CLIP_ANGLE + CLIP_HALF, CLIP_ANGLE - CLIP_HALF, true);
@@ -1134,6 +1193,20 @@ ctx.beginPath();
 ctx.arc(0, 0, mm(CLIP_R0 + 0.6), CLIP_ANGLE - CLIP_HALF * 0.4, CLIP_ANGLE + CLIP_HALF * 0.4);
 ctx.arc(0, 0, hubPx - mm(0.6), CLIP_ANGLE + CLIP_HALF * 0.4, CLIP_ANGLE - CLIP_HALF * 0.4, true);
 ctx.closePath(); ctx.fill();
+}
+if (HUB_ARCS) {
+var side = cxmm < SHELL_W / 2 ? 'left' : 'right';
+HUB_ARCS.forEach(function (ha) {
+if (ha.hub && ha.hub !== side) return;
+var a0 = CLIP_ANGLE + (ha.at - ha.span / 2) * Math.PI / 180, a1 = a0 + ha.span * Math.PI / 180, am = (a0 + a1) / 2, q = (a1 - a0) / 4;
+ctx.fillStyle = ha.colour;
+ctx.beginPath(); ctx.arc(0, 0, mm(ha.r1), a0, a1); ctx.arc(0, 0, mm(ha.r0), a1, a0, true); ctx.closePath(); ctx.fill();
+if (ha.recess && ha.r1 - ha.r0 > 1.2) {
+ctx.fillStyle = HUB_RECESS;
+ctx.beginPath(); ctx.arc(0, 0, mm(ha.r1 - 0.6), am - q, am + q); ctx.arc(0, 0, mm(ha.r0 + 0.6), am + q, am - q, true); ctx.closePath(); ctx.fill();
+}
+});
+}
 ctx.restore();
 }
 function hubColour(cxmm) { return (cxmm < SHELL_W / 2 ? HUB_COLS[0] : HUB_COLS[1]) || HUB_WHITE; }
@@ -2338,7 +2411,9 @@ turnPose[i] = 'translate(' + (at[0] - X(cxmm)).toFixed(3) + 'px,' + (at[1] - Y(c
 }
 }
 function drawHubLayer(i, cxmm, theta, z) {
-drawTurnLayer(i, cxmm, HUB_CY, FLANGE ? FLANGE_R : HUB, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
+var reach = Math.max(FLANGE ? FLANGE_R : HUB, HUB_FLANGE ? HUB_FLANGE[2] : HUB,
+HUB_ARCS ? Math.max.apply(null, HUB_ARCS.map(function (a) { return a.r1; })) : HUB);   // as wide as what turns, an arc past the hub's edge too
+drawTurnLayer(i, cxmm, HUB_CY, reach, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
 }
 function drawRollerLayers(z) {
 var theta = rollerAngle(t);
@@ -2420,6 +2495,10 @@ thetaT = turnsOn(t) * TAU;
 thetaS = turnsOff(t) * TAU;
 settleHubs();   // back on the one canvas, whoever asks
 draw();
+}
+function fontArrived() {
+if (!cv) return;
+if (splitOn) drawSplit(false); else draw();
 }
 function canGlide() {
 return !!(ctx && loaded && explode === explodeTarget && !snapped && chewOpen === 0 && spillMM === 0 && !reanchor && !ribbonBusy() &&
@@ -2587,7 +2666,7 @@ if (handLoaded[f[1]] || !src || !window.FontFace || !document.fonts) return;
 handLoaded[f[1]] = true;
 new FontFace(f[0], 'url(' + src + ')').load().then(function (face) {
 document.fonts.add(face);
-if (cv) render(t, headFrac);
+fontArrived();
 }, function () { /* stays in the system's script */ });
 }
 function setTrackMarks(m) { trackMarks = m && m.length ? m : null; }

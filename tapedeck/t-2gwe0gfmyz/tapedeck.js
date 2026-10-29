@@ -64,6 +64,8 @@ var SLACK_SIDE = 3.6, SLACK_MOUTH = 0.5, SLACK_SETTLE = 0.9, SLACK_TAKEUP = 0.12
 var HUB_WALL = '#d9dce0', HUB_RECESS = 'rgba(20,16,12,0.45)', HUB_NOTCH = 'rgba(20,16,12,0.16)';
 var BG_COLOR = '#111111';       // seen through the hub bores
 var HUB_WHITE = '#ffffff', HUB_EDGE = '#c4c7cc';
+var HUB_COLS = [null, null], HUB_WINDOWS = 0;
+var HUB_FLANGE = null, HUB_ARCS = null, HUB_CLIP = null, HUB_FLANGE_MAX = 14.5;
 var PATH_Y = 61.3;
 var CAPSTAN_SPACING = 48.0, PIN_SPACING = 28.0;
 var GUIDE_X = 9.7, GUIDE_R = 1.2, CAPSTAN_R = 2.25;
@@ -103,6 +105,8 @@ var LEADER_COLOR = '#2a6db8';
 var PACK_BASE = '#322722', PACK_R = 50, PACK_G = 39, PACK_B = 34;
 var PACKS = { ferric: ['#322722', 50, 39, 34], chrome: ['#25252a', 37, 37, 42], metal: ['#18181b', 26, 26, 30] };
 var HUB_RING = null, FLANGE = null, FRAME = null, RIBS = false, TEXTURE = null, PAD_FILL = '#9a9da5';
+var SHELL_FROST = 0, SHELL_INSIDE = false;
+var PANE = null, PLATE = null, FLANGE_R = 20.9, FLANGE_MIN = 15.25, FLANGE_MAX = 20.9;
 var TEXTURES = {
 knurl: { kind: 'dots', pitch: 0.9, ink: 'rgba(255,255,255,0.16)' },
 ribs: { kind: 'hlines', pitch: 1.1, ink: 'rgba(255,255,255,0.18)' },
@@ -212,6 +216,15 @@ var COVER_MM = 9.0;             // label cover square
 var IDX_Y = 39.3, IDX_X0 = 18.0, IDX_X1 = 82.4;   // printed index strip
 var SIDES_X = 86.0, SIDES_Y = 30.9, SIDES_PITCH = 3.0;   // the Sides block: its tick boxes' left edge, the first row's top, row to row
 function shellIsClear() { return clearOverride && STYLES[styleName].clear; }
+function packOf(hex) {
+if (typeof hex !== 'string' || !/^#[0-9a-f]{6}$/i.test(hex)) return null;
+return [hex, parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)];
+}
+function autoFrost(hex) { return /^#[0-9a-f]{6}$/i.test(hex) ? Math.max(0, Math.min(0.26, 0.4 * (luminance(hex) - 0.3))) : 0; }
+function hubLookNow() {
+return [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join(),
+HUB_COLS.join(), HUB_WALL, HUB_STEP, HUB_WINDOWS, HUB_FLANGE && HUB_FLANGE.join(), JSON.stringify(HUB_ARCS), HUB_CLIP].join();
+}
 function applyStyle(name) {
 var st = STYLES[name] || STYLES.Brand;
 styleName = STYLES[name] ? name : 'Brand';
@@ -223,19 +236,47 @@ LAB_RULE = hexToRgba(st.ink, 0.20);
 SHELL_FILL = st.shell; SHELL_EDGE = st.shellEdge; APRON_FILL = st.apron; CAP_FILL = st.capsule;
 SHELL_ALPHA = (typeof st.alpha === 'number') ? st.alpha : 0.42;
 SCREW_SHINY = !!st.shiny;
-var hubLook = [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join();
+var hubLook = hubLookNow();
 HUB_WHITE = st.hub || '#ffffff'; HUB_EDGE = st.hubEdge || '#c4c7cc'; HUB_RING = st.ring || null;
+HUB_COLS = Array.isArray(st.hubs) && st.hubs.length === 2 ? [st.hubs[0] || null, st.hubs[1] || null] : [null, null];
+HUB_WALL = st.hubWall || '#d9dce0';
+HUB_STEP = typeof st.hubStep === 'number' ? Math.max(6.5, Math.min(HUB - 0.6, st.hubStep)) : 8.1;
+HUB_WINDOWS = typeof st.hubWindows === 'number' ? Math.max(0, Math.min(24, Math.round(st.hubWindows))) : 0;
+var hf = st.hubFlange;
+HUB_FLANGE = Array.isArray(hf) && typeof hf[0] === 'string' ? [hf[0], typeof hf[1] === 'number' ? Math.max(0, Math.min(1, hf[1])) : 0.5,
+typeof hf[2] === 'number' ? Math.max(HUB_STEP + 0.5, Math.min(HUB_FLANGE_MAX, hf[2])) : HUB] : null;
+HUB_ARCS = Array.isArray(st.hubArcs) ? st.hubArcs.filter(function (a) { return a && typeof a.colour === 'string'; }).slice(0, 8).map(function (a) {
+var r1 = typeof a.r1 === 'number' ? a.r1 : HUB - 0.15;
+return { colour: a.colour, at: +a.at || 0, span: typeof a.span === 'number' ? Math.max(1, Math.min(360, a.span)) : 60,
+r0: typeof a.r0 === 'number' ? Math.max(BORE_WALL, a.r0) : HUB_STEP + 0.2, r1: Math.min(HUB_FLANGE_MAX, r1), recess: !!a.recess,
+hub: a.hub === 'left' || a.hub === 'right' ? a.hub : null };
+}) : null;
+if (HUB_ARCS && !HUB_ARCS.length) HUB_ARCS = null;
+HUB_CLIP = typeof st.hubClip === 'string' ? st.hubClip : null;
 var rl = st.roller || ['#cfd2d6', '#b4b8be', '#a0a4ab'];
 ROLLER_RIM = rl[0]; ROLLER_BODY = rl[1]; ROLLER_CORE = rl[2];
-FLANGE = st.reels || null;
-var pk = PACKS[st.pack] || PACKS.ferric;
+FLANGE = Array.isArray(st.reels) ? st.reels : null;
+FLANGE_R = FLANGE && typeof FLANGE[2] === 'number' ? Math.max(FLANGE_MIN, Math.min(FLANGE_MAX, FLANGE[2])) : FLANGE_MAX;
+var pn = st.pane, pl = st.plate;
+PANE = pn ? { colour: /^#[0-9a-f]{6}$/i.test(pn.colour) ? pn.colour : '#dfe4ea',
+alpha: typeof pn.alpha === 'number' ? Math.max(0, Math.min(0.9, pn.alpha)) : 0.3, win: pn.win || null,
+fill: pn.fill && typeof pn.fill === 'object' && Array.isArray(pn.fill.stops)
+&& (Array.isArray(pn.fill.grad) || Array.isArray(pn.fill.radial) || typeof pn.fill.angle === 'number') ? pn.fill : null } : null;   // a fill it can't read is the tint, never the ink
+PLATE = pl ? { colour: /^#[0-9a-f]{6}$/i.test(pl.colour) ? pl.colour : '#9a9da3',
+alpha: typeof pl.alpha === 'number' ? Math.max(0, Math.min(1, pl.alpha)) : 0.55,
+x: typeof pl.x === 'number' ? pl.x : 38.2, y: typeof pl.y === 'number' ? pl.y : HUB_CY + 0.6,
+w: typeof pl.w === 'number' ? Math.max(6, Math.min(90, pl.w)) : 24, h: typeof pl.h === 'number' ? Math.max(3, Math.min(30, pl.h)) : 6.2,
+ink: pl.ink || 'rgba(38,40,44,0.8)', marks: Array.isArray(pl.marks) ? pl.marks.slice(0, 12) : null, ticks: pl.ticks !== false } : null;
+var pk = PACKS[st.pack] || packOf(st.pack) || PACKS.ferric;
 PACK_BASE = pk[0]; PACK_R = pk[1]; PACK_G = pk[2]; PACK_B = pk[3];
+SHELL_FROST = st.clear && typeof st.frost === 'number' ? Math.max(0, Math.min(0.5, st.frost)) : 0;
+SHELL_INSIDE = !!(st.clear && st.inside);
 PAD_FILL = st.pad || '#9a9da5';
 FRAME = st.frame || null;
 RIBS = !!st.ribs; TEXTURE = TEXTURES[st.texture] || st.texture || null;
 LAB_Y1 = st.labelBottom || 43.2;
 APRON_Y0 = st.apronTop || 47.0; APRON_SHOULDER_Y = st.apronTop ? Math.min(62.0, st.apronTop + 5.5) : 52.5;
-if (hubLook !== [HUB_WHITE, HUB_EDGE, HUB_RING, ROLLER_RIM, ROLLER_BODY, ROLLER_CORE, FLANGE && FLANGE.join()].join()) hubStale = true;
+if (hubLook !== hubLookNow()) hubStale = true;
 if (SCREW_SHINY) { SCREW_HI = '#dcdfe4'; SCREW_LO = '#8d939b'; }
 else { SCREW_HI = '#b6bac0'; SCREW_LO = '#999da3'; }
 }
@@ -568,7 +609,7 @@ if (!f) return null;
 var src = (HANDS || {})[f[1]];
 if (!handLoaded[f[1]] && src && window.FontFace && document.fonts) {
 handLoaded[f[1]] = true;
-new FontFace(f[0], 'url(' + src + ')').load().then(function (face) { document.fonts.add(face); if (cv) render(t, headFrac); },
+new FontFace(f[0], 'url(' + src + ')').load().then(function (face) { document.fonts.add(face); fontArrived(); },
 function () { /* stays in the system's script */ });
 }
 return ['"' + f[0] + '", ' + HAND_SYSTEM, f[2]];
@@ -591,7 +632,9 @@ var keep = [HAND_FONT, HAND_SCALE], m = p.font === 'marker' && famHand('marker')
 if (m) { HAND_FONT = m[0]; HAND_SCALE = m[1]; }
 ctx.font = fitHandFont(words, max, p.size * (p.font === 'hand' ? WORD_SCALE : 1));
 HAND_FONT = keep[0]; HAND_SCALE = keep[1];
-if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25); ctx.lineJoin = 'round'; ctx.strokeText(words, x, y); }
+var over = ctx.measureText(words).width, kx = over > max ? max / over : 1;
+if (kx < 1) { ctx.translate(x, y); ctx.scale(kx, 1); x = 0; y = 0; }
+if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = mm(p.sw || 0.25) / kx; ctx.lineJoin = 'round'; ctx.strokeText(words, x, y); }
 if (p.fill !== 'none') ctx.fillText(words, x, y);
 } else {
 var face = FACES[p.font] || UI_FONT, squeeze = p.font === 'cond' ? 0.8 : 1;
@@ -677,20 +720,51 @@ g.fillRect(px, py, 1, 1);
 grainPat = ctx.createPattern(c, 'repeat'); grainFor = dpr;
 return grainPat;
 }
-function famColour(pal) {
-return function col(c) {
+function famColour(pal, box) {
+box = box || [LAB_X0, LAB_Y0, LAB_X1 - LAB_X0, LAB_Y1 - LAB_Y0];
+return function col(c, own) {
 if (!c) return pal.ink || '#1a1a1a';
-if (typeof c === 'object' && c.grad) {
-var g = ctx.createLinearGradient(X(c.grad[0]), Y(c.grad[1]), X(c.grad[2]), Y(c.grad[3]));
-c.stops.forEach(function (s) { g.addColorStop(s[0], col(s[1])); });
+if (typeof c === 'object') {
+var g = null, b = c.box || own || box;
+if (Array.isArray(c.grad)) g = ctx.createLinearGradient(X(c.grad[0]), Y(c.grad[1]), X(c.grad[2]), Y(c.grad[3]));
+else if (Array.isArray(c.radial)) g = ctx.createRadialGradient(X(c.radial[0]), Y(c.radial[1]), 0, X(c.radial[0]), Y(c.radial[1]), mm(c.radial[2]));
+else if (typeof c.angle === 'number') {
+var a = c.angle * Math.PI / 180, cx = b[0] + b[2] / 2, cy = b[1] + b[3] / 2;
+var rr = (Math.abs(Math.cos(a)) * b[2] + Math.abs(Math.sin(a)) * b[3]) / 2;   // the box's extent along the angle
+g = ctx.createLinearGradient(X(cx - Math.cos(a) * rr), Y(cy - Math.sin(a) * rr), X(cx + Math.cos(a) * rr), Y(cy + Math.sin(a) * rr));
+}
+if (!g || !Array.isArray(c.stops)) return pal.ink || '#1a1a1a';
+c.stops.forEach(function (s) { g.addColorStop(Math.max(0, Math.min(1, +s[0] || 0)), col(s[1])); });
 return g;
 }
+if (typeof c !== 'string') return pal.ink || '#1a1a1a';
 return c.charAt(0) === '$' ? (pal[c.slice(1)] || pal.ink || '#1a1a1a') : c;
 };
+}
+function partBox(p, x0, w) {
+if (p.k === 'rect') return [p.x, p.y, p.w, p.h];
+if (p.k === 'circle') return [p.cx - p.r, p.cy - p.r, 2 * p.r, 2 * p.r];
+if (p.k === 'band') return p.x0 != null ? [p.x0, p.y, p.x1 - p.x0, p.h] : [(x0 - ox) / PX, p.y, w / PX, p.h];   // the label's width, as drawn
+return null;
 }
 function drawParts(parts, col, above, x0, w) {
 parts.forEach(function (p) {
 if (!!p.above !== !!above) return;
+var own = partBox(p, x0, w), pcol = function (c) { return col(c, own); };
+var d = p.emboss === true ? 0.25 : typeof p.emboss === 'number' ? Math.max(-1, Math.min(1, p.emboss)) : 0;
+if (d && p.k !== 'cover') {
+var lit = 'rgba(255,255,255,' + (typeof p.embossLight === 'number' ? p.embossLight : 0.4) + ')';
+var dark = 'rgba(0,0,0,' + (typeof p.embossDark === 'number' ? p.embossDark : 0.45) + ')';
+[[-d, lit], [d, dark]].forEach(function (e) {
+ctx.save(); ctx.translate(mm(e[0]), mm(e[0]));
+drawPart(p, function () { return e[1]; }, x0, w);
+ctx.restore();
+});
+}
+drawPart(p, pcol, x0, w);
+});
+}
+function drawPart(p, col, x0, w) {
 var i, k;
 switch (p.k) {
 case 'band':   // the label's width, or x0 to x1
@@ -701,7 +775,7 @@ case 'rect':
 ctx.save();
 if (p.angle) { var rx = X(p.x + p.w / 2), ry = Y(p.y + p.h / 2); ctx.translate(rx, ry); ctx.rotate(p.angle * Math.PI / 180); ctx.translate(-rx, -ry); }
 ctx.beginPath(); subRoundRect(X(p.x), Y(p.y), mm(p.w), mm(p.h), mm(p.r || 0));
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = 1; ctx.stroke(); }
 ctx.restore(); break;
 case 'lines':
@@ -743,7 +817,7 @@ for (k = p.y0; k <= p.y1; k += p.step) { ctx.moveTo(X(p.x0), Y(k)); ctx.lineTo(X
 ctx.stroke(); break;
 case 'circle':
 ctx.beginPath(); ctx.arc(X(p.cx), Y(p.cy), mm(p.r), 0, TAU);
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.8, mm(p.w || 0.3)); ctx.stroke(); }
 break;
 case 'text': famText(p, col); break;
@@ -764,13 +838,12 @@ else fx += box + mm(0.8) + ctx.measureText(item).width + mm(2.4);
 ctx.restore(); break;
 case 'path':   // any outline, written in millimetres as an SVG path's d; rule: 'evenodd' for holes
 var pp = mmPath(p.d);
-if (p.fill) { ctx.fillStyle = col(p.fill); ctx.fill(pp, p.rule || 'nonzero'); }
+if (p.fill && p.fill !== 'none') { ctx.fillStyle = col(p.fill); ctx.fill(pp, p.rule || 'nonzero'); }
 if (p.stroke) { ctx.strokeStyle = col(p.stroke); ctx.lineWidth = Math.max(0.6, mm(p.w || 0.3)); ctx.lineJoin = 'round'; ctx.stroke(pp); }
 break;
 case 'tape': famStrip(p, col, false); break;
 case 'dymo': famStrip(p, col, true); break;
 }
-});
 }
 function drawShellPrint() {
 var st = STYLES[styleName] || {};
@@ -911,7 +984,6 @@ function drawReel(cxmm, cymm, R, theta, bands) {
 drawPack(cxmm, cymm, R, bands);
 drawHub(cxmm, cymm, theta);
 }
-var FLANGE_R = 20.9;
 function packR(r) { return FLANGE ? HUB + (r - HUB) * (FLANGE_R - 0.9 - HUB) / (RFULL - HUB) : r; }
 function drawRibs() {
 ctx.save();
@@ -930,6 +1002,57 @@ if (tx.kind === 'hlines' || tx.kind === 'grid') for (k = 3; k < SHELL_H - 3; k +
 if (tx.kind === 'grid') for (k = 3; k < SHELL_W - 3; k += pitch) { ctx.moveTo(X(k), Y(2)); ctx.lineTo(X(k), Y(SHELL_H - 2)); }
 if (tx.kind === 'diag') for (k = -SHELL_H; k < SHELL_W; k += pitch) { ctx.moveTo(X(k), Y(SHELL_H)); ctx.lineTo(X(k + SHELL_H), Y(0)); }
 ctx.stroke();
+}
+ctx.restore();
+}
+function paneGeometry() {
+var st = STYLES[styleName] || {}, own = st.label && LABELS[st.label];
+var win = PANE.win || (own && own.win) || st.win || 'wide';
+var shapes = (Array.isArray(win) ? win : [win]).map(function (w) { return famWindows(w); });
+var union = new Path2D(), bores = new Path2D();
+shapes.forEach(function (s) { union.addPath(s); });
+bores.rect(-4 * cssW, -4 * cssH, 9 * cssW, 9 * cssH);
+[SHELL_W / 2 - HUB_SPACING / 2, SHELL_W / 2 + HUB_SPACING / 2].forEach(function (x) {
+bores.moveTo(X(x) + mm(HUB_BORE), Y(HUB_CY)); bores.arc(X(x), Y(HUB_CY), mm(HUB_BORE), 0, TAU);
+});
+return { shapes: shapes, union: union, bores: bores, cuts: shapes.map(function (s) {
+var c = new Path2D(); c.rect(-4 * cssW, -4 * cssH, 9 * cssW, 9 * cssH); c.addPath(s); return c; }) };
+}
+function clipOutPane(pane) { pane.cuts.forEach(function (c) { ctx.clip(c, 'evenodd'); }); }
+function drawPane(pane) {
+var p = pane.union;
+ctx.save();
+ctx.beginPath(); shellPath(); ctx.clip();
+ctx.clip(pane.bores, 'evenodd');
+ctx.fillStyle = PANE.fill ? famColour({}, [CAP_X0, CAP_Y0, CAP_X1 - CAP_X0, CAP_Y1 - CAP_Y0])(PANE.fill) : hexToRgba(PANE.colour, PANE.alpha);
+ctx.fill(p);
+var g = ctx.createLinearGradient(X(0), Y(CAP_Y0 - 6), X(0), Y(CAP_Y1 + 4));
+g.addColorStop(0, 'rgba(255,255,255,0.16)'); g.addColorStop(0.45, 'rgba(255,255,255,0.03)'); g.addColorStop(1, 'rgba(255,255,255,0.08)');
+ctx.fillStyle = g; ctx.fill(p);
+if (pane.shapes.length === 1) { ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1; ctx.stroke(p); }
+ctx.restore();
+}
+function drawPlate() {
+var p = PLATE, x0 = X(p.x), y0 = Y(p.y), w = mm(p.w), h = mm(p.h), i;
+ctx.save();
+ctx.fillStyle = hexToRgba(p.colour, p.alpha); ctx.fillRect(x0, y0, w, h);
+ctx.strokeStyle = p.ink; ctx.fillStyle = p.ink; ctx.lineWidth = 1;
+if (p.ticks) {
+var n = Math.max(5, Math.round(p.w / 1.1 / 5) * 5);   // a tick about every 1.1 mm, in fives (w is 6 mm at least)
+ctx.beginPath();
+for (i = 0; i <= n; i++) {
+var tx = x0 + mm(0.8) + (w - mm(1.6)) * i / n;
+ctx.moveTo(tx, y0); ctx.lineTo(tx, y0 + h * (i % 5 ? 0.18 : 0.34));
+}
+ctx.stroke();
+}
+if (p.marks && p.marks.length) {
+ctx.font = '500 ' + mm(Math.min(2.3, p.h * 0.36)).toFixed(2) + 'px ' + UI_FONT;
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+p.marks.forEach(function (m, k) {
+var f = p.marks.length > 1 ? k / (p.marks.length - 1) : 0.5;
+ctx.fillText(String(m), x0 + mm(1.8) + (w - mm(3.6)) * f, y0 + h * 0.68);
+});
 }
 ctx.restore();
 }
@@ -983,36 +1106,59 @@ if (open) { ctx.beginPath(); ctx.arc(cx, cy, hubPx, 0, TAU); ctx.stroke(); }
 }
 function drawHub(cxmm, cymm, theta) {
 var cx = X(cxmm), cy = Y(cymm);
-var hubPx = mm(HUB);
+var hubPx = mm(HUB), hubCol = hubColour(cxmm);
 var i, a;
 ctx.save();
 ctx.translate(cx, cy);
 ctx.rotate(theta);
 if (FLANGE) {
-var fr = mm(FLANGE_R), fw;
+var fr = mm(FLANGE_R), fw, fh = typeof FLANGE[3] === 'number' ? Math.max(8, Math.min(55, FLANGE[3])) * Math.PI / 180 : 0.62;
 ctx.fillStyle = hexToRgba(FLANGE[0], FLANGE[1]);
 ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU);
 for (fw = 0; fw < 3; fw++) {
 var fa = fw * TAU / 3;
-ctx.moveTo(Math.cos(fa - 0.62) * mm(HUB + 1.6), Math.sin(fa - 0.62) * mm(HUB + 1.6));
-ctx.arc(0, 0, fr - mm(1.8), fa - 0.62, fa + 0.62);
-ctx.arc(0, 0, mm(HUB + 1.6), fa + 0.62, fa - 0.62, true);
+ctx.moveTo(Math.cos(fa - fh) * mm(HUB + 1.6), Math.sin(fa - fh) * mm(HUB + 1.6));
+ctx.arc(0, 0, fr - mm(1.8), fa - fh, fa + fh);
+ctx.arc(0, 0, mm(HUB + 1.6), fa + fh, fa - fh, true);
 ctx.closePath();
 }
 ctx.fill('evenodd');
 ctx.strokeStyle = hexToRgba(FLANGE[0], Math.min(1, FLANGE[1] + 0.3)); ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, fr, 0, TAU); ctx.stroke();
 }
-ctx.fillStyle = HUB_WHITE;
+if (HUB_FLANGE) {
+var fo = mm(HUB_FLANGE[2]), fi = mm(HUB_STEP);
+ctx.fillStyle = hexToRgba(HUB_FLANGE[0], HUB_FLANGE[1]);
+ctx.beginPath(); ctx.arc(0, 0, fo, 0, TAU); ctx.moveTo(fi, 0); ctx.arc(0, 0, fi, 0, TAU); ctx.fill('evenodd');
+ctx.strokeStyle = hexToRgba(HUB_FLANGE[0], Math.min(1, HUB_FLANGE[1] + 0.3)); ctx.lineWidth = 1;
+ctx.beginPath(); ctx.arc(0, 0, fo, 0, TAU); ctx.stroke();
+ctx.fillStyle = hubCol;
+ctx.beginPath(); ctx.arc(0, 0, fi, 0, TAU); ctx.fill();
+} else {
+ctx.fillStyle = hubCol;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, hubPx, 0, TAU); ctx.stroke();
+}
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_STEP), 0, TAU); ctx.stroke();
 if (HUB_RING) {
 ctx.strokeStyle = HUB_RING; ctx.lineWidth = mm(1.3);
 ctx.beginPath(); ctx.arc(0, 0, (hubPx + mm(HUB_STEP)) / 2, 0, TAU); ctx.stroke();
 }
+if (HUB_WINDOWS) {
+var rim = HUB_FLANGE ? mm(HUB_FLANGE[2]) : hubPx;
+var wr = (mm(HUB_STEP) + rim) / 2, wh = Math.max(1, rim - mm(HUB_STEP) - mm(0.9)), ww = Math.max(1, Math.min(wh * 0.9, wr * TAU / HUB_WINDOWS * 0.45));
+ctx.fillStyle = HUB_RECESS;
+for (i = 0; i < HUB_WINDOWS; i++) {
+a = CLIP_ANGLE + Math.PI + i * TAU / HUB_WINDOWS;
+var da = Math.abs(((a - CLIP_ANGLE) % TAU + TAU) % TAU);
+if (Math.min(da, TAU - da) < CLIP_HALF + 0.12) continue;
+ctx.save(); ctx.rotate(a);
+roundRect(wr - wh / 2, -ww / 2, wh, ww, Math.min(ww, wh) * 0.3); ctx.fill();
+ctx.restore();
+}
+} else {
 ctx.fillStyle = HUB_RECESS;
 a = CLIP_ANGLE + Math.PI;
 ctx.beginPath();
@@ -1026,16 +1172,18 @@ ctx.rotate(CLIP_ANGLE + [-2.1, -1.05, 1.05, 2.1][i]);
 ctx.fillRect(mm(NOTCH_R0), -mm(NOTCH_W) / 2, mm(NOTCH_R1 - NOTCH_R0), mm(NOTCH_W));
 ctx.restore();
 }
+}
 ctx.fillStyle = HUB_WALL;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_BORE), 0, TAU); ctx.fill();
 ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.arc(0, 0, mm(HUB_BORE), 0, TAU); ctx.stroke();
 ctx.fillStyle = BG_COLOR;
 ctx.beginPath(); ctx.arc(0, 0, mm(BORE_WALL), 0, TAU); ctx.fill();
-drawDriveDogs();
-bores.push([cx, cy, theta]);
+drawDriveDogs(hubCol);
+bores.push([cx, cy, theta, hubCol]);
 var c0 = mm(CLIP_R0), c1 = hubPx;
-ctx.fillStyle = CLIP_COLOR;
+if (HUB_CLIP !== 'none') {
+ctx.fillStyle = HUB_CLIP || CLIP_COLOR;
 ctx.beginPath();
 ctx.arc(0, 0, c1, CLIP_ANGLE - CLIP_HALF, CLIP_ANGLE + CLIP_HALF);
 ctx.arc(0, 0, c0, CLIP_ANGLE + CLIP_HALF, CLIP_ANGLE - CLIP_HALF, true);
@@ -1045,10 +1193,25 @@ ctx.beginPath();
 ctx.arc(0, 0, mm(CLIP_R0 + 0.6), CLIP_ANGLE - CLIP_HALF * 0.4, CLIP_ANGLE + CLIP_HALF * 0.4);
 ctx.arc(0, 0, hubPx - mm(0.6), CLIP_ANGLE + CLIP_HALF * 0.4, CLIP_ANGLE - CLIP_HALF * 0.4, true);
 ctx.closePath(); ctx.fill();
+}
+if (HUB_ARCS) {
+var side = cxmm < SHELL_W / 2 ? 'left' : 'right';
+HUB_ARCS.forEach(function (ha) {
+if (ha.hub && ha.hub !== side) return;
+var a0 = CLIP_ANGLE + (ha.at - ha.span / 2) * Math.PI / 180, a1 = a0 + ha.span * Math.PI / 180, am = (a0 + a1) / 2, q = (a1 - a0) / 4;
+ctx.fillStyle = ha.colour;
+ctx.beginPath(); ctx.arc(0, 0, mm(ha.r1), a0, a1); ctx.arc(0, 0, mm(ha.r0), a1, a0, true); ctx.closePath(); ctx.fill();
+if (ha.recess && ha.r1 - ha.r0 > 1.2) {
+ctx.fillStyle = HUB_RECESS;
+ctx.beginPath(); ctx.arc(0, 0, mm(ha.r1 - 0.6), am - q, am + q); ctx.arc(0, 0, mm(ha.r0 + 0.6), am + q, am - q, true); ctx.closePath(); ctx.fill();
+}
+});
+}
 ctx.restore();
 }
-function drawDriveDogs() {
-ctx.fillStyle = HUB_WHITE; ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
+function hubColour(cxmm) { return (cxmm < SHELL_W / 2 ? HUB_COLS[0] : HUB_COLS[1]) || HUB_WHITE; }
+function drawDriveDogs(colour) {
+ctx.fillStyle = colour || HUB_WHITE; ctx.strokeStyle = HUB_EDGE; ctx.lineWidth = 0.8;
 for (var i = 0; i < 6; i++) {
 ctx.save();
 ctx.rotate(i * TAU / 6);
@@ -1070,7 +1233,7 @@ ctx.globalCompositeOperation = 'destination-out';
 ctx.beginPath(); ctx.arc(0, 0, mm(BORE_WALL), 0, TAU); ctx.fill();
 ctx.globalCompositeOperation = 'source-over';
 }
-drawDriveDogs();
+drawDriveDogs(b[3]);
 ctx.restore();
 }
 bores = [];
@@ -1745,10 +1908,7 @@ ctx.beginPath(); ctx.arc(X(cx), Y(cy), mm(r), 0, TAU); ctx.fill();
 ctx.fillStyle = METAL;
 ctx.beginPath(); ctx.arc(X(cx - r * 0.18), Y(cy - r * 0.22), mm(r * 0.62), 0, TAU); ctx.fill();
 }
-function drawWell() {
-var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
-var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
-var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
+function drawWellFloor() {
 ctx.fillStyle = WELL_LEDGE;
 roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
 ctx.fillStyle = WELL_FLOOR;
@@ -1770,6 +1930,12 @@ roundRect(X(p[0] - 1.3), Y(p[1] - 1.3), mm(2.6), mm(2.6), mm(0.6)); ctx.fill();
 });
 ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
 ctx.beginPath(); ctx.moveTo(X(12.0), Y(9.5)); ctx.lineTo(X(SHELL_W - 12.0), Y(9.5)); ctx.stroke();
+}
+function drawWell() {
+var cxS = SHELL_W/2 - HUB_SPACING/2, cxT = SHELL_W/2 + HUB_SPACING/2;
+var cxCapL = SHELL_W/2 - CAPSTAN_SPACING/2, cxCapR = SHELL_W/2 + CAPSTAN_SPACING/2;
+var cxPinL = SHELL_W/2 - PIN_SPACING/2, cxPinR = SHELL_W/2 + PIN_SPACING/2;
+drawWellFloor();
 spindle(cxS, HUB_CY);
 spindle(cxT, HUB_CY);
 post(cxCapL, ROLLER_Y, CAPSTAN_R * 0.5, METAL_DARK);
@@ -1783,6 +1949,8 @@ var EX_SPAN = 0.6;                  // how much of the sequence one layer's move
 var EX_SY = 0.48, EX_SHX = -0.34;   // the tilt: y squashed, the far edge leaning right
 var EX_THICK = 4.2, EX_TAPE = 3.81, EX_SHANK = 9;   // mm: a shell half, the tape's width, a screw
 var view = null;                    // the tilt this frame; null when assembled
+var parX = 0, parY = 0, parTX = 0, parTY = 0, parAt = 0, PAR_T = 0.12, PAR_Y = 0.6;
+function parPx() { return Math.min(6, cssW * 0.012); }   // CSS px: a few, and fewer on a small cassette
 function exSpan(e, from, len) { var p = (e - from) / len; return p <= 0 ? 0 : p >= 1 ? 1 : p; }
 function exBack(p) { var c = 1.3, q = p - 1; return 1 + (c + 1) * q * q * q + c * q * q; }
 function exLift(name, e) { return EX[name][0] * exBack(exSpan(e, EX[name][1], EX_SPAN)); }
@@ -1793,18 +1961,25 @@ var up = Math.max(0, zTop) + 2 * s, down = Math.max(0, -zBottom) + EX_THICK * s;
 var room = 1 - 0.045 * s;   // a little air round the stack once it's apart
 var k = Math.min(1, room * (SHELL_H + 2 * MARGIN) / (sy * SHELL_H + up + down),
 room * (SHELL_W + 2 * MARGIN) / (SHELL_W + 2 * EAR_OUT - shx * SHELL_H));
-return { s: s, k: k, sy: sy, shx: shx, drop: k * (up - down) / 2 };
+var far = parPx() * s;
+return { s: s, k: k, sy: sy, shx: shx, drop: k * (up - down) / 2,
+zb: zBottom, zr: zTop - zBottom, px: -parX * far, py: -parY * far * PAR_Y };
+}
+function parOff(z) {
+if (!view || !(view.zr > 0) || (!view.px && !view.py)) return [0, 0];
+var f = Math.max(0, Math.min(1, (z - view.zb) / view.zr));
+return [view.px * f, view.py * f];
 }
 function setView(z) {
-var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k;
+var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k, p = parOff(z);
 ctx.setTransform(dpr * k, 0, dpr * k * view.shx, dpr * k * view.sy,
-dpr * (cx - k * cx - k * view.shx * cy),
-dpr * (cy + mm(view.drop) - k * view.sy * cy - k * mm(z)));
+dpr * (cx - k * cx - k * view.shx * cy + p[0]),
+dpr * (cy + mm(view.drop) - k * view.sy * cy - k * mm(z) + p[1]));
 }
 function exPoint(xmm, ymm, z) {
-var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k;
-return [cx + k * (X(xmm) - cx + view.shx * (Y(ymm) - cy)),
-cy + mm(view.drop) + k * view.sy * (Y(ymm) - cy) - k * mm(z)];
+var cx = X(SHELL_W / 2), cy = Y(SHELL_H / 2), k = view.k, p = parOff(z);
+return [cx + k * (X(xmm) - cx + view.shx * (Y(ymm) - cy)) + p[0],
+cy + mm(view.drop) + k * view.sy * (Y(ymm) - cy) - k * mm(z) + p[1]];
 }
 function chewTurn() {
 var h = mm(EX_TAPE) * view.k * view.s, r = mm(1.2) * view.k;
@@ -1838,8 +2013,8 @@ ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 ctx.beginPath(); shellPath(); ctx.fill(); ctx.stroke();
 ctx.restore();
 }
-function drawSlipSheet(cxS, cxT) {
-var a = view.s;
+function drawSlipSheet(cxS, cxT, alpha) {
+var a = alpha != null ? alpha : view.s;
 ctx.beginPath();
 ctx.moveTo(X(7.5), Y(4.6));
 ctx.lineTo(X(SHELL_W - 7.5), Y(4.6));
@@ -1858,8 +2033,8 @@ ctx.strokeStyle = 'rgba(255,255,255,' + (0.38 * a).toFixed(3) + ')'; ctx.lineWid
 ctx.stroke();
 }
 var SHEET_HOLE = 6.9;   // mm: clear of the hub's bore and its drive dogs
-function drawShield() {
-var a = view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
+function drawShield(alpha) {
+var a = alpha != null ? alpha : view.s, cx = X(SHELL_W / 2), y = Y(ROLLER_Y);
 ctx.save();
 ctx.globalAlpha *= a;
 ctx.fillStyle = METAL; ctx.strokeStyle = METAL_DARK; ctx.lineWidth = 1;
@@ -1928,10 +2103,11 @@ if (!ctx) return;
 rollersApart = !!split;
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 ctx.clearRect(0, 0, cssW, cssH);
-if (!loaded) { drawWell(); return; }
+if (!loaded) { stepParallax(false); drawWell(); return; }   // ejected as it eased: at rest, not left on its way
 var Rt = packR(rTake(t)), Rs = packR(rSupply(t));
 stepSlack();
 stepExplode();
+stepParallax(explode > 0.002);
 var e = explode, apart = e > 0.002, z = { tape: 0 };
 view = null;
 if (apart) {
@@ -1947,17 +2123,28 @@ var axes = loose.concat([[cxS, HUB_CY], [cxT, HUB_CY]]);
 var i;
 var sb = leaderOn ? supplyBands(t) : null;
 var tb = leaderOn ? takeBands(t)   : null;
+var pane = PANE ? paneGeometry() : null;   // a pane's paths, once for the back, the front and its tint
 if (apart) plateEdge(z.back, 1);
 layer(z.back);
+var inside = SHELL_INSIDE && shellIsClear() && !apart;
+if (inside) drawWellFloor();
 ctx.fillStyle = shellIsClear() ? hexToRgba(SHELL_FILL, SHELL_ALPHA) : SHELL_FILL;
 ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 drawEars();
-roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill(); ctx.stroke();
+roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R)); ctx.fill();
+if (SHELL_FROST > 0 && shellIsClear()) { ctx.fillStyle = 'rgba(255,255,255,' + SHELL_FROST.toFixed(3) + ')'; ctx.fill(); }
+ctx.stroke();
 drawApron();
 drawFittings(false, apart);
 if (apart) { drawGuideCorner(1, 'housing'); drawGuideCorner(-1, 'housing'); }
 drawCapsule();
-drawScale();
+if (pane && !apart) {
+ctx.save(); ctx.clip(pane.union);
+drawWellFloor(); drawSlipSheet(cxS, cxT, 0.8);
+ctx.restore();
+}
+if (!PLATE) drawScale();
+if (inside) { drawSlipSheet(cxS, cxT, 1 - SHELL_ALPHA); drawShield(1 - SHELL_ALPHA); }
 if (apart) screwSeats(loose);
 ctx.restore();
 if (apart) {
@@ -2016,9 +2203,9 @@ var x0 = SHELL_W / 2 + sd * chewOpen / 2;
 if (apart) {
 var p = exPoint(x0, PATH_Y, 0), px = p[0] - sd * turn.w / 2;   // the strand, just inside the opening
 var xa = px + sd * (turn.r + turn.twist);   // the cut end, and under it the tape's centre line there
-var vcx = X(SHELL_W / 2), vcy = Y(SHELL_H / 2);
-var ly = ribbonYAt(runPts, vcx + (xa - vcx) / view.k - view.shx * (Y(PATH_Y) + mm(GUIDE_R) - vcy));
-var yc = vcy + mm(view.drop) + view.k * view.sy * (ly - vcy) + turn.h / 2;
+var vcx = X(SHELL_W / 2), vcy = Y(SHELL_H / 2), p0 = parOff(0);
+var ly = ribbonYAt(runPts, vcx + (xa - p0[0] - vcx) / view.k - view.shx * (Y(PATH_Y) + mm(GUIDE_R) - vcy));
+var yc = vcy + mm(view.drop) + view.k * view.sy * (ly - vcy) + p0[1] + turn.h / 2;
 var tn = Math.max(1, Math.ceil(mm(EX_TAPE) * view.k * view.s)), thin = Math.min(1, turn.w / Math.max(turn.h, 0.01)), tj, tu;
 ctx.save();
 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2097,6 +2284,8 @@ if (apart && !cutaway) plateEdge(z.front, frontAlpha);
 layer(z.front);
 ctx.globalAlpha = frontAlpha;
 if (!cutaway) {
+ctx.save();
+if (pane) clipOutPane(pane);   // the pane's area is the pane's, drawn after
 ctx.beginPath();
 subRoundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
 subRoundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
@@ -2117,10 +2306,18 @@ ctx.fill('evenodd');
 ctx.strokeStyle = CAP_FILL; ctx.lineWidth = 2;
 roundRect(X(CAP_X0), Y(CAP_Y0), mm(CAP_X1-CAP_X0), mm(CAP_Y1-CAP_Y0), mm(CAP_R));
 ctx.stroke();
+ctx.restore();
 ctx.strokeStyle = SHELL_EDGE; ctx.lineWidth = 2;
 roundRect(X(0), Y(0), mm(SHELL_W), mm(SHELL_H), mm(SHELL_R));
 ctx.stroke();
-if (RIBS || TEXTURE) drawRibs();
+if (RIBS || TEXTURE) {
+ctx.save();
+if (pane) clipOutPane(pane);
+drawRibs();
+ctx.restore();
+}
+if (pane) drawPane(pane);
+if (PLATE) drawPlate();
 if (FRAME) drawFrame();
 }
 if (!apart) drawScrew(SHELL_W / 2, BOTTOM_SCREW_Y);
@@ -2214,7 +2411,9 @@ turnPose[i] = 'translate(' + (at[0] - X(cxmm)).toFixed(3) + 'px,' + (at[1] - Y(c
 }
 }
 function drawHubLayer(i, cxmm, theta, z) {
-drawTurnLayer(i, cxmm, HUB_CY, FLANGE ? FLANGE_R : HUB, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
+var reach = Math.max(FLANGE ? FLANGE_R : HUB, HUB_FLANGE ? HUB_FLANGE[2] : HUB,
+HUB_ARCS ? Math.max.apply(null, HUB_ARCS.map(function (a) { return a.r1; })) : HUB);   // as wide as what turns, an arc past the hub's edge too
+drawTurnLayer(i, cxmm, HUB_CY, reach, theta, z, function () { drawHub(cxmm, HUB_CY, theta); openBores(!view); });
 }
 function drawRollerLayers(z) {
 var theta = rollerAngle(t);
@@ -2269,6 +2468,14 @@ turnAnim.forEach(function (a) { if (a) a.cancel(); });
 turnAnim = [null, null, null, null];
 turnCv.concat([topCv]).forEach(function (c) { c.style.display = 'none'; });
 }
+function stepParallax(apart) {
+var now = performance.now() / 1000, dt = parAt ? Math.min(0.1, now - parAt) : 0;
+parAt = now;
+if (parX === parTX && parY === parTY) return;
+var f = apart ? 1 - Math.exp(-dt / PAR_T) : 1, near = 0.02 / Math.max(1, parPx());
+parX += (parTX - parX) * f; parY += (parTY - parY) * f;
+if (Math.abs(parTX - parX) < near && Math.abs(parTY - parY) < near) { parX = parTX; parY = parTY; }
+}
 function stepExplode() {
 var now = performance.now() / 1000, dt = explodeAt ? Math.min(0.1, now - explodeAt) : 0;
 explodeAt = now;
@@ -2288,6 +2495,10 @@ thetaT = turnsOn(t) * TAU;
 thetaS = turnsOff(t) * TAU;
 settleHubs();   // back on the one canvas, whoever asks
 draw();
+}
+function fontArrived() {
+if (!cv) return;
+if (splitOn) drawSplit(false); else draw();
 }
 function canGlide() {
 return !!(ctx && loaded && explode === explodeTarget && !snapped && chewOpen === 0 && spillMM === 0 && !reanchor && !ribbonBusy() &&
@@ -2331,6 +2542,10 @@ if ((tape.needs || 1) > (typeof TAPE_ENGINE === 'number' ? TAPE_ENGINE : 1)) ret
 if (SHELLS.indexOf(tape.name) >= 0) return false;
 var shell = Object.assign({ face: '#fbfbfc', ink: '#1a1a1a', dim: '#6b7080', stripe: '#FBCA12',
 shell: '#26282c', shellEdge: '#16171a', apron: '#303338', capsule: '#1a1c1f', leader: '#ece8df' }, tape.shell);
+if (shell.clear) {
+if (typeof shell.frost !== 'number') shell.frost = autoFrost(shell.shell);
+if (typeof shell.inside !== 'boolean') shell.inside = true;
+}
 if (tape.label && Array.isArray(tape.label.parts)) {
 LABELS[tape.name] = Object.assign({}, tape.label, { own: true });
 shell.label = tape.name;
@@ -2353,13 +2568,13 @@ var i = TAPE_INFO[n];
 return { id: i.id, name: n, title: SHOW_BRANDS && i.brand ? i.brand : n, fav: i.fav, type: i.type, source: i.source };
 });
 }
-function thumb(name, canvas, width) {
+function thumb(name, canvas, width, maxDpr) {
 if (!STYLES[name] || !canvas) return false;
-var w = Math.round(width || canvas.clientWidth || 160), d = window.devicePixelRatio || 1;
+var w = Math.round(width || canvas.clientWidth || 160), d = Math.min(window.devicePixelRatio || 1, maxDpr > 0 ? maxDpr : Infinity);
 var h = Math.round(w * (SHELL_H + 2 * MARGIN) / (SHELL_W + 2 * MARGIN));
 canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
 var keep = [ctx, cssW, cssH, dpr, PX, ox, oy, styleName, explode, cutaway, labelStyle, loaded, t, headFrac, thetaT, thetaS,
-lastAngL, lastAngR, reanchor, phaseL, phaseR, snapSpun];
+lastAngL, lastAngR, reanchor, phaseL, phaseR, snapSpun, hubStale];
 ctx = canvas.getContext('2d'); cssW = w; cssH = h; dpr = d;
 PX = w / (SHELL_W + 2 * MARGIN); ox = mm(MARGIN); oy = mm(MARGIN);
 explode = 0; cutaway = false; labelStyle = 'shell'; loaded = true;
@@ -2370,6 +2585,7 @@ explode = keep[8]; cutaway = keep[9]; labelStyle = keep[10]; loaded = keep[11]; 
 thetaT = keep[14]; thetaS = keep[15]; lastAngL = keep[16]; lastAngR = keep[17]; reanchor = keep[18];
 phaseL = keep[19]; phaseR = keep[20]; snapSpun = keep[21];
 applyStyle(keep[7]);
+hubStale = keep[22];
 }
 return true;
 }
@@ -2377,7 +2593,20 @@ function setTapeType(kind, nr) {
 tapeKind = kind === 'I' || kind === 'IV' ? kind : 'II';
 tapeNR = nr === 'B' || nr === 'C' ? nr : 'off';
 }
-function setExploded(on, instant) { explodeTarget = on ? 1 : 0; if (instant) explode = explodeTarget; }
+function setExploded(on, instant) { explodeTarget = on ? 1 : 0; if (instant) explode = explodeTarget; if (!on) setParallax(0, 0, instant); }
+function setParallax(x, y, instant) {
+var on = explodeTarget === 1 && loaded;
+if (!loaded) instant = true;   // an empty deck draws the well, which steps nothing
+x = on ? Math.max(-1, Math.min(1, +x || 0)) : 0; y = on ? Math.max(-1, Math.min(1, +y || 0)) : 0;
+var moved = Math.abs(x - parTX) >= 0.02 || Math.abs(y - parTY) >= 0.02 || ((x === 0) !== (parTX === 0)) || ((y === 0) !== (parTY === 0));
+if (moved || instant) {
+if (parX === parTX && parY === parTY) parAt = performance.now() / 1000;   // from rest: the first step is a frame's, not the time since the last draw
+parTX = x; parTY = y;
+}
+if (instant) { parX = parTX; parY = parTY; }
+return moved;
+}
+function parallaxBusy() { return loaded && (parX !== parTX || parY !== parTY); }
 function setArtPalette(pal) {
 artPal = pal || null;
 if (STYLES[styleName].album) applyStyle(styleName);
@@ -2437,7 +2666,7 @@ if (handLoaded[f[1]] || !src || !window.FontFace || !document.fonts) return;
 handLoaded[f[1]] = true;
 new FontFace(f[0], 'url(' + src + ')').load().then(function (face) {
 document.fonts.add(face);
-if (cv) render(t, headFrac);
+fontArrived();
 }, function () { /* stays in the system's script */ });
 }
 function setTrackMarks(m) { trackMarks = m && m.length ? m : null; }
@@ -2524,9 +2753,19 @@ return sqCv;
 var sharedAC = null;
 function audioContext() {
 if (sharedAC) return sharedAC;
+var inApp = !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.tape);
+try { if (navigator.audioSession) navigator.audioSession.type = inApp ? 'ambient' : 'playback'; } catch (e) {}
 var AC = window.AudioContext || window.webkitAudioContext;
 if (AC) sharedAC = new AC();
+if (sharedAC) {
+var ac = sharedAC;
+soundNote('made (' + ac.state + ', its session ' + (navigator.audioSession ? navigator.audioSession.type : 'not asked') + ')');
+ac.onstatechange = function () { if (ac.state === 'interrupted' || ac.state === 'closed') soundNote(ac.state); };
+}
 return sharedAC;
+}
+function soundNote(what) {
+try { window.webkit.messageHandlers.tape.postMessage({ op: 'note', text: 'the page’s sound: ' + what }); } catch (e) { /* not in the app */ }
 }
 function restAudio() { if (sharedAC && sharedAC.state === 'running') sharedAC.suspend(); }
 function createHiss() {
@@ -2820,7 +3059,7 @@ return {
 mount: mount, render: render, glide: glide, canGlide: canGlide, setSide: setSide, setLeaders: setLeaders,
 setLabel: setLabel, setStyle: setStyle, setBackground: setBackground,
 setWordScale: function (k) { WORD_SCALE = k > 0 ? k : 1; },
-setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), randomHands: Object.keys(HAND_FONTS).filter(function (k) { return !HAND_FONTS[k] || HAND_FONTS[k][3] !== 'typed'; }), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, onLabel: onLabel, showsIndex: showsIndex, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setArtPalette: setArtPalette,
+setLeaderLength: setLeaderLength, setCover: setCover, setIndex: setIndex, setHandFont: setHandFont, setChewed: setChewed, setSpill: setSpill, spilled: function () { return spillMM; }, handFonts: Object.keys(HAND_FONTS), randomHands: Object.keys(HAND_FONTS).filter(function (k) { return !HAND_FONTS[k] || HAND_FONTS[k][3] !== 'typed'; }), setTrackMarks: setTrackMarks, mouthAt: mouthAt, snapshot: snapshot, indexAt: indexAt, sideAt: sideAt, onLabel: onLabel, showsIndex: showsIndex, setLabelShape: setLabelShape, setTapeType: setTapeType, setExploded: setExploded, setParallax: setParallax, parallaxBusy: parallaxBusy, parallax: function () { var p = view ? [view.px, view.py] : [0, 0]; return { x: parX, y: parY, tx: parTX, ty: parTY, px: p[0], py: p[1] }; }, setArtPalette: setArtPalette,
 setDirection: setDirection, setWear: setWear, setLabelInfo: setLabelInfo, setLoaded: setLoaded, setRunning: setRunning, setSlackInstant: setSlackInstant, audioContext: audioContext, restAudio: restAudio,
 setClearShell: setClearShell, setLabelOn: setLabelOn, setCutaway: setCutaway, snap: snap, splice: splice,
 slackSettled: function () { return !loaded || ((slackInstant || Math.abs(slack - (running ? 0 : 1)) < 0.01) && explode === explodeTarget && snapAge() > SNAP_T && performance.now() - spillAt > 250); },
