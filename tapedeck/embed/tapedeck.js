@@ -473,6 +473,27 @@ parts: [
 { k: 'text', t: 'COPY', x: 84.2, y: 38.95, w: 11, size: 1.7, font: 'sans', weight: 600, ink: '#ffffff', align: 'center' },
 { k: 'text', t: '@artist', x: 15.6, y: 42, w: 76, size: 1.5, font: 'sans', weight: 700, ink: '#ffffff', upper: true }
 ] },
+'Terminal': { win: 'rect', pals: [
+{ face: '#0a110c', ink: '#6dff8e', dim: '#3dbf5f' },
+{ face: '#120d05', ink: '#ffb23e', dim: '#c98a2c' }],
+bezel: { stroke: '$dim', w: 0.35 },
+parts: [
+{ k: 'band', y: 5.8, h: 3.7, fill: '$ink' },
+{ k: 'text', t: '@sideword', x: 3.4, y: 7.75, w: 20, size: 2.0, font: 'term', weight: 700, ink: '$face' },
+{ k: 'text', t: '─ tape ─', x: 50.2, y: 7.75, w: 24, size: 2.0, font: 'term', weight: 700, ink: '$face', align: 'center' },
+{ k: 'text', t: '@tape', x: 96.6, y: 7.75, w: 16, size: 2.0, font: 'term', weight: 700, ink: '$face', align: 'right' },
+{ k: 'text', t: '>', x: 3.4, y: 12.3, w: 3, size: 3.0, font: 'term', weight: 700, ink: '$ink' },
+{ k: 'text', t: '@title', x: 6.8, y: 12.3, w: 89, size: 3.0, font: 'term', weight: 600, ink: '$ink' },
+{ k: 'text', t: '@artist', x: 6.8, y: 16.0, w: 89, size: 2.3, font: 'term', ink: '$dim' },
+{ k: 'text', t: '>', x: 3.4, y: 19.7, w: 3, size: 2.3, font: 'term', weight: 700, ink: '$dim' },
+{ k: 'rect', x: 6.8, y: 18.5, w: 1.4, h: 2.4, fill: '$ink' },
+{ k: 'text', t: '@sides', x: 3.0, y: 28.9, w: 12, size: 1.5, font: 'term', ink: '$dim' },
+{ k: 'text', t: 'STEREO', x: 97.4, y: 28.9, w: 12, size: 1.5, font: 'term', ink: '$dim', align: 'right' },
+{ k: 'text', t: '+' + new Array(95).join('-') + '+', x: 50.2, y: 37.5, w: 95, size: 1.6, font: 'term', ink: '$dim', align: 'center' },
+{ k: 'text', t: '@type', x: 3.4, y: 40.6, w: 76, size: 1.5, font: 'term', ink: '$dim' },
+{ k: 'text', t: '░▒▓█', x: 96.6, y: 40.6, w: 9, size: 2.2, font: 'term', ink: '$ink', align: 'right' },
+{ k: 'pins', y0: 6.2, y1: 43.0, n: 47, w: 0.16, fills: ['rgba(0,0,0,0.22)'] }
+] },
 'Red Horseshoe': { own: true, win: 'holes', pal: { face: '#e5dac2', ink: '#2a2a2a', dim: '#6b655a', a1: '#d8303a' }, grain: 0.5,
 parts: [
 { k: 'rect', x: 21.7, y: 19.7, w: 57.9, h: 16.5, r: 8.25, fill: '#dcd8ca', stroke: '#b9b5a6' },
@@ -516,6 +537,7 @@ var FACES = {
 sans: UI_FONT, cond: UI_FONT, italic: UI_FONT,
 serif: 'Georgia, "Times New Roman", serif',
 mono: '"American Typewriter", "Courier New", Courier, monospace',
+term: 'Menlo, "SF Mono", ui-monospace, Monaco, Consolas, "DejaVu Sans Mono", "Courier New", monospace',
 round: '"Arial Rounded MT Bold", "SF Pro Rounded", ui-rounded, ' + UI_FONT,
 heavy: '"Avenir Next", "Arial Black", ' + UI_FONT,
 iserif: 'Georgia, "Times New Roman", serif'
