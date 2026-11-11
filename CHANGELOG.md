@@ -45,6 +45,7 @@ All notable changes to the Andy Bateman Personal Website project are documented 
   which the browser never sends to a server
 
 ### Changed
+- **README documents the `/termlogo/` and `/tapedeck/` pages** (2026-11-11): every page and folder under `tapedeck/` (features, help, privacy, `tape.html`, embed, the `level/` links and the sample tape) and what the `termlogo/` support files are, with where each is built. The project folder's README and HANDOVER carry the same. Documentation only
 - **Masthead nav:** Stories, WLG Hills and NZ Hills taken out of it
   (`_layouts/default.html`). The pages are still there at their addresses,
   and the stories' own bar is Hills and Map, Stories gone from it too
