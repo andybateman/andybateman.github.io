@@ -38,10 +38,16 @@
     <a class="button ghost" href="help.html">Read the help</a>
   </div>
   <p class="platforms">iPhone · iPad · Apple Watch · Mac · CarPlay</p>
-  <img class="shot" src="img/hero.jpg" alt="Tape Deck on the Mac: a cassette docked above the transport keys with the albums list under it" width="2560" height="1600">
+  <!-- The page's one moving part (#667): the real cassette, still until Play. The song is Glenn Callow's,
+       used with his leave as for the app's demo tape; the player fetches only its details until then. -->
+  <div class="shot live">
+    <tape-deck-player src="audio/andy-bateman.m4a" title="Andy Bateman" artist="Glenn Callow" cover="audio/andy-bateman.jpg"></tape-deck-player>
+    <p class="caption">Go on, press Play. It's the demo tape from the app: Andy Bateman, by Glenn Callow.</p>
+  </div>
 </header>
 
 <section aria-labelledby="cassette">
+  <span class="eyebrow" aria-hidden="true">Side A · 1</span>
   <h2 id="cassette">Drawn off a real tape</h2>
   <p>I measured it off a real HF 60 and drew it to the standard's dimensions. The reels are sized by how long the side is and wind across as the music plays.</p>
   <div class="split">
@@ -49,7 +55,7 @@
     <ul class="ticks">
       <li><strong>Every album gets a label:</strong> title and artist in handwriting, the cover, the running time and a strip with a mark for each track. Click the strip to wind there.</li>
       <li><strong>Six shells and eight classic tapes.</strong> One shell takes its colour from the album cover (and so does the page).</li>
-      <li><strong>698 tapes copied from real cassettes</strong> from the 70s to the 90s, with thirteen label styles. Pick one from a grid of little cassettes, search by name or ID, favourites first. Or set Random, by album and let every album keep its own. Flick across the label for the next one.</li>
+      <li><strong>Hundreds of tapes copied from real cassettes</strong> from the 70s to the 90s, with thirteen label styles. Pick one from a grid of little cassettes, search by name or ID, favourites first. Or set Random, by album and let every album keep its own. Flick across the label for the next one.</li>
       <li><strong>Eight hands,</strong> from a biro to a marker, block capitals to a typed label. Or a different one for every album.</li>
       <li><strong>Type I, II or IV, Dolby B or C.</strong> It's on the label, cut into the shell and you can hear it.</li>
       <li><strong>Take it apart.</strong> A clear shell, the front off or the whole thing exploded into layers that tilt when you move the mouse or the phone.</li>
@@ -70,6 +76,7 @@
 </section>
 
 <section aria-labelledby="deck">
+  <span class="eyebrow" aria-hidden="true">Side A · 2</span>
   <h2 id="deck">Keys that behave like a deck's</h2>
   <p>Portable recorder keys or modern player keys, your call. Either way the tape moves like a tape.</p>
   <div class="grid">
@@ -83,6 +90,7 @@
 </section>
 
 <section aria-labelledby="wear">
+  <span class="eyebrow" aria-hidden="true">Side A · 3</span>
   <h2 id="wear">From fresh to chewed</h2>
   <p>One slider for how battered you want the tape. Turn it up and the hiss comes in, the pitch starts to wobble and the shell picks up scratches.</p>
   <div class="split">
@@ -96,25 +104,38 @@
 </section>
 
 <section aria-labelledby="library">
+  <span class="eyebrow" aria-hidden="true">Side A · 4</span>
   <h2 id="library">Your whole library</h2>
   <p>Tape Deck plays music you own. Copy it into the app, play a folder where it sits (a NAS is fine) or point it at your own music server. That can be a <a href="https://github.com/andybateman/tape-deck-server">Tape Deck Server</a> (free, open source, serves a folder of albums from any computer), Plex, Jellyfin or a Subsonic server like Navidrome.</p>
-  <p>Got Apple Music? Your Apple Music library plays as tapes too.</p>
-  <div class="grid">
-    <div class="card"><h3>Recent first</h3><p>What you played last, then what's new.</p></div>
-    <div class="card"><h3>Albums, artists, tracks</h3><p>One button to sort, jump by letter, search as you type. It doesn't mind a missing accent.</p></div>
-    <div class="card"><h3>Favourites everywhere</h3><p>Heart a track or a whole album and it follows you to your iPhone, iPad and Mac through iCloud.</p></div>
-    <div class="card"><h3>Downloads</h3><p>From a server, an album downloads as you play it. Or grab it ahead of time for the train, the whole album or one track. You choose how much space it gets. The Lock Screen and Dynamic Island show how it's going.</p></div>
-    <div class="card"><h3>Songs on this iPhone</h3><p>Switch it on and the songs you synced from a Mac or PC play as tapes too. Copy-protected songs are skipped and the app tells you how many.</p></div>
-    <div class="card"><h3>Through iCloud Drive</h3><p>Drop albums in the Tape Deck folder in iCloud Drive and they're on your iPhone, iPad and Mac in seconds.</p></div>
-    <div class="card"><h3>Mixtapes</h3><p>Make one by hand, albums and tracks in whatever order you like. Or make one from what you've played in the last hour. It's a proper tape, sides and all.</p></div>
-    <div class="card"><h3>Send this tape</h3><p>Send the tape in the deck as a link, from the share sheet or in Messages. They get a page with the cassette, its handwritten label and the tracks on each side. The music stays with you.</p></div>
-    <div class="card"><h3>A demo tape</h3><p>Until your music arrives there's one song in the deck, so you've got something to play from the first launch. After that it gets out of the way. Search for Glenn Callow and it's still there (yes, the song's called Andy Bateman).</p></div>
-    <div class="card"><h3>Albums by their own names</h3><p>Where a folder had to swap a colon or a slash for an underscore, the album shows its proper name from the tags.</p></div>
-    <div class="card"><h3>Apple Music, as tapes</h3><p>Pick Apple Music from the source button and your library swaps for your Apple Music one, catalogue search and all. The sound is Apple's own so the hiss and wear step aside. The reels and keys carry on. Needs a subscription.</p></div>
+  <figure>
+    <img src="img/hero.jpg" alt="Tape Deck on the Mac: a cassette docked above the transport keys with the albums list under it" width="2560" height="1600" loading="lazy">
+    <figcaption>On the Mac. The tape in the deck, your albums underneath.</figcaption>
+  </figure>
+  <div class="groups">
+    <div class="card"><h3>Where it comes from</h3>
+      <p><b>Through iCloud Drive.</b> Drop albums in the Tape Deck folder in iCloud Drive and they're on your iPhone, iPad and Mac in seconds.</p>
+      <p><b>Songs on this iPhone.</b> Switch it on and the songs you synced from a Mac or PC play as tapes too. Copy-protected songs are skipped and the app tells you how many.</p>
+      <p><b>Apple Music, as tapes.</b> Pick Apple Music from the source button and your library swaps for your Apple Music one, catalogue search and all. The sound is Apple's own so the hiss and wear step aside. The reels and keys carry on. Needs a subscription.</p>
+    </div>
+    <div class="card"><h3>Finding it</h3>
+      <p><b>Recent first.</b> What you played last, then what's new.</p>
+      <p><b>Albums, artists, tracks.</b> One button to sort, jump by letter, search as you type. It doesn't mind a missing accent.</p>
+      <p><b>Albums by their own names.</b> Where a folder had to swap a colon or a slash for an underscore, the album shows its proper name from the tags.</p>
+    </div>
+    <div class="card"><h3>Keeping it</h3>
+      <p><b>Favourites everywhere.</b> Heart a track or a whole album and it follows you to your iPhone, iPad and Mac through iCloud.</p>
+      <p><b>Downloads.</b> From a server, an album downloads as you play it. Or grab it ahead of time for the train, the whole album or one track. You choose how much space it gets. The Lock Screen and Dynamic Island show how it's going.</p>
+    </div>
+    <div class="card"><h3>Making tapes</h3>
+      <p><b>Mixtapes.</b> Make one by hand, albums and tracks in whatever order you like. Or make one from what you've played in the last hour. It's a proper tape, sides and all.</p>
+      <p><b>Send this tape.</b> Send the tape in the deck as a link, from the share sheet or in Messages. They get a page with the cassette, its handwritten label and the tracks on each side. The music stays with you.</p>
+      <p><b>A demo tape.</b> Until your music arrives there's one song in the deck, so you've got something to play from the first launch. After that it gets out of the way. Search for Glenn Callow and it's still there (yes, the song's called Andy Bateman).</p>
+    </div>
   </div>
 </section>
 
 <section aria-labelledby="books">
+  <span class="eyebrow" aria-hidden="true">Side A · 5</span>
   <h2 id="books">Audiobooks and podcasts</h2>
   <p>Hook up your Audiobookshelf server and the deck plays your books and podcasts too. Each book's a tape, each chapter a track.</p>
   <div class="split">
@@ -130,6 +151,7 @@
 </section>
 
 <section aria-labelledby="wrist">
+  <span class="eyebrow" aria-hidden="true">Side B · 1</span>
   <h2 id="wrist">On your wrist</h2>
   <p>On Apple Watch you get the tape in your iPhone's deck, drawn the same way.</p>
   <div class="split">
@@ -146,6 +168,7 @@
 </section>
 
 <section aria-labelledby="car">
+  <span class="eyebrow" aria-hidden="true">Side B · 2</span>
   <h2 id="car">In the car (and with Siri)</h2>
   <p>Tape Deck works with CarPlay. Pick from your music and books on the car's screen and your iPhone plays the tape.</p>
   <ul class="ticks">
@@ -158,6 +181,7 @@
 </section>
 
 <section aria-labelledby="devices">
+  <span class="eyebrow" aria-hidden="true">Side B · 3</span>
   <h2 id="devices">On iPhone, iPad and Mac</h2>
   <p>One app, at home on each.</p>
   <div class="split">
@@ -180,11 +204,13 @@
 </section>
 
 <section aria-labelledby="private">
+  <span class="eyebrow" aria-hidden="true">Side B · 4</span>
   <h2 id="private">Private by design</h2>
   <p>No account, no sign-in, no tracking. Tape Deck only asks for what you switch on: Apple Music if you pick it, your media library for Music on this iPhone and the motion sensor for the exploded view's tilt. Your music stays on your devices and your own server. Favourites go through your own iCloud.</p>
 </section>
 
 <section aria-labelledby="get">
+  <span class="eyebrow" aria-hidden="true">Side B · 5</span>
   <h2 id="get">Get it</h2>
   <p id="app-store">It's free on the <a href="https://apps.apple.com/app/tape-deck/id6822531305">App Store</a> for iPhone, iPad and Mac. The Apple Watch app comes with the iPhone one.</p>
   <p>Want the newest bits first? <a href="https://testflight.apple.com/join/6d429PHB">Join the beta on TestFlight</a>. Open the link on your iPhone, iPad or Mac, install TestFlight if it asks, then Accept and Install. Places are limited, so if it says it's full, try again later.</p>
@@ -197,5 +223,6 @@
 <footer>
   <div class="wrap">Tape Deck · <a href="help.html">Help</a> · <a href="privacy.html">Privacy</a></div>
 </footer>
+<script src="js/tapedeck.js" defer></script>
 </body>
 </html>
