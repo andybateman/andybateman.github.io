@@ -4,6 +4,9 @@ All notable changes to the Andy Bateman Personal Website project are documented 
 
 ## [Unreleased]
 
+### Changed
+- **`/mohoe/` is now You Mohoe** (2026-11-19): renamed (title, heading, nav label) and restyled after the A3 poster in the Mohoe project: Nunito and Instrument Sans, black on white, greyscale tiles, teal for cafes been to, tick-box lists per city with visit dates, the challenge block and the Mo Hoe footnote. The page keeps its own look; the rest of the site stays on The Logbook theme. The Mojo roundel is left off. URL unchanged.
+
 ### Added
 - **Terminal Logo Turtle** at `/termlogo/`: the browser version of the Logo
   interpreter from andybateman/termlogo, as plain static files (page, worker,
