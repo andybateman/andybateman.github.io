@@ -24,8 +24,8 @@ leaflet: true
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; height: 100%; overflow: hidden; }
-        body { font-family: var(--text); color: var(--ink); background: var(--paper); text-shadow: 0 .03rem .06rem rgba(0, 0, 0, .12); }
-        .container { display: flex; height: 100vh; width: 100%; }
+        body { font-family: var(--text); color: var(--ink); background: var(--paper); text-shadow: 0 .03rem .06rem rgba(0, 0, 0, .12); box-shadow: none; }
+        .mohoe { display: flex; height: 100vh; width: 100%; max-width: none; margin: 0; padding: 0; }
         #map { flex: 1; z-index: 1; min-height: 0; background: var(--paper); border-left: 2px solid var(--ink); }
         /* Greyscale tiles to match the poster's black and white map */
         #map .leaflet-tile-pane { filter: grayscale(1) contrast(1.15); }
@@ -96,7 +96,7 @@ leaflet: true
         .footnote .say { color: var(--grey); margin: 0 4px; }
 
         @media (max-width: 768px) {
-            .container { flex-direction: column; }
+            .mohoe { flex-direction: column; }
             #map { order: 2; flex: 1; min-height: 0; border-left: 0; border-top: 2px solid var(--ink); }
             .sidebar { order: 1; width: 100%; max-height: 45vh; padding: 14px 16px; }
             .title { font-size: 36px; }
@@ -124,7 +124,7 @@ leaflet: true
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="mohoe">
         <div id="map"></div>
         <div class="sidebar">
             <a href="/" class="home-link">&larr; Home</a>
