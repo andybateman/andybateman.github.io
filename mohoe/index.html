@@ -8,242 +8,151 @@ leaflet: true
 <html lang="en" class="h-100">
 <head>
     {% include head.html %}
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Instrument+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Bespoke map + sidebar layout for the Mohoe coffee tracker,
-           themed to "The Logbook". Fonts come from the shared head. */
+        /* You Mohoe: styled after the A3 poster (Quests project 20251101_Mohoe).
+           Black on white, Nunito for heads, Instrument Sans for text,
+           the teal from mojo.coffee as the one accent. */
         :root {
-            --ink: #1a1813;
-            --red: #c0392b;
-            --yellow: #fbca12;
-            --green: #27ae60;
+            --ink: #000;
+            --paper: #fff;
+            --teal: #88c6bc;
+            --teal-dark: #2c7d72;
+            --grey: #4e4e4e;
+            --head: "Nunito", system-ui, sans-serif;
+            --text: "Instrument Sans", system-ui, sans-serif;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        body {
-            font-family: "IBM Plex Mono", ui-monospace, monospace;
-            color: var(--ink);
-            background: #fff;
-        }
-        .container {
-            display: flex;
-            height: 100vh;
-            width: 100%;
-        }
-        #map {
-            flex: 1;
-            z-index: 1;
-            min-height: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
+        body { font-family: var(--text); color: var(--ink); background: var(--paper); }
+        .container { display: flex; height: 100vh; width: 100%; }
+        #map { flex: 1; z-index: 1; min-height: 0; background: var(--paper); border-left: 2px solid var(--ink); }
+        /* Greyscale tiles to match the poster's black and white map */
+        #map .leaflet-tile-pane { filter: grayscale(1) contrast(1.15); }
         .sidebar {
-            width: 320px;
-            background: #fff;
+            order: -1;
+            width: 360px;
+            background: var(--paper);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
-            padding: 16px;
+            padding: 20px 22px;
             display: flex;
             flex-direction: column;
         }
         .home-link {
-            font-family: "IBM Plex Mono", ui-monospace, monospace;
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--ink);
-            text-decoration: none;
-            display: block;
-            margin-bottom: 12px;
-            flex-shrink: 0;
+            font-family: var(--text); font-weight: 700; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: var(--ink); text-decoration: none; display: block; margin-bottom: 14px; flex-shrink: 0;
         }
-        .home-link:hover { color: var(--red); }
-        .sidebar h2 {
-            font-family: "Hanken Grotesk", system-ui, sans-serif;
-            font-weight: 800;
-            font-size: 22px;
-            line-height: 1.1;
-            margin-bottom: 14px;
-            padding-left: 10px;
-            border-left: 4px solid var(--red);
-            color: var(--ink);
-            flex-shrink: 0;
+        .home-link:hover { color: var(--teal-dark); }
+        .title {
+            font-family: var(--head); font-weight: 900; font-size: 52px; line-height: 0.92;
+            letter-spacing: 0.02em; text-transform: uppercase; color: var(--ink); flex-shrink: 0;
         }
-        .stats {
-            background: var(--yellow);
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            color: var(--ink);
-            flex-shrink: 0;
+        .title sup { font-size: 0.45em; vertical-align: top; position: relative; top: -0.1em; }
+        .tagline {
+            font-family: var(--head); font-weight: 700; font-size: 11px; letter-spacing: 0.16em;
+            text-transform: uppercase; margin: 10px 0 18px; flex-shrink: 0;
         }
-        .stats-item {
-            margin-bottom: 6px;
-        }
-        .stats-item:last-child {
-            margin-bottom: 0;
-        }
-        .stats-item strong {
-            font-weight: 700;
-        }
-        #locations-list {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            min-height: 0;
-        }
-        .city-section {
-            margin-bottom: 16px;
-        }
+        .challenge { border-top: 2px solid var(--ink); padding-top: 10px; margin-bottom: 18px; flex-shrink: 0; font-size: 13px; }
+        .challenge h3 { font-family: var(--head); font-weight: 900; font-size: 12px; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .challenge p { margin-bottom: 8px; }
+        .challenge dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; align-items: baseline; }
+        .challenge dt { font-weight: 700; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
+        .challenge dd { font-family: var(--head); font-weight: 900; }
+        .key { display: flex; gap: 16px; margin-top: 8px; font-size: 12px; font-weight: 700; }
+        .key span { display: inline-flex; align-items: center; gap: 6px; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--ink); display: inline-block; }
+        .dot.done { background: var(--teal); }
+        .dot.todo { background: var(--ink); }
+        #locations-list { flex: none; }
+        .city-section { margin-bottom: 18px; flex-shrink: 0; }
         .city-title {
-            font-weight: 700;
-            color: var(--red);
-            margin-bottom: 8px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
+            display: flex; justify-content: space-between; align-items: baseline;
+            border-bottom: 2px solid var(--ink); padding-bottom: 3px; margin-bottom: 6px;
         }
+        .city-title strong { font-family: var(--head); font-weight: 900; font-size: 17px; letter-spacing: 0.06em; text-transform: uppercase; }
+        .city-title span { font-size: 11px; color: var(--grey); }
         .location-item {
-            padding: 10px 8px;
-            margin-bottom: 4px;
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            user-select: none;
-            -webkit-user-select: none;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center; gap: 10px; padding: 6px 4px; min-height: 40px;
+            cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 2px;
         }
-        .location-item:active {
-            background-color: #efe9d9;
+        .location-item:hover { background: #f2f2f2; }
+        .location-item:active { background: #e8e8e8; }
+        .box {
+            width: 20px; height: 20px; flex-shrink: 0; border: 1.5px solid var(--ink); border-radius: 2px;
+            background: var(--paper); display: inline-flex; align-items: center; justify-content: center;
         }
-        .location-item:hover {
-            background-color: #f5f1e6;
+        .visited .box { background: var(--teal); }
+        .visited .box::after {
+            content: ""; width: 5px; height: 10px; border: solid var(--ink); border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg) translate(-1px, -1px);
         }
-        .location-item.visited {
-            color: var(--green);
-            font-weight: 700;
-        }
-        .location-item.unvisited {
-            color: #6b6660;
-        }
-        .location-item.new {
-            color: var(--red);
-            font-weight: 700;
-        }
-        .status-badge {
-            display: inline-block;
-            margin-right: 6px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
+        .loc-name { font-family: var(--head); font-weight: 900; font-size: 15px; line-height: 1.15; }
+        .loc-date { font-weight: 700; font-size: 11px; color: var(--teal-dark); margin-left: 6px; }
+        .loc-note { display: block; font-size: 11px; color: var(--grey); }
+        .footnote { border-top: 1px solid var(--ink); padding-top: 10px; margin-top: 4px; font-size: 12px; flex-shrink: 0; }
+        .footnote strong { font-family: var(--head); font-weight: 900; font-size: 14px; }
+        .footnote .say { color: var(--grey); margin: 0 4px; }
 
-        /* Mobile styles */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            #map {
-                order: 2;
-                flex: 1;
-                min-height: 0;
-            }
-            .sidebar {
-                order: 1;
-                width: 100%;
-                max-height: 40vh;
-                border-bottom: 1px solid #e0e0e0;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                padding: 12px;
-            }
-            .sidebar h2 {
-                font-size: 18px;
-                margin-bottom: 8px;
-            }
-            .stats {
-                padding: 10px;
-                margin-bottom: 12px;
-                font-size: 12px;
-            }
-            .city-title {
-                font-size: 11px;
-                margin-bottom: 6px;
-            }
-            .location-item {
-                padding: 8px 6px;
-                margin-bottom: 2px;
-                font-size: 12px;
-                min-height: 40px;
-            }
+            .container { flex-direction: column; }
+            #map { order: 2; flex: 1; min-height: 0; border-left: 0; border-top: 2px solid var(--ink); }
+            .sidebar { order: 1; width: 100%; max-height: 45vh; padding: 14px 16px; }
+            .title { font-size: 36px; }
+            .tagline { font-size: 10px; margin: 6px 0 12px; }
         }
-
-        /* iPhone specific */
         @supports (padding: max(0px)) {
             .sidebar {
-                padding-left: max(16px, env(safe-area-inset-left));
-                padding-right: max(16px, env(safe-area-inset-right));
-                padding-bottom: max(16px, env(safe-area-inset-bottom));
+                padding-left: max(22px, env(safe-area-inset-left));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
             }
             @media (max-width: 768px) {
                 .sidebar {
-                    padding-left: max(12px, env(safe-area-inset-left));
-                    padding-right: max(12px, env(safe-area-inset-right));
-                    padding-bottom: max(12px, env(safe-area-inset-bottom));
+                    padding-left: max(16px, env(safe-area-inset-left));
+                    padding-right: max(16px, env(safe-area-inset-right));
+                    padding-bottom: max(14px, env(safe-area-inset-bottom));
                 }
             }
         }
-
-        /* Leaflet touch fixes */
-        .leaflet-container {
-            font-size: 16px;
-            font-family: "IBM Plex Mono", ui-monospace, monospace;
-        }
-        .leaflet-popup-content {
-            font-size: 14px;
-            margin: 0;
-        }
-        .leaflet-popup-content-wrapper {
-            border-radius: 8px;
-        }
+        .leaflet-container { font-family: var(--text); font-size: 15px; }
+        .leaflet-popup-content-wrapper { border-radius: 2px; border: 1.5px solid var(--ink); box-shadow: none; }
+        .leaflet-popup-content { margin: 10px 14px; font-size: 13px; }
+        .leaflet-popup-content strong { font-family: var(--head); font-weight: 900; font-size: 15px; }
+        .leaflet-popup-content .d { color: var(--teal-dark); font-weight: 700; }
+        .leaflet-bar a { color: var(--ink); border-radius: 0 !important; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="map"></div>
         <div class="sidebar">
-            <a href="/" class="home-link">← Home</a>
-            <h2>You Mohoe</h2>
-            <div class="stats">
-                <div class="stats-item"><strong>Visited:</strong> <span id="visited-count">0</span>/<span id="total-count">0</span></div>
-                <div class="stats-item"><strong>Remaining:</strong> <span id="remaining-count">0</span></div>
+            <a href="/" class="home-link">&larr; Home</a>
+            <h1 class="title">You<br>Mohoe<sup>*</sup></h1>
+            <p class="tagline">A coffee at every Mojo in New Zealand</p>
+            <div class="challenge">
+                <h3>THE CHALLENGE</h3>
+                <p>One coffee at every Mojo cafe in the country. Tick each one off as you go.</p>
+                <dl>
+                    <dt>Done</dt><dd><span id="visited-count">0</span> of <span id="total-count">0</span></dd>
+                    <dt>To go</dt><dd id="remaining-count">0</dd>
+                    <dt>Started</dt><dd id="started">&nbsp;</dd>
+                </dl>
+                <div class="key"><span><i class="dot done"></i>Been</span><span><i class="dot todo"></i>Still to go</span></div>
             </div>
             <div id="locations-list"></div>
+            <p class="footnote"><strong>*Mo Hoe</strong><span class="say">(moh-hoh)</span><em>noun</em><br>Someone who will go anywhere for a Mojo coffee, and has the ticks to prove it.</p>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        // Initialize map
         const map = L.map('map', {
-            zoomControl: true,
-            touchZoom: true,
-            doubleClickZoom: true,
-            scrollWheelZoom: true
-        }).setView([-39.13, 177.71], 5);
+            zoomControl: true, touchZoom: true, doubleClickZoom: true, scrollWheelZoom: true
+        }).setView([-41.0, 174.0], 5);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
+            attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
@@ -282,72 +191,66 @@ leaflet: true
             ]
         };
 
-        // Marker colours follow the same convention as the other maps:
-        // green = visited, red = still to visit, yellow ring flags new openings.
-        function markerStyle(loc) {
-            if (loc.visited) return { fillColor: '#27ae60', color: '#fff' };
-            if (loc.new)     return { fillColor: '#fbca12', color: '#c0392b' };
-            return { fillColor: '#e74c3c', color: '#fff' };
+        const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        function fmtDate(iso) {
+            const [y, m, d] = iso.split('-').map(Number);
+            return `${d} ${MONTHS[m - 1]} ${y}`;
         }
+        function shortName(loc) {
+            return loc.name.replace(/^Mojo /, '').replace(/ \(closed\)$/, '');
+        }
+        const isClosed = loc => /\(closed\)$/.test(loc.name);
 
-        // Add markers to map
-        Object.values(locations).forEach(locs => {
-            locs.forEach(loc => {
-                const style = markerStyle(loc);
-                const marker = L.circleMarker([loc.lat, loc.lng], {
-                    radius: 8,
-                    fillColor: style.fillColor,
-                    color: style.color,
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.9
-                }).addTo(map);
-                const popupText = loc.visited
-                    ? `<strong>${loc.name}</strong><br>✅ Visited: ${loc.date}`
-                    : `<strong>${loc.name}</strong><br>${loc.new ? '🆕 New — not visited' : '⏳ Not visited'}`;
-                marker.bindPopup(popupText);
-            });
+        // Poster markers: teal for been, black for still to go, both ringed in white
+        const bounds = [];
+        Object.values(locations).flat().forEach(loc => {
+            bounds.push([loc.lat, loc.lng]);
+            const marker = L.circleMarker([loc.lat, loc.lng], {
+                radius: 8,
+                fillColor: loc.visited ? '#88c6bc' : '#000',
+                color: loc.visited ? '#000' : '#fff',
+                weight: 2, opacity: 1, fillOpacity: 1
+            }).addTo(map);
+            const status = loc.visited
+                ? `<span class="d">${fmtDate(loc.date)}</span>`
+                : (loc.new ? 'New, still to go' : 'Still to go');
+            marker.bindPopup(`<strong>${shortName(loc)}</strong><br>${status}${isClosed(loc) ? '<br>Closed, still counted' : ''}`);
+            loc.marker = marker;
         });
+        // Been markers on top, so a ticked cafe is never hidden under one still to go
+        Object.values(locations).flat().filter(l => l.visited).forEach(l => l.marker.bringToFront());
+        map.fitBounds(bounds, { padding: [30, 30] });
 
-        // Build sidebar
+        // Sidebar: a tick-box list per city, as on the poster
         const listContainer = document.getElementById('locations-list');
-        Object.entries(locations).forEach(([city, locs]) => {
-            const cityDiv = document.createElement('div');
-            cityDiv.className = 'city-section';
-
-            const cityTitle = document.createElement('div');
-            cityTitle.className = 'city-title';
-            cityTitle.textContent = city;
-            cityDiv.appendChild(cityTitle);
-
+        ['Auckland', 'Christchurch', 'Wellington'].forEach(city => {
+            const locs = [...locations[city]].sort((a, b) => shortName(a).localeCompare(shortName(b)));
+            const section = document.createElement('div');
+            section.className = 'city-section';
+            const done = locs.filter(l => l.visited).length;
+            section.innerHTML = `<div class="city-title"><strong>${city}</strong><span>${done} of ${locs.length}</span></div>`;
             locs.forEach(loc => {
                 const item = document.createElement('div');
-                let className = `location-item ${loc.visited ? 'visited' : 'unvisited'}`;
-                if (loc.new) className += ' new';
-                item.className = className;
-                const badge = loc.visited ? '✅' : (loc.new ? '🆕' : '⏳');
-                item.innerHTML = `<span class="status-badge">${badge}</span> ${loc.name}`;
-                item.onclick = () => {
-                    map.setView([loc.lat, loc.lng], 15);
-                };
-                cityDiv.appendChild(item);
+                item.className = 'location-item' + (loc.visited ? ' visited' : '');
+                const note = isClosed(loc) ? 'Closed, still counted' : (loc.new ? 'New' : '');
+                item.innerHTML = `<span class="box"></span><span><span class="loc-name">${shortName(loc)}</span>`
+                    + (loc.visited ? `<span class="loc-date">${fmtDate(loc.date)}</span>` : '')
+                    + (note ? `<span class="loc-note">${note}</span>` : '') + '</span>';
+                item.onclick = () => { map.setView([loc.lat, loc.lng], 16); loc.marker.openPopup(); };
+                section.appendChild(item);
             });
-
-            listContainer.appendChild(cityDiv);
+            listContainer.appendChild(section);
         });
 
-        // Compute stats from data
         const allLocs = Object.values(locations).flat();
-        const total = allLocs.length;
-        const visitedCount = allLocs.filter(l => l.visited).length;
-        document.getElementById('total-count').textContent = total;
-        document.getElementById('visited-count').textContent = visitedCount;
-        document.getElementById('remaining-count').textContent = total - visitedCount;
+        const visited = allLocs.filter(l => l.visited);
+        document.getElementById('total-count').textContent = allLocs.length;
+        document.getElementById('visited-count').textContent = visited.length;
+        document.getElementById('remaining-count').textContent = allLocs.length - visited.length;
+        const first = visited.map(l => l.date).sort()[0];
+        if (first) document.getElementById('started').textContent = fmtDate(first);
 
-        // Handle window resize for responsive layout
-        window.addEventListener('resize', () => {
-            map.invalidateSize();
-        });
+        window.addEventListener('resize', () => map.invalidateSize());
     </script>
 </body>
 </html>
